@@ -1,0 +1,15 @@
+newmtl itu_brick
+Kd 0.6 0.6 0.6
+
+newmtl itu_concrete
+Kd 0.6 0.6 0.6
+
+newmtl itu_glass
+Kd 0.6 0.6 0.6
+
+newmtl itu_medium_dry_ground
+Kd 0.6 0.6 0.6
+
+newmtl itu_metal
+Kd 0.6 0.6 0.6
+
