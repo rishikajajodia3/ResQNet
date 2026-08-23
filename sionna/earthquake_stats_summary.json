@@ -1,0 +1,8 @@
+{
+    "num_disaster_states": 25,
+    "total_runs": 200,
+    "mean_coverage_t0_pct": 70.32,
+    "mean_coverage_final_pct": 70.76,
+    "average_coverage_improvement_pct": 0.44,
+    "hypothesis_validated": true
+}
