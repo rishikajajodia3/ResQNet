@@ -1,1 +1,306 @@
+#include "ns3/core-module.h"
+#include "ns3/network-module.h"
+#include "ns3/mobility-module.h"
+#include "ns3/wifi-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/applications-module.h"
+#include "ns3/flow-monitor-module.h"
 
+#include <iostream>
+
+using namespace ns3;
+
+int main(int argc, char *argv[])
+{
+    // =========================================
+    // 1. CREATE NODES
+    // =========================================
+
+    NodeContainer uav;
+    uav.Create(1);
+
+    NodeContainer users;
+    users.Create(10);
+
+    // =========================================
+    // 2. 3D MOBILITY / POSITIONS
+    // =========================================
+
+    MobilityHelper mobility;
+
+    mobility.SetMobilityModel(
+        "ns3::ConstantPositionMobilityModel");
+
+    // UAV position
+    Ptr<ListPositionAllocator> uavPosition =
+        CreateObject<ListPositionAllocator>();
+
+    uavPosition->Add(
+        Vector(100.0, 100.0, 100.0));
+
+    mobility.SetPositionAllocator(uavPosition);
+    mobility.Install(uav);
+
+    // Ground users
+    Ptr<ListPositionAllocator> userPositions =
+        CreateObject<ListPositionAllocator>();
+
+    for (uint32_t i = 0; i < 10; i++)
+    {
+        userPositions->Add(
+            Vector(100.0 + i * 30.0,
+                   100.0 + i * 20.0,
+                   0.0));
+    }
+
+    mobility.SetPositionAllocator(userPositions);
+    mobility.Install(users);
+
+    // =========================================
+    // 3. WIFI
+    // =========================================
+
+    NodeContainer allNodes;
+
+    allNodes.Add(uav);
+    allNodes.Add(users);
+
+    WifiHelper wifi;
+
+    wifi.SetStandard(WIFI_STANDARD_80211n);
+
+    WifiMacHelper wifiMac;
+
+    wifiMac.SetType(
+        "ns3::AdhocWifiMac");
+
+    // Wi-Fi channel
+    YansWifiChannelHelper channel =
+        YansWifiChannelHelper::Default();
+
+    YansWifiPhyHelper phy;
+
+    phy.SetChannel(channel.Create());
+
+    // Increase transmission power
+    phy.Set(
+        "TxPowerStart",
+        DoubleValue(30.0));
+
+    phy.Set(
+        "TxPowerEnd",
+        DoubleValue(30.0));
+
+    // Improve receiver sensitivity
+    phy.Set(
+        "RxSensitivity",
+        DoubleValue(-90.0));
+
+    NetDeviceContainer devices =
+        wifi.Install(
+            phy,
+            wifiMac,
+            allNodes);
+
+    // =========================================
+    // 4. INTERNET STACK
+    // =========================================
+
+    InternetStackHelper internet;
+
+    internet.Install(allNodes);
+
+    Ipv4AddressHelper address;
+
+    address.SetBase(
+        "10.1.1.0",
+        "255.255.255.0");
+
+    Ipv4InterfaceContainer interfaces =
+        address.Assign(devices);
+
+    // =========================================
+    // 5. UDP SERVER ON UAV
+    // =========================================
+
+    uint16_t port = 9000;
+
+    UdpServerHelper server(port);
+
+    ApplicationContainer serverApp =
+        server.Install(uav.Get(0));
+
+    serverApp.Start(
+        Seconds(1.0));
+
+    serverApp.Stop(
+        Seconds(10.0));
+
+    // =========================================
+    // 6. UDP CLIENTS ON USERS
+    // =========================================
+
+    for (uint32_t i = 0;
+         i < users.GetN();
+         i++)
+    {
+        UdpClientHelper client(
+            interfaces.GetAddress(0),
+            port);
+
+        client.SetAttribute(
+            "MaxPackets",
+            UintegerValue(1000));
+
+        client.SetAttribute(
+            "Interval",
+            TimeValue(
+                MilliSeconds(10)));
+
+        client.SetAttribute(
+            "PacketSize",
+            UintegerValue(512));
+
+        ApplicationContainer clientApp =
+            client.Install(
+                users.Get(i));
+
+        clientApp.Start(
+            Seconds(2.0));
+
+        clientApp.Stop(
+            Seconds(10.0));
+    }
+
+    // =========================================
+    // 7. FLOW MONITOR
+    // =========================================
+
+    FlowMonitorHelper flowmon;
+
+    Ptr<FlowMonitor> monitor =
+        flowmon.InstallAll();
+
+    // =========================================
+    // 8. RUN SIMULATION
+    // =========================================
+
+    Simulator::Stop(
+        Seconds(10.0));
+
+    Simulator::Run();
+
+    // =========================================
+    // 9. COLLECT RESULTS
+    // =========================================
+
+    monitor->CheckForLostPackets();
+
+    Ptr<Ipv4FlowClassifier> classifier =
+        DynamicCast<Ipv4FlowClassifier>(
+            flowmon.GetClassifier());
+
+    auto stats =
+        monitor->GetFlowStats();
+
+    std::cout
+        << "\n====================================\n";
+
+    std::cout
+        << "       UAV NETWORK RESULTS\n";
+
+    std::cout
+        << "====================================\n";
+
+    for (const auto &flow : stats)
+    {
+        Ipv4FlowClassifier::FiveTuple tuple =
+            classifier->FindFlow(flow.first);
+
+        std::cout
+            << "\nFlow: "
+            << tuple.sourceAddress
+            << " -> "
+            << tuple.destinationAddress
+            << "\n";
+
+        if (flow.second.rxPackets == 0)
+        {
+            std::cout
+                << "No packets received.\n";
+
+            continue;
+        }
+
+        double duration =
+            flow.second.timeLastRxPacket.GetSeconds()
+            -
+            flow.second.timeFirstTxPacket.GetSeconds();
+
+        double throughput = 0.0;
+
+        if (duration > 0)
+        {
+            throughput =
+                flow.second.rxBytes * 8.0
+                /
+                duration
+                /
+                1000000.0;
+        }
+
+        double delay =
+            flow.second.delaySum.GetSeconds()
+            /
+            flow.second.rxPackets
+            *
+            1000.0;
+
+        double packetLoss =
+            100.0
+            *
+            (
+                flow.second.txPackets
+                -
+                flow.second.rxPackets
+            )
+            /
+            flow.second.txPackets;
+
+        std::cout
+            << "Packets Sent: "
+            << flow.second.txPackets
+            << "\n";
+
+        std::cout
+            << "Packets Received: "
+            << flow.second.rxPackets
+            << "\n";
+
+        std::cout
+            << "Throughput: "
+            << throughput
+            << " Mbps\n";
+
+        std::cout
+            << "Average Delay: "
+            << delay
+            << " ms\n";
+
+        std::cout
+            << "Packet Loss: "
+            << packetLoss
+            << " %\n";
+    }
+
+    std::cout
+        << "\n====================================\n";
+
+    // =========================================
+    // 10. DESTROY SIMULATION
+    // =========================================
+
+    Simulator::Destroy();
+
+    return 0;
+}
