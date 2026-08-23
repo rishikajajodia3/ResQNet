@@ -84,7 +84,7 @@ def main():
     print("=" * 60)
 
     model.learn(
-        total_timesteps=50_000
+        total_timesteps=500
     )
 
     # ==================================================

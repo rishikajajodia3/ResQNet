@@ -7,8 +7,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 INPUT_FILE = (
     PROJECT_ROOT
-    / "data"
-    / "processed"
+    / "sionna"
     / "earthquake_trajectory_dataset.csv"
 )
 
@@ -440,6 +439,8 @@ print(
 # =========================================================
 # SAVE
 # =========================================================
+
+OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
 
 state_df.to_csv(
     OUTPUT_FILE,

@@ -14,8 +14,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 DATA_FILE = (
     PROJECT_ROOT
-    / "data"
-    / "processed"
+    / "sionna"
     / "earthquake_trajectory_dataset.csv"
 )
 

@@ -711,7 +711,7 @@ if __name__ == "__main__":
     
     # 2. Production Run of Engine 2: Temporal Earthquake Trajectory Dataset (25 Disaster States, 8 Timesteps = 200 runs)
     print("\n--- RUNNING PRODUCTION TEMPORAL EARTHQUAKE DATASET (25 STATES, 8 TIMESTEPS) ---")
-    run_earthquake_temporal_dataset(num_disaster_states=25, timesteps_per_state=8, seed=100)
+    run_earthquake_temporal_dataset(num_disaster_states=25, timesteps_per_state=8, seed=100, scene_name="scenes/city_damaged.xml")
     
     # 3. Production Run of Engine 1: Recommended Grid-Sweep Dataset (6 Environments, 15m Grid, 588 runs)
     print("\n--- RUNNING RECOMMENDED GRID SWEEP DATASET (6 ENVIRONMENTS, 588 RUNS) ---")
