@@ -1,125 +1,421 @@
-# ResQNet — Sionna RT Wireless Propagation Module (Person 2)
+# ResQNet : Disaster-Resilient UAV Communication Network
 
-This directory contains the **Sionna RT (v2.0.1)** wireless ray-tracing module for the **ResQNet** emergency UAV communications pipeline.
+ResQNet is an intelligent emergency communication framework designed for **disaster-affected environments where conventional communication infrastructure may be damaged or unavailable**.
+
+The system combines **3D wireless propagation modelling, machine learning-based UAV placement, and NS-3 network simulation** to determine and validate effective UAV deployment for restoring emergency connectivity.
+
+## Problem
+
+During disasters such as floods, earthquakes, and cyclones, communication infrastructure can become severely disrupted. Rescue teams may know that people need assistance but still struggle to communicate with affected areas.
+
+ResQNet addresses this by using **UAVs as temporary aerial communication nodes**.
+
+Instead of placing UAVs arbitrarily, the system considers the disaster environment and wireless conditions to determine suitable UAV positions and then validates their communication performance at the network level.
 
 ---
 
-## 🏗️ Pipeline Overview
+## System Pipeline
 
+```text
+                Disaster Environment
+                        │
+                        ▼
+              3D Damaged City Model
+                        │
+                        ▼
+              Sionna Wireless Propagation
+                        │
+                        ▼
+              ML / PPO UAV Placement
+                        │
+                        ▼
+               UAV Position Selection
+                        │
+                        ▼
+                 uav_positions.json
+                        │
+                        ▼
+                NS-3 Network Simulation
+                        │
+                        ▼
+       ┌─────────────────────────────────┐
+       │ Throughput │ Delay │ Packet Loss │
+       └─────────────────────────────────┘
 ```
-[ Person 1 ] GIS / 3D Mesh (.obj/.ply)
-     │
-     ▼
-[ Person 2 ] Sionna RT 3D Ray Tracing & Radio Map Solver  <-- (THIS MODULE)
-     │
-     ├─────────── JSON Handoff Data Contract ───────────┐
-     ▼                                                 ▼
-[ Person 3 ] ML UAV Placement Model            [ Person 4 ] ns-3 Digital Twin
-(Consumes coverage % & path gain)              (Consumes per-user RSS & delays)
+
+---
+
+## Key Components
+
+### 1. 3D Disaster Environment
+
+A damaged-city 3D model is used to represent the physical environment.
+
+The current model contains approximately:
+
+* **186,506 vertices**
+* **317,948 faces**
+* Buildings and terrain represented as a 3D mesh
+
+The environment is used by the wireless propagation layer to model how the physical surroundings affect communication.
+
+The interactive visualization can display:
+
+* Damaged city
+* UAV position
+* UAV altitude
+* Emergency-user locations
+* Different candidate UAV positions
+
+---
+
+### 2. Sionna Wireless Propagation
+
+[Sionna](https://nvlabs.github.io/sionna/) is used to model wireless propagation through the 3D disaster environment.
+
+The propagation layer evaluates parameters such as:
+
+* Path gain
+* Received power
+* Propagation paths
+* Propagation delay
+* Coverage
+
+Example configuration:
+
+```text
+Carrier Frequency : 2.1 GHz
+Transmit Power    : 30 dBm
+```
+
+The propagation results provide information that can be used by the ML layer when selecting UAV positions.
+
+---
+
+### 3. Machine Learning — PPO
+
+ResQNet uses **Proximal Policy Optimization (PPO)** for dynamic UAV positioning.
+
+The UAV environment represents the deployment problem as a reinforcement-learning task.
+
+Possible actions include:
+
+```text
+0 → Stay
+1 → Move left  (-X)
+2 → Move right (+X)
+3 → Move down  (-Y)
+4 → Move up    (+Y)
+```
+
+The agent observes the current environment state and selects an action intended to improve the communication situation.
+
+The trained model is stored as:
+
+```text
+models/ppo_uav_dynamic.zip
+```
+
+Run the trained PPO model using:
+
+```bash
+python ml/run_ppo.py
+```
+
+The selected UAV coordinates are written to:
+
+```text
+data/uav_positions.json
+```
+
+Example:
+
+```json
+{
+  "num_uavs": 1,
+  "uav_positions": [
+    [
+      -18.82,
+      48.41,
+      30.57
+    ]
+  ]
+}
 ```
 
 ---
 
-## 📄 JSON Handoff Contract (`sionna_output_interface.json`)
+## 4. NS-3 Network Validation
 
-The simulation outputs a structured JSON interface documenting propagation results.
+NS-3 is used to validate the **network-level consequences** of the UAV placement selected by the ML system.
 
-### JSON Field Reference
+The simulation creates:
 
-| Key Path | Type | Unit | Range / Values | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| `simulation_config.num_uavs` | `int` | Count | $\ge 1$ | Number of active UAV base station transmitters. |
-| `simulation_config.uav_positions` | `list[list]` | meters | $[x, y, z]$ | 3D coordinates of UAV transmitters. |
-| `simulation_config.carrier_frequency_hz` | `float` | Hz | e.g. `2.1e9` | Carrier radio frequency ($2.1\text{ GHz}$ LTE/5G). |
-| `simulation_config.tx_power_dbm` | `float` | dBm | e.g. `30.0` | Transmit RF power output ($30\text{ dBm} = 1\text{ W}$). |
-| `ml_summary_metrics.coverage_percentage` | `float` | % | `0.0` to `100.0` | Percentage of ground grid cells exceeding $-100\text{ dB}$ path gain threshold. |
-| `ml_summary_metrics.mean_path_gain_db` | `float` | dB | $[-200, 0]$ | Unbiased average path gain computed **only** over valid coverage cells (excluding dead zones). |
-| `ml_summary_metrics.min_valid_path_gain_db` | `float` | dB | $[-200, 0]$ | Minimum path gain recorded among cells with at least 1 valid ray path. |
-| `ml_summary_metrics.max_path_gain_db` | `float` | dB | $[-200, 0]$ | Maximum path gain recorded (closest point to Tx). |
-| `ml_summary_metrics.no_coverage_cell_count` | `int` | Count | $\ge 0$ | Number of grid cells with 0 ray paths (dead zones). |
-| `ml_summary_metrics.no_coverage_percentage` | `float` | % | `0.0` to `100.0` | Percentage of dead zone grid cells. |
-| `user_metrics_for_ns3[i].user_id` | `string` | — | `"user_1"` | Identifier string for ground survivor node. |
-| `user_metrics_for_ns3[i].position` | `list` | meters | $[x, y, z]$ | 3D position of ground user. |
-| `user_metrics_for_ns3[i].received_power_dbm` | `float` | dBm | $[-150, +30]$ | Total received RF signal power at user antenna. |
-| `user_metrics_for_ns3[i].path_gain_linear` | `float` | ratio | $[0.0, 1.0]$ | Total linear power gain ($|a|^2$). |
-| `user_metrics_for_ns3[i].shortest_delay_sec` | `float` | seconds | $> 0.0$ | Time delay of the shortest direct line-of-sight ray path. |
-| `user_metrics_for_ns3[i].num_paths` | `int` | Count | $\ge 0$ | Number of distinct ray-traced multipath reflections reaching user. |
+* UAV communication node
+* Multiple emergency-user nodes
+* IEEE 802.11n Wi-Fi ad-hoc communication
+* UDP traffic flows
+* Flow Monitor measurements
 
----
+The UAV position generated by the ML layer is passed into the NS-3 simulation through:
 
-## 🌋 Temporal Earthquake Trajectory Contract (`earthquake_trajectory_dataset.json` / `earthquake_trajectory_dataset.csv` - Schema 3.0)
-
-Simulates dynamic UAV repositioning trajectories over earthquake survivor clusters (collapsed building assembly points):
-
-### Top-Level Metadata
-* **`schema_version`**: `"3.0"`
-* **`num_disaster_states`**: Number of simulated disaster environment states.
-* **`total_timesteps_simulated`**: Total number of evaluated trajectory timesteps.
-
-### Per-Disaster State Schema (`disaster_states[i]`)
-* **`state_id`**: Unique disaster state index.
-* **`cluster_centers`**: $2D$ coordinates $[[x_1, y_1], [x_2, y_2], \dots]$ of collapsed building survivor clusters.
-* **`fixed_users`**: Array of ground survivor objects with `user_id`, `position`, and `cluster_id`.
-* **`trajectory_type`**: `"toward_cluster"` (converging on survivor centroid) or `"greedy_exploration"` (bounded random walk).
-* **`timesteps`**: Array of per-timestep evaluations (`t`, `uav_position`, `coverage_percentage`, `mean_path_gain_db`, `no_coverage_percentage`, `user_results`).
-
----
-
-## 🗺️ Grid-Sweep ML Dataset Contract (`grid_sweep_dataset.json` / `grid_sweep_dataset.csv`)
-
-The Grid-Sweep Engine systematically evaluates coverage outcomes across a dense 3D spatial grid for multiple fixed disaster environments:
-
-### Top-Level Metadata
-* **`schema_version`**: `"1.0"`
-* **`num_environments`**: Number of distinct fixed ground user environments ($N$).
-* **`total_runs`**: Total number of evaluated grid points ($N \times \text{Grid Points}$).
-
-### Per-Environment Schema (`environments[i]`)
-* **`env_id`**: Unique environment identifier (e.g. `"env_1"`).
-* **`num_users`**: Count of ground users (survivors) in this environment (8–15).
-* **`user_positions`**: Fixed 3D coordinates $[x, y, 1.5]$ of survivors.
-* **`runs`**: Array of grid evaluation records (`run_id`, `uav_x`, `uav_y`, `uav_z`, `coverage_percentage`, `mean_path_gain_db`, `no_coverage_percentage`, `user_results`).
-
----
-
-## 📊 Batch ML Dataset Contract (`batch_uav_dataset.json`)
-
-The batch scenario generator outputs a dataset format designed specifically for Person 3 (ML Model Training):
-
-### Top-Level Metadata
-* **`schema_version`**: `"1.0"`
-* **`notes`**: Informational disclaimer regarding placeholder geometry vs final OBJ/PLY mesh.
-* **`dataset_size`**: Number of simulated UAV deployment scenarios.
-
-### Per-Scenario Schema (`scenarios[i]`)
-* **`scenario_id`**: Unique scenario index.
-* **`uav_positions`**: List of 3D UAV coordinates $[x, y, z]$.
-* **`coverage_percentage`**: Global spatial coverage percentage ($\% > -100\text{ dB}$).
-* **`mean_path_gain_db`**: Unbiased mean path gain ($\text{dB}$) across non-dead-zone cells.
-* **`no_coverage_percentage`**: Dead zone percentage ($\%$ cells with 0 rays).
-* **`user_results`**: Array of structured user objects containing `user_id`, `position`, `received_power_dbm`, `path_gain_linear`, `shortest_delay_sec`, and `num_paths`.
-
----
-
-## 🚀 Execution Instructions
-
-### 1. Run Single Scenario Simulation & Heatmap
-```powershell
-python sionna_pipeline.py
+```text
+data/uav_positions.json
 ```
-* Generates `sionna_output_interface.json` (handoff contract).
-* Saves `coverage_heatmap.png` (2D heatmap overlaying red UAV triangles and cyan User circles).
-* Generates `batch_uav_dataset.json` (multi-scenario dataset for Person 3's ML training).
+
+NS-3 then evaluates:
+
+* Packets sent
+* Packets received
+* Throughput
+* Average delay
+* Packet loss
+
+Example result:
+
+```text
+Packets Sent:     800
+Packets Received: 800
+Throughput:       ~0.432 Mbps
+Average Delay:    ~1.36 ms
+Packet Loss:      0%
+```
+
+Some users may have no packets received depending on their position relative to the UAV. This demonstrates the importance of **intelligent UAV placement for emergency connectivity**.
 
 ---
 
-## 🛠️ Module Functions Reference
+# Project Structure
 
-* **`run_uav_propagation_sim(uav_positions, user_positions, scene_name, freq, tx_power_dbm)`**:
-  Executes ray tracing (`PathSolver`) and grid solver (`RadioMapSolver`), returns metrics dictionary and dB path gain matrix.
+```text
+ResQNet/
+│
+├── README.md
+│
+├── data/
+│   ├── uav_positions.json
+│   └── ...
+│
+├── ml/
+│   ├── dynamic_model.py
+│   ├── prepare_dynamic_data.py
+│   ├── train_dynamic.py
+│   ├── train_dynamic_coverage.py
+│   └── run_ppo.py
+│
+├── models/
+│   ├── ppo_uav_dynamic.zip
+│   └── dynamic_coverage_model.pkl
+│
+├── ns3/
+│   └── uav-demo.cc
+│
+├── sionna/
+│   ├── sionna_pipeline.py
+│   ├── view_3d.py
+│   └── scenes/
+│       └── city_damaged.xml
+│
+├── results/
+│   └── ppo_damaged_city_coverage.png
+│
+└── ResQNet_3D_Demo.ipynb
+```
 
-* **`safe_load_scene(scene_name)`**:
-  Handles custom `.obj` or `.ply` mesh files from Person 1, with automatic fallback to built-in scenes and default material assignment (`itu_concrete`).
+---
 
-* **`batch_run_scenarios(uav_configs_list, user_positions, output_dataset_file)`**:
-  Batch executes multiple UAV candidate configurations and aggregates training data for Person 3.
+# Installation
+
+## Clone the repository
+
+```bash
+git clone <repository-url>
+cd ResQNet
+```
+
+## Create and activate the virtual environment
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+## Install Python dependencies
+
+```bash
+pip install numpy matplotlib trimesh plotly joblib scikit-learn stable-baselines3
+```
+
+For the Jupyter demonstration:
+
+```bash
+pip install jupyterlab ipykernel
+```
+
+Register the environment:
+
+```bash
+python -m ipykernel install --user \
+    --name resqnet \
+    --display-name "Python (ResQNet)"
+```
+
+---
+
+# Running ResQNet
+
+## Step 1 — Run PPO UAV Placement
+
+From the project root:
+
+```bash
+cd ~/ResQNet
+source .venv/bin/activate
+python ml/run_ppo.py
+```
+
+The model selects a UAV position and saves it to:
+
+```text
+data/uav_positions.json
+```
+
+---
+
+## Step 2 — Launch the 3D Demonstration
+
+```bash
+cd ~/ResQNet
+source .venv/bin/activate
+jupyter lab
+```
+
+Open:
+
+```text
+ResQNet_3D_Demo.ipynb
+```
+
+Select the:
+
+```text
+Python (ResQNet)
+```
+
+kernel and run the notebook cells.
+
+The notebook visualizes the UAV inside the damaged 3D environment.
+
+---
+
+# Step 3 — Run NS-3 Validation
+
+Go to the NS-3 directory:
+
+```bash
+cd ~/ns3-rt
+```
+
+Build NS-3:
+
+```bash
+/usr/bin/python3.12 ./ns3 build
+```
+
+Run the validation:
+
+```bash
+/usr/bin/python3.12 ./ns3 run scratch/uav-demo
+```
+
+The simulation prints the communication metrics for each user flow.
+
+---
+
+# Example End-to-End Execution
+
+```bash
+# ML
+cd ~/ResQNet
+source .venv/bin/activate
+python ml/run_ppo.py
+
+# 3D visualization
+jupyter lab
+
+# NS-3 validation
+cd ~/ns3-rt
+/usr/bin/python3.12 ./ns3 run scratch/uav-demo
+```
+
+---
+
+# Current Results
+
+The current implementation demonstrates the complete connection between the major layers:
+
+```text
+3D disaster environment
+        ↓
+Wireless propagation
+        ↓
+PPO UAV positioning
+        ↓
+UAV position file
+        ↓
+NS-3 simulation
+        ↓
+Network performance metrics
+```
+
+The system has successfully demonstrated:
+
+* A damaged 3D city environment
+* Wireless propagation simulation
+* PPO-based UAV position selection
+* UAV position exchange through JSON
+* Interactive 3D visualization
+* NS-3 network simulation
+* Multiple emergency-user flows
+* Throughput measurement
+* Delay measurement
+* Packet-loss measurement
+
+---
+
+# Future Improvements
+
+The current system provides the foundation for a more complete **closed-loop disaster communication optimizer**.
+
+Planned improvements include:
+
+* Dynamic UAV repositioning based directly on real-time network conditions
+* Connecting PPO decisions continuously with Sionna propagation results
+* Recalculating coverage after every UAV movement
+* Multi-UAV optimization
+* More realistic disaster scenarios
+* Dynamic user mobility
+* Improved reward functions
+* Joint optimization of coverage, throughput, and latency
+* Automated comparison of different UAV deployment strategies
+* Real-time visualization of communication coverage
+
+The long-term goal is:
+
+```text
+Observe disaster state
+        ↓
+Estimate wireless conditions
+        ↓
+PPO selects UAV movement
+        ↓
+Recalculate propagation
+        ↓
+Validate network performance
+        ↓
+Feed results back to the agent
+        ↓
+Repeat
+```
+
+This would turn ResQNet into a **closed-loop intelligent UAV communication system for disaster recovery**.
