@@ -1,0 +1,109 @@
+{
+  "experiment_name": "ResQNet_PPO_Sionna_Challenging_Optimization",
+  "random_seed": 42,
+  "scene_name": "city_damaged.xml",
+  "scene_mesh": "scenes/city_damaged.obj",
+  "propagation_engine": "Sionna RT (PathSolver with Mitsuba 3 LLVM ray tracer)",
+  "channel_model": "3D Ray Tracing (Line-of-Sight, Specular Reflections, Scattering)",
+  "connectivity_threshold_dbm": -50.0,
+  "path_gain_threshold_db": -80.0,
+  "noise_power_dbm": -94.0,
+  "transmit_power_dbm": 30.0,
+  "carrier_frequency_hz": 2100000000.0,
+  "bandwidth_hz": 20000000.0,
+  "uav_starting_position": [
+    -45.0,
+    50.0,
+    12.0
+  ],
+  "ground_user_positions": [
+    [
+      -20.0,
+      -30.0,
+      1.5
+    ],
+    [
+      -10.0,
+      -20.0,
+      1.5
+    ],
+    [
+      0.0,
+      -10.0,
+      1.5
+    ],
+    [
+      10.0,
+      0.0,
+      1.5
+    ],
+    [
+      20.0,
+      10.0,
+      1.5
+    ],
+    [
+      -15.0,
+      25.0,
+      1.5
+    ],
+    [
+      5.0,
+      35.0,
+      1.5
+    ],
+    [
+      25.0,
+      -15.0,
+      1.5
+    ],
+    [
+      -30.0,
+      -10.0,
+      1.5
+    ],
+    [
+      0.0,
+      20.0,
+      1.5
+    ]
+  ],
+  "action_sequence": [
+    {
+      "step": 1,
+      "action_id": 2,
+      "action_name": "Move +X"
+    },
+    {
+      "step": 2,
+      "action_id": 2,
+      "action_name": "Move +X"
+    },
+    {
+      "step": 3,
+      "action_id": 3,
+      "action_name": "Move -Y"
+    },
+    {
+      "step": 4,
+      "action_id": 2,
+      "action_name": "Move +X"
+    },
+    {
+      "step": 5,
+      "action_id": 3,
+      "action_name": "Move -Y"
+    },
+    {
+      "step": 6,
+      "action_id": 0,
+      "action_name": "Stay (Hold)"
+    }
+  ],
+  "reproducibility_audit": {
+    "exact_numerical_reproducibility": false,
+    "macroscopic_experimental_reproducibility": true,
+    "reproducibility_and_numerical_variance": "Small Monte Carlo multipath variations (+/- 0.3 dB) can affect users near the -50 dBm connectivity threshold without altering macroscopic trajectory or optimal convergence.",
+    "evaluation_recommendation": "Use multiple independent trials and seeds for aggregate statistical reporting."
+  }
+}
