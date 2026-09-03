@@ -5,7 +5,11 @@ from sionna.rt import (
     PlanarArray
 )
 
-SCENE = "/home/rishika/ResQNet/sionna/scenes/city_damaged.xml"
+import os
+
+SCENE = os.path.join(os.path.dirname(__file__), "scenes", "city_damaged.xml")
+if not os.path.exists(SCENE):
+    SCENE = "city_damaged.xml"
 
 # Load damaged 3D city
 scene = load_scene(SCENE)

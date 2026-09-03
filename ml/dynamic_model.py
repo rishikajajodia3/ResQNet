@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import gymnasium as gym
+from typing import Optional, Any
 
 from gymnasium import spaces
 
@@ -9,7 +10,20 @@ from pathlib import Path
 import joblib
 
 
+import sys
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+# Add sionna directory to sys.path
+SIONNA_DIR = PROJECT_ROOT / "sionna"
+if str(SIONNA_DIR) not in sys.path:
+    sys.path.insert(0, str(SIONNA_DIR))
+
+try:
+    from sionna_feedback_engine import evaluate_uav_position, ConnectivityConfig
+except ImportError:
+    evaluate_uav_position = None
+    ConnectivityConfig = None
 
 
 DATA_FILE = (
@@ -32,9 +46,35 @@ class UAVDynamicEnv(gym.Env):
         "render_modes": []
     }
 
-    def __init__(self):
+    def __init__(
+        self,
+        use_sionna_feedback: bool = False,
+        scene_name: str = "city_damaged.xml",
+        connectivity_config: Optional[Any] = None,
+        w_conn: float = 0.50,
+        w_qual: float = 0.25,
+        w_prog: float = 0.20,
+        w_move: float = 0.05,
+        rss_min_dbm: float = -95.0,
+        rss_max_dbm: float = -40.0,
+        seed: int = 42
+    ):
 
         super().__init__()
+
+        self.use_sionna_feedback = use_sionna_feedback
+        self.scene_name = scene_name
+        self.connectivity_config = connectivity_config
+        self.seed = seed
+
+        # Configurable reward weights & signal quality normalization
+        self.w_conn = w_conn
+        self.w_qual = w_qual
+        self.w_prog = w_prog
+        self.w_move = w_move
+        self.rss_min_dbm = rss_min_dbm
+        self.rss_max_dbm = rss_max_dbm
+        self.current_sionna_metrics = None
 
         # ==================================================
         # LOAD EARTHQUAKE DATA
@@ -51,22 +91,28 @@ class UAVDynamicEnv(gym.Env):
             )
 
         # ==================================================
-        # LOAD COVERAGE MODEL
+        # LOAD COVERAGE MODEL (FOR SURROGATE MODE)
         # ==================================================
 
-        if not COVERAGE_MODEL_FILE.exists():
-
-            raise FileNotFoundError(
-                "\nDynamic coverage model not found:\n"
-                f"{COVERAGE_MODEL_FILE}\n\n"
-                "Run:\n"
-                "python ml/train_dynamic_coverage.py\n"
-                "first."
+        self.coverage_model = None
+        if not self.use_sionna_feedback:
+            if not COVERAGE_MODEL_FILE.exists():
+                raise FileNotFoundError(
+                    "\nDynamic coverage model not found:\n"
+                    f"{COVERAGE_MODEL_FILE}\n\n"
+                    "Run:\n"
+                    "python ml/train_dynamic_coverage.py\n"
+                    "first."
+                )
+            self.coverage_model = joblib.load(
+                COVERAGE_MODEL_FILE
             )
-
-        self.coverage_model = joblib.load(
-            COVERAGE_MODEL_FILE
-        )
+        else:
+            if COVERAGE_MODEL_FILE.exists():
+                try:
+                    self.coverage_model = joblib.load(COVERAGE_MODEL_FILE)
+                except Exception:
+                    self.coverage_model = None
 
         # ==================================================
         # ACTION SPACE
@@ -260,12 +306,25 @@ class UAVDynamicEnv(gym.Env):
             self.current_power = -200.0
 
         # ==================================================
-        # INITIAL COVERAGE
+        # INITIAL COVERAGE & POWER
         # ==================================================
 
-        self.current_coverage = float(
-            row["coverage_percentage"]
-        )
+        sionna_metrics = None
+        if self.use_sionna_feedback and evaluate_uav_position is not None:
+            sionna_metrics = evaluate_uav_position(
+                self.uav_position,
+                scene_name=self.scene_name,
+                connectivity_config=self.connectivity_config,
+                seed=self.seed
+            )
+            self.current_coverage = float(sionna_metrics["aggregate"]["coverage_percentage"])
+            self.current_power = float(sionna_metrics["aggregate"]["mean_rss_dbm"])
+            self.current_sionna_metrics = sionna_metrics
+        else:
+            self.current_coverage = float(
+                row["coverage_percentage"]
+            )
+            self.current_sionna_metrics = None
 
         observation = (
             self._make_observation()
@@ -283,7 +342,10 @@ class UAVDynamicEnv(gym.Env):
                 int(row["t"]),
 
             "coverage":
-                self.current_coverage
+                self.current_coverage,
+
+            "sionna_metrics":
+                sionna_metrics
         }
 
         return observation, info
@@ -427,47 +489,58 @@ class UAVDynamicEnv(gym.Env):
         )
 
         # ==================================================
-        # PREDICT COVERAGE
+        # PREDICT / EVALUATE COVERAGE
         # ==================================================
 
-        prediction_input = pd.DataFrame(
-            [
-                {
-                    "uav_x":
-                        self.uav_position[0],
-
-                    "uav_y":
-                        self.uav_position[1],
-
-                    "uav_z":
-                        self.uav_position[2],
-
-                    "num_users":
-                        self.num_users,
-
-                    "mean_received_power":
-                        self.current_power
-                }
-            ]
-        )
-
-        predicted_coverage = float(
-            self.coverage_model.predict(
-                prediction_input
-            )[0]
-        )
-
-        predicted_coverage = float(
-            np.clip(
-                predicted_coverage,
-                0.0,
-                100.0
+        sionna_metrics = None
+        if self.use_sionna_feedback and evaluate_uav_position is not None:
+            sionna_metrics = evaluate_uav_position(
+                self.uav_position,
+                scene_name=self.scene_name,
+                connectivity_config=self.connectivity_config,
+                seed=self.seed
             )
-        )
+            self.current_coverage = float(sionna_metrics["aggregate"]["coverage_percentage"])
+            self.current_power = float(sionna_metrics["aggregate"]["mean_rss_dbm"])
+        else:
+            prediction_input = pd.DataFrame(
+                [
+                    {
+                        "uav_x":
+                            self.uav_position[0],
 
-        self.current_coverage = (
-            predicted_coverage
-        )
+                        "uav_y":
+                            self.uav_position[1],
+
+                        "uav_z":
+                            self.uav_position[2],
+
+                        "num_users":
+                            self.num_users,
+
+                        "mean_received_power":
+                            self.current_power
+                    }
+                ]
+            )
+
+            predicted_coverage = float(
+                self.coverage_model.predict(
+                    prediction_input
+                )[0]
+            )
+
+            predicted_coverage = float(
+                np.clip(
+                    predicted_coverage,
+                    0.0,
+                    100.0
+                )
+            )
+
+            self.current_coverage = (
+                predicted_coverage
+            )
 
         # ==================================================
         # REWARD
@@ -478,20 +551,52 @@ class UAVDynamicEnv(gym.Env):
             - old_coverage
         )
 
-        # Small cost for movement
+        if self.use_sionna_feedback and sionna_metrics is not None:
+            conn_count = sionna_metrics["aggregate"]["connected_users_count"]
+            old_conn_count = (
+                self.current_sionna_metrics["aggregate"]["connected_users_count"]
+                if self.current_sionna_metrics is not None
+                else conn_count
+            )
 
-        if action == 0:
+            # 1. Connected ratio: 0.0 to 1.0 (dominant component)
+            r_conn = conn_count / 10.0
 
-            movement_penalty = 0.0
+            # 2. Normalized RSS quality: 0.0 to 1.0
+            mean_rss = sionna_metrics["aggregate"]["mean_rss_dbm"]
+            if self.rss_max_dbm > self.rss_min_dbm:
+                r_qual = float(np.clip(
+                    (mean_rss - self.rss_min_dbm) / (self.rss_max_dbm - self.rss_min_dbm),
+                    0.0,
+                    1.0
+                ))
+            else:
+                r_qual = 0.0
 
+            # 3. Step progress: -1.0 to +1.0
+            r_prog = (conn_count - old_conn_count) / 10.0
+
+            # 4. Movement penalty: 1.0 if action != 0 else 0.0
+            cost_move = 1.0 if action != 0 else 0.0
+
+            reward = (
+                self.w_conn * r_conn
+                + self.w_qual * r_qual
+                + self.w_prog * r_prog
+                - self.w_move * cost_move
+            )
+            self.current_sionna_metrics = sionna_metrics
         else:
+            # Small cost for movement
+            if action == 0:
+                movement_penalty = 0.0
+            else:
+                movement_penalty = 0.05
 
-            movement_penalty = 0.05
-
-        reward = (
-            coverage_change
-            - movement_penalty
-        )
+            reward = (
+                coverage_change
+                - movement_penalty
+            )
 
         # ==================================================
         # ADVANCE EARTHQUAKE TIME
@@ -538,7 +643,10 @@ class UAVDynamicEnv(gym.Env):
             "trajectory_type":
                 self.current_trajectory.iloc[
                     self.current_step
-                ]["trajectory_type"]
+                ]["trajectory_type"],
+
+            "sionna_metrics":
+                sionna_metrics
         }
 
         return (

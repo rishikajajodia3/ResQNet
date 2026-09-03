@@ -1,0 +1,39 @@
+{
+  "experiment_name": "ResQNet_PPO_Sionna_Challenging_Optimization",
+  "episode_id": 1,
+  "total_steps": 6,
+  "initial_uav_position": [
+    -45.0,
+    50.0,
+    12.0
+  ],
+  "final_uav_position": [
+    -15.0,
+    30.0,
+    12.0
+  ],
+  "initial_connected_users": "2 / 10 (20.0%)",
+  "final_connected_users": "8 / 10 (80.0%)",
+  "improvement_in_connected_users": "+6 connected users",
+  "improvement_percentage_points": "+60.0 percentage points (20.0% -> 80.0%)",
+  "initial_mean_rss_dbm": -52.27,
+  "final_mean_rss_dbm": -44.69,
+  "mean_rss_improvement_db": "+7.58 dB",
+  "cumulative_reward": 2.8467,
+  "reproducibility_classification": {
+    "exact_numerical_reproducibility": "Not guaranteed for this Sionna RT Monte Carlo ray-tracing configuration",
+    "macroscopic_experimental_reproducibility": "Demonstrated and verified across independent trials",
+    "macroscopic_invariants": {
+      "same_initial_state": true,
+      "same_action_sequence": true,
+      "same_final_uav_position": true,
+      "same_final_connectivity": true,
+      "same_final_mean_rss": true,
+      "same_overall_optimization_outcome": true
+    }
+  },
+  "reproducibility_and_numerical_variance": {
+    "explanation": "Monte Carlo ray tracing in Sionna RT casts 1,000,000 rays across a 560,000-polygon mesh. Parallel thread reduction introduces minor sub-dB multipath variance that can affect users located within 0.3 dB of the -50 dBm sensitivity threshold.",
+    "recommendation": "Future statistical evaluations should aggregate metrics over multiple independent trials and seeds rather than relying on a single deterministic run."
+  }
+}
