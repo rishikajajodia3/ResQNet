@@ -1,0 +1,110 @@
+{
+  "scene": "city_damaged.xml",
+  "mode": "sionna",
+  "num_uavs": 1,
+  "num_users": 10,
+  "num_steps": 5,
+  "total_reward": 3.4109090909090907,
+  "initial_position": [
+    20.690000534057617,
+    22.639999389648438,
+    25.969999313354492
+  ],
+  "final_position": [
+    -29.31,
+    22.64,
+    25.97
+  ],
+  "trajectory": [
+    {
+      "step": 0,
+      "action": null,
+      "position": [
+        20.690000534057617,
+        22.639999389648438,
+        25.969999313354492
+      ],
+      "connected_users": 10,
+      "coverage_percent": 100.0,
+      "mean_path_gain_db": -75.74,
+      "mean_rss_dbm": -45.74,
+      "mean_snr_db": 0.0,
+      "reward": 0.0
+    },
+    {
+      "step": 1,
+      "action": 1,
+      "position": [
+        10.690000534057617,
+        22.639999389648438,
+        25.969999313354492
+      ],
+      "connected_users": 10,
+      "coverage_percent": 100.0,
+      "mean_path_gain_db": -73.63,
+      "mean_rss_dbm": -43.63,
+      "mean_snr_db": 0.0,
+      "reward": 0.6835
+    },
+    {
+      "step": 2,
+      "action": 1,
+      "position": [
+        0.6900005340576172,
+        22.639999389648438,
+        25.969999313354492
+      ],
+      "connected_users": 10,
+      "coverage_percent": 100.0,
+      "mean_path_gain_db": -73.1,
+      "mean_rss_dbm": -43.1,
+      "mean_snr_db": 0.0,
+      "reward": 0.6859090909090908
+    },
+    {
+      "step": 3,
+      "action": 1,
+      "position": [
+        -9.309999465942383,
+        22.639999389648438,
+        25.969999313354492
+      ],
+      "connected_users": 10,
+      "coverage_percent": 100.0,
+      "mean_path_gain_db": -73.63,
+      "mean_rss_dbm": -43.63,
+      "mean_snr_db": 0.0,
+      "reward": 0.6835
+    },
+    {
+      "step": 4,
+      "action": 1,
+      "position": [
+        -19.309999465942383,
+        22.639999389648438,
+        25.969999313354492
+      ],
+      "connected_users": 10,
+      "coverage_percent": 100.0,
+      "mean_path_gain_db": -74.73,
+      "mean_rss_dbm": -44.73,
+      "mean_snr_db": 0.0,
+      "reward": 0.6785
+    },
+    {
+      "step": 5,
+      "action": 1,
+      "position": [
+        -29.309999465942383,
+        22.639999389648438,
+        25.969999313354492
+      ],
+      "connected_users": 10,
+      "coverage_percent": 100.0,
+      "mean_path_gain_db": -74.51,
+      "mean_rss_dbm": -44.51,
+      "mean_snr_db": 0.0,
+      "reward": 0.6795
+    }
+  ]
+}

@@ -1,152 +1,625 @@
-import argparse
 import sys
-from pathlib import Path
 import json
-from stable_baselines3 import PPO
+import argparse
+from pathlib import Path
 
-# Setup paths
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
-if str(PROJECT_ROOT / "ml") not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT / "ml"))
-if str(PROJECT_ROOT / "sionna") not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT / "sionna"))
+import numpy as np
+
+
+# ============================================================
+# PROJECT PATHS
+# ============================================================
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+ML_DIR = PROJECT_ROOT / "ml"
+SIONNA_DIR = PROJECT_ROOT / "sionna"
+
+sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(0, str(ML_DIR))
+sys.path.insert(0, str(SIONNA_DIR))
+
+
+# ============================================================
+# IMPORT ENVIRONMENT
+# ============================================================
 
 from dynamic_model import UAVDynamicEnv
 
 
-MODEL_PATH = (
-    PROJECT_ROOT
-    / "models"
-    / "ppo_uav_dynamic"
+# ============================================================
+# FILE PATHS
+# ============================================================
+
+MODEL_PATH = PROJECT_ROOT / "models" / "ppo_uav_dynamic.zip"
+
+UAV_POSITION_PATH = (
+    PROJECT_ROOT / "data" / "uav_positions.json"
 )
 
-OUTPUT_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "uav_positions.json"
+TRAJECTORY_PATH = (
+    PROJECT_ROOT / "data" / "ppo_trajectory.json"
 )
 
 
-def run_ppo_episode(use_sionna: bool = True, max_steps: int = 8):
-    mode_str = "LIVE SIONNA RT (PHYSICS-IN-THE-LOOP)" if use_sionna else "SURROGATE (RANDOM FOREST)"
-    print("=" * 75)
-    print(f"PPO UAV CLOSED-LOOP EPISODE EXECUTION -- MODE: {mode_str}")
-    print("=" * 75)
+# ============================================================
+# GET REAL SIONNA METRICS
+# ============================================================
 
-    # 1. Initialize Environment
-    env = UAVDynamicEnv(use_sionna_feedback=use_sionna, scene_name="city_damaged.xml")
-    
-    # 2. Load trained PPO model (if exists)
+def get_metrics(env):
+
+    position = np.asarray(
+        env.uav_position,
+        dtype=float
+    )
+
+    coverage = float(
+        env.current_coverage
+        if env.current_coverage is not None
+        else 0.0
+    )
+
+    connected_users = 0
+    mean_rss = 0.0
+    mean_path_gain = 0.0
+    mean_snr = 0.0
+
+    sionna_metrics = getattr(
+        env,
+        "current_sionna_metrics",
+        None
+    )
+
+    if sionna_metrics is not None:
+
+        aggregate = sionna_metrics.get(
+            "aggregate",
+            {}
+        )
+
+        coverage = float(
+            aggregate.get(
+                "coverage_percentage",
+                coverage
+            )
+        )
+
+        connected_users = int(
+            aggregate.get(
+                "connected_users_count",
+                0
+            )
+        )
+
+        mean_rss = float(
+            aggregate.get(
+                "mean_rss_dbm",
+                aggregate.get(
+                    "mean_rs_dbm",
+                    0.0
+                )
+            )
+        )
+
+        mean_path_gain = float(
+            aggregate.get(
+                "mean_path_gain_db",
+                0.0
+            )
+        )
+
+        mean_snr = float(
+            aggregate.get(
+                "mean_snr_db",
+                0.0
+            )
+        )
+
+    return {
+        "position": position.tolist(),
+        "coverage_percentage": coverage,
+        "connected_users_count": connected_users,
+        "mean_rss_dbm": mean_rss,
+        "mean_path_gain_db": mean_path_gain,
+        "mean_snr_db": mean_snr
+    }
+
+
+# ============================================================
+# RUN PPO
+# ============================================================
+
+def run_ppo_episode(
+    use_sionna=True,
+    max_steps=5
+):
+
+    mode_name = (
+        "sionna"
+        if use_sionna
+        else "surrogate"
+    )
+
+    print()
+    print("=" * 60)
+    print("RESQNET PPO UAV OPTIMIZATION")
+    print("=" * 60)
+
+    print(f"Mode       : {mode_name}")
+    print(f"Steps      : {max_steps}")
+    print("Scene      : city_damaged.xml")
+
+    # ========================================================
+    # CREATE ENVIRONMENT
+    # ========================================================
+
+    env = UAVDynamicEnv(
+        use_sionna_feedback=use_sionna,
+        scene_name="city_damaged.xml"
+    )
+
+    # ========================================================
+    # LOAD PPO MODEL
+    # ========================================================
+
     model = None
-    if MODEL_PATH.with_suffix(".zip").exists() or MODEL_PATH.exists():
-        try:
-            model = PPO.load(MODEL_PATH)
-            print(f"[INFO] Loaded trained PPO policy from: {MODEL_PATH}")
-        except Exception as e:
-            print(f"[WARN] Failed loading model ({e}). Using deterministic exploration policy.")
-            model = None
-    else:
-        print("[INFO] No pre-trained zip found. Using deterministic exploration policy.")
 
-    # 3. Reset Environment
-    observation, info = env.reset(seed=42)
-    
-    print("\nInitial State (t=0):")
-    print(f"  * UAV Position:      [X={observation[0]:.2f}, Y={observation[1]:.2f}, Z={observation[2]:.2f}]")
-    print(f"  * Initial Coverage:  {observation[3]:.2f}%")
-    print(f"  * Initial Mean RSS:  {observation[4]:.2f} dBm")
-    
-    if info.get("sionna_metrics"):
-        sm = info["sionna_metrics"]["aggregate"]
-        print(f"  * Connected Users:   {sm['connected_users_count']} / 10 ({sm['connected_users_percentage']}%)")
+    if MODEL_PATH.exists():
+
+        from stable_baselines3 import PPO
+
+        print()
+        print("Loading PPO model...")
+
+        model = PPO.load(
+            str(MODEL_PATH)
+        )
+
+        print(
+            "PPO model loaded successfully."
+        )
+
+    else:
+
+        print()
+        print(
+            "WARNING: PPO model not found."
+        )
+
+    # ========================================================
+    # RESET
+    # ========================================================
+
+    observation, info = env.reset(
+        seed=42
+    )
+
+    observation = np.asarray(
+        observation
+    )
+
+    # ========================================================
+    # INITIAL METRICS
+    # ========================================================
+
+    initial = get_metrics(env)
+
+    print()
+    print("Initial UAV state:")
+
+    print(
+        "Position:",
+        initial["position"]
+    )
+
+    print(
+        "Coverage:",
+        initial["coverage_percentage"],
+        "%"
+    )
+
+    print(
+        "Connected users:",
+        initial["connected_users_count"]
+    )
+
+    print(
+        "Mean RSS:",
+        initial["mean_rss_dbm"],
+        "dBm"
+    )
+
+    print(
+        "Mean path gain:",
+        initial["mean_path_gain_db"],
+        "dB"
+    )
+
+    print(
+        "Mean SNR:",
+        initial["mean_snr_db"],
+        "dB"
+    )
+
+    # ========================================================
+    # STORE TRAJECTORY
+    # ========================================================
+
+    trajectory = []
+
+    trajectory.append({
+        "step": 0,
+        "action": None,
+        "position": initial["position"],
+        "connected_users": initial[
+            "connected_users_count"
+        ],
+        "coverage_percent": initial[
+            "coverage_percentage"
+        ],
+        "mean_path_gain_db": initial[
+            "mean_path_gain_db"
+        ],
+        "mean_rss_dbm": initial[
+            "mean_rss_dbm"
+        ],
+        "mean_snr_db": initial[
+            "mean_snr_db"
+        ],
+        "reward": 0.0
+    })
+
+    # ========================================================
+    # PPO LOOP
+    # ========================================================
 
     total_reward = 0.0
-    step_history = []
 
-    print("\n" + "-" * 75)
-    print(f"{'Step':<6} | {'Action':<8} | {'UAV Position (X, Y, Z)':<25} | {'Connected':<11} | {'Coverage %':<11} | {'Reward':<8}")
-    print("-" * 75)
+    for step in range(
+        1,
+        max_steps + 1
+    ):
 
-    for step_num in range(1, max_steps + 1):
-        # 4. Predict PPO action
+        # ----------------------------------------------------
+        # SELECT ACTION
+        # ----------------------------------------------------
+
         if model is not None:
-            action, _ = model.predict(observation, deterministic=True)
-            action = int(action)
+
+            action, _ = model.predict(
+                observation,
+                deterministic=True
+            )
+
+            action = int(
+                np.asarray(action).item()
+            )
+
         else:
-            action = (step_num % 4) + 1 if step_num < 4 else 0
 
-        action_names = {0: "0 (Stay)", 1: "1 (Move -X)", 2: "2 (Move +X)", 3: "3 (Move -Y)", 4: "4 (Move +Y)"}
-        act_label = action_names.get(action, str(action))
+            # Fallback:
+            # Move UAV in -X direction.
+            action = 1
 
-        # 5. Apply action in environment
-        prev_pos = [round(float(p), 2) for p in observation[:3]]
-        observation, reward, terminated, truncated, step_info = env.step(action)
+        # ----------------------------------------------------
+        # ENVIRONMENT STEP
+        # ----------------------------------------------------
+
+        result = env.step(
+            action
+        )
+
+        observation = np.asarray(
+            result[0]
+        )
+
+        reward = float(
+            result[1]
+        )
+
+        terminated = bool(
+            result[2]
+        )
+
+        truncated = bool(
+            result[3]
+        )
+
         total_reward += reward
 
-        new_pos = [round(float(p), 2) for p in observation[:3]]
-        cov = float(observation[3])
-        
-        print(f"\nStep {step_num}")
-        print(f"  * Action:                  {act_label}")
-        print(f"  * Previous UAV position:   [X={prev_pos[0]:.2f}, Y={prev_pos[1]:.2f}, Z={prev_pos[2]:.2f}]")
-        print(f"  * New UAV position:        [X={new_pos[0]:.2f}, Y={new_pos[1]:.2f}, Z={new_pos[2]:.2f}]")
-        
-        if step_info.get("sionna_metrics"):
-            agg = step_info["sionna_metrics"]["aggregate"]
-            print(f"  * Connected users:         {agg['connected_users_count']} / 10 ({agg['connected_users_percentage']}%)")
-            print(f"  * Coverage %:              {agg['coverage_percentage']:.1f}%")
-            print(f"  * Mean path gain:          {agg['mean_path_gain_db']:.2f} dB")
-            print(f"  * Mean RSS:                {agg['mean_rss_dbm']:.2f} dBm")
-            snr_str = f"{agg['mean_sinr_db']:.2f} dB (Thermal noise floor = -94 dBm, I = 0)" if agg.get('mean_sinr_db') is not None else "None"
-            print(f"  * Mean SNR:                {snr_str}")
-        else:
-            print(f"  * Coverage % (Surrogate):  {cov:.1f}%")
-            print(f"  * Mean RSS (Surrogate):    {float(observation[4]):.2f} dBm")
+        # ----------------------------------------------------
+        # GET REAL SIONNA RESULTS
+        # ----------------------------------------------------
 
-        print(f"  * Reward:                  {reward:+.4f}")
-        
-        step_history.append({
-            "step": step_num,
+        metrics = get_metrics(env)
+
+        # ----------------------------------------------------
+        # SAVE STEP
+        # ----------------------------------------------------
+
+        step_data = {
+
+            "step": step,
+
             "action": action,
-            "previous_position": prev_pos,
-            "new_position": new_pos,
-            "coverage": cov,
-            "reward": reward,
-            "sionna_metrics": step_info.get("sionna_metrics")
-        })
+
+            "position": metrics[
+                "position"
+            ],
+
+            "connected_users": metrics[
+                "connected_users_count"
+            ],
+
+            "coverage_percent": metrics[
+                "coverage_percentage"
+            ],
+
+            "mean_path_gain_db": metrics[
+                "mean_path_gain_db"
+            ],
+
+            "mean_rss_dbm": metrics[
+                "mean_rss_dbm"
+            ],
+
+            "mean_snr_db": metrics[
+                "mean_snr_db"
+            ],
+
+            "reward": reward
+        }
+
+        trajectory.append(
+            step_data
+        )
+
+        # ----------------------------------------------------
+        # PRINT
+        # ----------------------------------------------------
+
+        print()
+        print(
+            f"Step {step}"
+        )
+
+        print(
+            "  Action:",
+            action
+        )
+
+        print(
+            "  UAV position:",
+            metrics["position"]
+        )
+
+        print(
+            "  Coverage:",
+            metrics[
+                "coverage_percentage"
+            ],
+            "%"
+        )
+
+        print(
+            "  Connected:",
+            metrics[
+                "connected_users_count"
+            ],
+            "/ 10"
+        )
+
+        print(
+            "  Mean RSS:",
+            metrics[
+                "mean_rss_dbm"
+            ],
+            "dBm"
+        )
+
+        print(
+            "  Mean path gain:",
+            metrics[
+                "mean_path_gain_db"
+            ],
+            "dB"
+        )
+
+        print(
+            "  Mean SNR:",
+            metrics[
+                "mean_snr_db"
+            ],
+            "dB"
+        )
+
+        print(
+            "  Reward:",
+            round(
+                reward,
+                4
+            )
+        )
 
         if terminated or truncated:
-            print(f"\n[INFO] Episode terminated at step {step_num}.")
+
+            print()
+            print(
+                "Episode finished early."
+            )
+
             break
 
-    final_x, final_y, final_z = round(float(observation[0]), 2), round(float(observation[1]), 2), round(float(observation[2]), 2)
-    print("-" * 75)
-    print(f"\nEpisode Finished! Total Cumulative Reward: {total_reward:.4f}")
-    print(f"Final PPO-Selected UAV Position: [X={final_x}, Y={final_y}, Z={final_z}]")
+    # ========================================================
+    # FINAL POSITION
+    # ========================================================
 
-    # 6. Save final position for NS-3 handoff
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    handoff_data = {
+    final_position = [
+        round(
+            float(x),
+            2
+        )
+        for x in trajectory[-1][
+            "position"
+        ]
+    ]
+
+    # ========================================================
+    # SAVE UAV POSITION FOR NS-3
+    # ========================================================
+
+    uav_data = {
+
         "num_uavs": 1,
+
         "uav_positions": [
-            [final_x, final_y, final_z]
+            final_position
         ]
     }
-    with open(OUTPUT_PATH, "w") as f:
-        json.dump(handoff_data, f, indent=2)
 
-    print(f"\n[SUCCESS] Exported final UAV position to NS-3 handoff file: '{OUTPUT_PATH}'")
-    print(f"Content:\n{json.dumps(handoff_data, indent=2)}")
+    UAV_POSITION_PATH.parent.mkdir(
+        parents=True,
+        exist_ok=True
+    )
 
-    return step_history
+    with open(
+        UAV_POSITION_PATH,
+        "w"
+    ) as f:
 
+        json.dump(
+            uav_data,
+            f,
+            indent=2
+        )
+
+    # ========================================================
+    # SAVE COMPLETE PPO TRAJECTORY
+    # ========================================================
+
+    trajectory_data = {
+
+        "scene":
+            "city_damaged.xml",
+
+        "mode":
+            mode_name,
+
+        "num_uavs":
+            1,
+
+        "num_users":
+            10,
+
+        "num_steps":
+            len(trajectory) - 1,
+
+        "total_reward":
+            float(total_reward),
+
+        "initial_position":
+            trajectory[0]["position"],
+
+        "final_position":
+            final_position,
+
+        "trajectory":
+            trajectory
+    }
+
+    with open(
+        TRAJECTORY_PATH,
+        "w"
+    ) as f:
+
+        json.dump(
+            trajectory_data,
+            f,
+            indent=2
+        )
+
+    # ========================================================
+    # FINAL SUMMARY
+    # ========================================================
+
+    print()
+    print("=" * 60)
+    print("PPO COMPLETE")
+    print("=" * 60)
+
+    print(
+        "Initial position:",
+        trajectory[0]["position"]
+    )
+
+    print(
+        "Final position:",
+        final_position
+    )
+
+    print(
+        "Total reward:",
+        round(
+            total_reward,
+            4
+        )
+    )
+
+    print()
+    print(
+        "Saved UAV position:"
+    )
+
+    print(
+        UAV_POSITION_PATH
+    )
+
+    print()
+    print(
+        "Saved PPO trajectory:"
+    )
+
+    print(
+        TRAJECTORY_PATH
+    )
+
+    print("=" * 60)
+
+    return trajectory
+
+
+# ============================================================
+# MAIN
+# ============================================================
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run PPO UAV dynamic placement episode")
-    parser.add_argument("--mode", choices=["sionna", "surrogate"], default="sionna", help="Simulation mode")
-    parser.add_argument("--steps", type=int, default=5, help="Number of episode steps")
+
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run PPO UAV optimization "
+            "with Sionna RT"
+        )
+    )
+
+    parser.add_argument(
+        "--mode",
+        choices=[
+            "sionna",
+            "surrogate"
+        ],
+        default="sionna"
+    )
+
+    parser.add_argument(
+        "--steps",
+        type=int,
+        default=5
+    )
+
     args = parser.parse_args()
 
-    run_ppo_episode(use_sionna=(args.mode == "sionna"), max_steps=args.steps)
+    run_ppo_episode(
+        use_sionna=(
+            args.mode == "sionna"
+        ),
+        max_steps=args.steps
+    )
