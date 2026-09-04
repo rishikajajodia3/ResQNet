@@ -28,7 +28,7 @@
       "coverage_percent": 100.0,
       "mean_path_gain_db": -75.74,
       "mean_rss_dbm": -45.74,
-      "mean_snr_db": 0.0,
+      "mean_sinr_db": 48.26,
       "reward": 0.0
     },
     {
@@ -43,7 +43,7 @@
       "coverage_percent": 100.0,
       "mean_path_gain_db": -73.63,
       "mean_rss_dbm": -43.63,
-      "mean_snr_db": 0.0,
+      "mean_sinr_db": 50.37,
       "reward": 0.6835
     },
     {
@@ -58,7 +58,7 @@
       "coverage_percent": 100.0,
       "mean_path_gain_db": -73.1,
       "mean_rss_dbm": -43.1,
-      "mean_snr_db": 0.0,
+      "mean_sinr_db": 50.9,
       "reward": 0.6859090909090908
     },
     {
@@ -73,7 +73,7 @@
       "coverage_percent": 100.0,
       "mean_path_gain_db": -73.63,
       "mean_rss_dbm": -43.63,
-      "mean_snr_db": 0.0,
+      "mean_sinr_db": 50.37,
       "reward": 0.6835
     },
     {
@@ -88,7 +88,7 @@
       "coverage_percent": 100.0,
       "mean_path_gain_db": -74.73,
       "mean_rss_dbm": -44.73,
-      "mean_snr_db": 0.0,
+      "mean_sinr_db": 49.27,
       "reward": 0.6785
     },
     {
@@ -103,7 +103,7 @@
       "coverage_percent": 100.0,
       "mean_path_gain_db": -74.51,
       "mean_rss_dbm": -44.51,
-      "mean_snr_db": 0.0,
+      "mean_sinr_db": 49.49,
       "reward": 0.6795
     }
   ]

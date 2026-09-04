@@ -46,8 +46,11 @@ if (!positionFile)
     return 1;
 }
 
-// Simple JSON parsing for:
-/// "uav_positions": [[x, y, z]]
+// Minimal JSON parsing (no external deps) for the ML handoff file:
+//   "uav_positions":  [[x, y, z]]
+//   "user_positions": [[x, y, z], [x, y, z], ...]
+// The file is pretty-printed, so we locate values by key rather than by
+// assuming a compact "[[" layout.
 
 std::string line;
 std::string json;
@@ -57,16 +60,30 @@ while (std::getline(positionFile, line))
     json += line;
 }
 
-size_t start = json.find("[[");
-start += 2;
+size_t uavKey = json.find("\"uav_positions\"");
 
-sscanf(
-    json.c_str() + start,
-    "%lf, %lf, %lf",
-    &uavX,
-    &uavY,
-    &uavZ
-);
+if (uavKey == std::string::npos)
+{
+    std::cerr << "Could not find \"uav_positions\" in data/uav_positions.json" << std::endl;
+    return 1;
+}
+
+size_t uavBracket = json.find('[', uavKey);            // outer '['
+if (uavBracket != std::string::npos)
+{
+    uavBracket = json.find('[', uavBracket + 1);       // first inner '['
+}
+
+if (uavBracket == std::string::npos ||
+    sscanf(json.c_str() + uavBracket + 1,
+           "%lf, %lf, %lf",
+           &uavX,
+           &uavY,
+           &uavZ) != 3)
+{
+    std::cerr << "Could not parse UAV coordinates from data/uav_positions.json" << std::endl;
+    return 1;
+}
 
 std::cout << "ML UAV Position: ("
           << uavX << ", "
@@ -80,17 +97,86 @@ uavPosition->Add(
     mobility.SetPositionAllocator(uavPosition);
     mobility.Install(uav);
 
-    // Ground users
+    // Ground users: use the SAME positions that Sionna RT / PPO evaluated,
+    // handed over through data/uav_positions.json as
+    //   "user_positions": [[x, y, z], ...].
+    // This keeps the wireless-propagation scenario and the network
+    // simulation consistent. If the field is absent (older handoff file),
+    // fall back to the previous generated layout.
     Ptr<ListPositionAllocator> userPositions =
         CreateObject<ListPositionAllocator>();
 
-    for (uint32_t i = 0; i < 10; i++)
-{
-    userPositions->Add(
-        Vector(uavX + i * 5.0,
-               uavY + i * 3.0,
-               0.0));
-}
+    uint32_t usersLoaded = 0;
+    size_t userKey = json.find("\"user_positions\"");
+
+    if (userKey != std::string::npos)
+    {
+        size_t arrStart = json.find('[', userKey);          // outer '['
+
+        // Find the matching close bracket of the outer array by depth
+        // counting (whitespace-tolerant for pretty-printed JSON).
+        size_t arrEnd = std::string::npos;
+        if (arrStart != std::string::npos)
+        {
+            int depth = 0;
+            for (size_t k = arrStart; k < json.size(); k++)
+            {
+                if (json[k] == '[')
+                {
+                    depth++;
+                }
+                else if (json[k] == ']')
+                {
+                    depth--;
+                    if (depth == 0)
+                    {
+                        arrEnd = k;
+                        break;
+                    }
+                }
+            }
+        }
+
+        size_t p = (arrStart == std::string::npos)
+                       ? std::string::npos
+                       : json.find('[', arrStart + 1);      // first inner '['
+
+        while (p != std::string::npos && arrEnd != std::string::npos &&
+               p < arrEnd && usersLoaded < users.GetN())
+        {
+            double ux, uy, uz;
+            if (sscanf(json.c_str() + p + 1,
+                       "%lf, %lf, %lf",
+                       &ux, &uy, &uz) == 3)
+            {
+                userPositions->Add(Vector(ux, uy, uz));
+                usersLoaded++;
+            }
+            p = json.find('[', p + 1);
+        }
+    }
+
+    if (usersLoaded != users.GetN())
+    {
+        std::cerr << "WARNING: expected " << users.GetN()
+                  << " entries in \"user_positions\", found " << usersLoaded
+                  << "; using generated fallback positions." << std::endl;
+
+        userPositions = CreateObject<ListPositionAllocator>();
+        for (uint32_t i = 0; i < users.GetN(); i++)
+        {
+            userPositions->Add(
+                Vector(uavX + i * 5.0,
+                       uavY + i * 3.0,
+                       0.0));
+        }
+    }
+    else
+    {
+        std::cout << "Loaded " << usersLoaded
+                  << " ground-user positions from data/uav_positions.json"
+                  << std::endl;
+    }
 
     mobility.SetPositionAllocator(userPositions);
     mobility.Install(users);

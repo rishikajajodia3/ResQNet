@@ -25,6 +25,11 @@ sys.path.insert(0, str(SIONNA_DIR))
 
 from dynamic_model import UAVDynamicEnv
 
+# The ground-user layout evaluated by Sionna RT (see
+# sionna/sionna_feedback_engine.py). It is written into the NS-3
+# handoff file so that NS-3 simulates the exact same user positions.
+from sionna_feedback_engine import DEFAULT_10_USERS
+
 
 # ============================================================
 # FILE PATHS
@@ -61,7 +66,7 @@ def get_metrics(env):
     connected_users = 0
     mean_rss = 0.0
     mean_path_gain = 0.0
-    mean_snr = 0.0
+    mean_sinr = 0.0
 
     sionna_metrics = getattr(
         env,
@@ -107,9 +112,13 @@ def get_metrics(env):
             )
         )
 
-        mean_snr = float(
+        # The Sionna feedback engine reports this quantity as "mean_sinr_db".
+        # For the single-UAV scenario there is no co-channel interference
+        # (I = 0), so SINR reduces to SNR = RSS - noise_power. We keep the
+        # engine's key name to stay consistent with its output schema.
+        mean_sinr = float(
             aggregate.get(
-                "mean_snr_db",
+                "mean_sinr_db",
                 0.0
             )
         )
@@ -120,7 +129,7 @@ def get_metrics(env):
         "connected_users_count": connected_users,
         "mean_rss_dbm": mean_rss,
         "mean_path_gain_db": mean_path_gain,
-        "mean_snr_db": mean_snr
+        "mean_sinr_db": mean_sinr
     }
 
 
@@ -235,8 +244,8 @@ def run_ppo_episode(
     )
 
     print(
-        "Mean SNR:",
-        initial["mean_snr_db"],
+        "Mean SINR:",
+        initial["mean_sinr_db"],
         "dB"
     )
 
@@ -262,8 +271,8 @@ def run_ppo_episode(
         "mean_rss_dbm": initial[
             "mean_rss_dbm"
         ],
-        "mean_snr_db": initial[
-            "mean_snr_db"
+        "mean_sinr_db": initial[
+            "mean_sinr_db"
         ],
         "reward": 0.0
     })
@@ -362,8 +371,8 @@ def run_ppo_episode(
                 "mean_rss_dbm"
             ],
 
-            "mean_snr_db": metrics[
-                "mean_snr_db"
+            "mean_sinr_db": metrics[
+                "mean_sinr_db"
             ],
 
             "reward": reward
@@ -425,9 +434,9 @@ def run_ppo_episode(
         )
 
         print(
-            "  Mean SNR:",
+            "  Mean SINR:",
             metrics[
-                "mean_snr_db"
+                "mean_sinr_db"
             ],
             "dB"
         )
@@ -467,13 +476,33 @@ def run_ppo_episode(
     # SAVE UAV POSITION FOR NS-3
     # ========================================================
 
+    # Hand off the same ground-user positions that Sionna RT evaluated,
+    # so NS-3 simulates an identical scenario. Prefer the exact list from
+    # the last Sionna evaluation; fall back to the canonical default.
+    sionna_metrics = getattr(env, "current_sionna_metrics", None)
+
+    if sionna_metrics is not None:
+        user_positions = [
+            [round(float(c), 2) for c in u["position"]]
+            for u in sionna_metrics["user_results"]
+        ]
+    else:
+        user_positions = [
+            [round(float(c), 2) for c in u]
+            for u in DEFAULT_10_USERS
+        ]
+
     uav_data = {
 
         "num_uavs": 1,
 
         "uav_positions": [
             final_position
-        ]
+        ],
+
+        "num_users": len(user_positions),
+
+        "user_positions": user_positions
     }
 
     UAV_POSITION_PATH.parent.mkdir(
