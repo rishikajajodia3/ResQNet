@@ -1,0 +1,10 @@
+# Extra packages for the ResQNet dashboard backend only.
+# Install into the existing project virtualenv:
+#     source .venv/bin/activate
+#     pip install -r dashboard/requirements.txt
+#
+# The dashboard reuses the project's existing environment for everything
+# else (sionna-rt, torch, stable-baselines3, trimesh, numpy, pandas, ...).
+
+fastapi>=0.115
+uvicorn[standard]>=0.30

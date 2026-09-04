@@ -1,0 +1,54 @@
+{
+  "_comment": "ResQNet disaster simulation scenarios. Each scenario represents a set of spatial / propagation conditions - NOT a claim about a specific real disaster. User placement and initial UAV placement are generated deterministically from a seed (see ml/scenarios.py).",
+  "user_height_m": 1.5,
+  "distributions": ["uniform", "clustered", "edge_heavy", "random"],
+  "scenarios": {
+    "open_area": {
+      "name": "Open Disaster Area",
+      "scene": "city_damaged.xml",
+      "user_region": { "x": [-70.0, 90.0], "y": [-70.0, 90.0] },
+      "uav_region": { "x": [-80.0, 100.0], "y": [-80.0, 100.0], "z": [15.0, 45.0] },
+      "user_distribution": "uniform",
+      "purpose": "Test basic multi-UAV positioning and coverage with users spread widely across a relatively open region.",
+      "note": "Reuses the city_damaged mesh. The near-origin operating region of that mesh is relatively open ground with only sparse low structures (see dashboard/assets/scene_meta.json)."
+    },
+    "dense_urban": {
+      "name": "Dense Urban Disaster",
+      "scene": "city_baseline.xml",
+      "user_region": { "x": [-45.0, 65.0], "y": [-45.0, 65.0] },
+      "uav_region": { "x": [-50.0, 70.0], "y": [-50.0, 70.0], "z": [15.0, 45.0] },
+      "user_distribution": "uniform",
+      "purpose": "Test whether UAV positioning adapts to urban obstacles. Users are distributed across different parts of the city.",
+      "note": "Intact city geometry (city_baseline). Buildings create propagation obstructions."
+    },
+    "blocked_urban": {
+      "name": "Blocked / Damaged Urban Area",
+      "scene": "city_damaged.xml",
+      "user_region": { "x": [-45.0, 65.0], "y": [-45.0, 65.0] },
+      "uav_region": { "x": [-50.0, 70.0], "y": [-50.0, 70.0], "z": [15.0, 45.0] },
+      "user_distribution": "uniform",
+      "purpose": "Test UAV repositioning under difficult propagation conditions in the damaged city environment.",
+      "note": "Damaged city geometry (city_damaged)."
+    },
+    "clustered_survivors": {
+      "name": "Clustered Survivors",
+      "scene": "city_damaged.xml",
+      "user_region": { "x": [-45.0, 65.0], "y": [-45.0, 65.0] },
+      "uav_region": { "x": [-50.0, 70.0], "y": [-50.0, 70.0], "z": [15.0, 45.0] },
+      "user_distribution": "clustered",
+      "num_clusters": 3,
+      "cluster_std_m": 8.0,
+      "purpose": "Test whether multiple UAVs learn to distribute themselves across separated survivor clusters instead of unnecessarily clustering together.",
+      "note": "Users grouped into 3 spatially separated clusters."
+    },
+    "wide_area": {
+      "name": "Wide-Area Disaster",
+      "scene": "city_damaged.xml",
+      "user_region": { "x": [-150.0, 170.0], "y": [-150.0, 170.0] },
+      "uav_region": { "x": [-160.0, 180.0], "y": [-160.0, 180.0], "z": [20.0, 60.0] },
+      "user_distribution": "random",
+      "purpose": "Test multi-UAV coverage and scalability with users spread over a much larger geographical area.",
+      "note": "Reuses the city_damaged mesh over a larger footprint."
+    }
+  }
+}
