@@ -9,11 +9,11 @@
   "position_handoff_to_ns3": true,
   "ns3_summary": {
     "total_flows": 10,
-    "successful_flows": 6,
-    "failed_flows": 4,
-    "average_throughput_mbps": 0.4324631666666667,
-    "average_delay_ms": 1.38673,
-    "overall_flow_loss_percent": 40.0
+    "successful_flows": 4,
+    "failed_flows": 6,
+    "average_throughput_mbps": 0.4324875,
+    "average_delay_ms": 1.0902025,
+    "overall_flow_loss_percent": 60.0
   },
   "flows": [
     {
@@ -33,38 +33,30 @@
       "destination": "10.1.1.1",
       "packets_sent": 800,
       "packets_received": 800,
-      "throughput_mbps": 0.432395,
-      "average_delay_ms": 1.39622,
+      "throughput_mbps": 0.432456,
+      "average_delay_ms": 1.08093,
       "packet_loss_percent": 0.0,
       "status": "OK"
     },
     {
       "source": "10.1.1.5",
       "destination": "10.1.1.1",
-      "packets_sent": 800,
-      "packets_received": 800,
-      "throughput_mbps": 0.432466,
-      "average_delay_ms": 1.35356,
-      "packet_loss_percent": 0.0,
-      "status": "OK"
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED"
     },
     {
       "source": "10.1.1.6",
       "destination": "10.1.1.1",
-      "packets_sent": 800,
-      "packets_received": 800,
-      "throughput_mbps": 0.432412,
-      "average_delay_ms": 1.40296,
-      "packet_loss_percent": 0.0,
-      "status": "OK"
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED"
     },
     {
       "source": "10.1.1.7",
       "destination": "10.1.1.1",
       "packets_sent": 800,
       "packets_received": 800,
-      "throughput_mbps": 0.432481,
-      "average_delay_ms": 1.37462,
+      "throughput_mbps": 0.432474,
+      "average_delay_ms": 1.09131,
       "packet_loss_percent": 0.0,
       "status": "OK"
     },
@@ -73,8 +65,8 @@
       "destination": "10.1.1.1",
       "packets_sent": 800,
       "packets_received": 800,
-      "throughput_mbps": 0.432504,
-      "average_delay_ms": 1.39513,
+      "throughput_mbps": 0.43252,
+      "average_delay_ms": 1.06786,
       "packet_loss_percent": 0.0,
       "status": "OK"
     },
@@ -95,8 +87,8 @@
       "destination": "10.1.1.1",
       "packets_sent": 800,
       "packets_received": 800,
-      "throughput_mbps": 0.432521,
-      "average_delay_ms": 1.39789,
+      "throughput_mbps": 0.4325,
+      "average_delay_ms": 1.12071,
       "packet_loss_percent": 0.0,
       "status": "OK"
     }

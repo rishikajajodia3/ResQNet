@@ -67,6 +67,7 @@ def get_metrics(env):
     mean_rss = 0.0
     mean_path_gain = 0.0
     mean_sinr = 0.0
+    user_results = []
 
     sionna_metrics = getattr(
         env,
@@ -80,6 +81,22 @@ def get_metrics(env):
             "aggregate",
             {}
         )
+
+        # Preserve the live Sionna per-user link metrics for this step so
+        # the dashboard can render per-user diagnostics. These come straight
+        # from sionna_feedback_engine's evaluate_uav_position() output.
+        for u in sionna_metrics.get("user_results", []):
+            user_results.append({
+                "user_id": u.get("user_id"),
+                "position": u.get("position"),
+                "rss_dbm": u.get("rss_dbm"),
+                "sinr_db": u.get("sinr_db"),
+                "path_gain_db": u.get("path_gain_db"),
+                "num_paths": u.get("num_paths"),
+                "shortest_delay_sec": u.get("shortest_delay_sec"),
+                "coverage": u.get("coverage"),
+                "connected": u.get("connected")
+            })
 
         coverage = float(
             aggregate.get(
@@ -129,7 +146,8 @@ def get_metrics(env):
         "connected_users_count": connected_users,
         "mean_rss_dbm": mean_rss,
         "mean_path_gain_db": mean_path_gain,
-        "mean_sinr_db": mean_sinr
+        "mean_sinr_db": mean_sinr,
+        "user_results": user_results
     }
 
 
@@ -274,7 +292,10 @@ def run_ppo_episode(
         "mean_sinr_db": initial[
             "mean_sinr_db"
         ],
-        "reward": 0.0
+        "reward": 0.0,
+        "user_results": initial[
+            "user_results"
+        ]
     })
 
     # ========================================================
@@ -375,7 +396,11 @@ def run_ppo_episode(
                 "mean_sinr_db"
             ],
 
-            "reward": reward
+            "reward": reward,
+
+            "user_results": metrics[
+                "user_results"
+            ]
         }
 
         trajectory.append(

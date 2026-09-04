@@ -29,7 +29,159 @@
       "mean_path_gain_db": -75.74,
       "mean_rss_dbm": -45.74,
       "mean_sinr_db": 48.26,
-      "reward": 0.0
+      "reward": 0.0,
+      "user_results": [
+        {
+          "user_id": "user_1",
+          "position": [
+            -20.0,
+            -30.0,
+            1.5
+          ],
+          "rss_dbm": -45.82,
+          "sinr_db": 48.18,
+          "path_gain_db": -75.82,
+          "num_paths": 3,
+          "shortest_delay_sec": 2.364643876262562e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_2",
+          "position": [
+            -10.0,
+            -20.0,
+            1.5
+          ],
+          "rss_dbm": -44.15,
+          "sinr_db": 49.85,
+          "path_gain_db": -74.15,
+          "num_paths": 2,
+          "shortest_delay_sec": 1.933183426672258e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_3",
+          "position": [
+            0.0,
+            -10.0,
+            1.5
+          ],
+          "rss_dbm": -47.64,
+          "sinr_db": 46.36,
+          "path_gain_db": -77.64,
+          "num_paths": 2,
+          "shortest_delay_sec": 1.525751116560059e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_4",
+          "position": [
+            10.0,
+            0.0,
+            1.5
+          ],
+          "rss_dbm": -41.92,
+          "sinr_db": 52.08,
+          "path_gain_db": -71.92,
+          "num_paths": 6,
+          "shortest_delay_sec": 1.1677727940195837e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_5",
+          "position": [
+            20.0,
+            10.0,
+            1.5
+          ],
+          "rss_dbm": -40.32,
+          "sinr_db": 53.68,
+          "path_gain_db": -70.32,
+          "num_paths": 3,
+          "shortest_delay_sec": 9.189835736833629e-08,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_6",
+          "position": [
+            -15.0,
+            25.0,
+            1.5
+          ],
+          "rss_dbm": -44.01,
+          "sinr_db": 49.99,
+          "path_gain_db": -74.01,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.4455785901645868e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_7",
+          "position": [
+            5.0,
+            35.0,
+            1.5
+          ],
+          "rss_dbm": -62.48,
+          "sinr_db": 31.52,
+          "path_gain_db": -92.48,
+          "num_paths": 2,
+          "shortest_delay_sec": 1.0536226113799785e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_8",
+          "position": [
+            25.0,
+            -15.0,
+            1.5
+          ],
+          "rss_dbm": -44.37,
+          "sinr_db": 49.63,
+          "path_gain_db": -74.37,
+          "num_paths": 4,
+          "shortest_delay_sec": 1.504417070918862e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_9",
+          "position": [
+            -30.0,
+            -10.0,
+            1.5
+          ],
+          "rss_dbm": -45.16,
+          "sinr_db": 48.84,
+          "path_gain_db": -75.16,
+          "num_paths": 2,
+          "shortest_delay_sec": 2.1703790764604491e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_10",
+          "position": [
+            0.0,
+            20.0,
+            1.5
+          ],
+          "rss_dbm": -41.55,
+          "sinr_db": 52.45,
+          "path_gain_db": -71.55,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.0725144505840944e-07,
+          "coverage": true,
+          "connected": true
+        }
+      ]
     },
     {
       "step": 1,
@@ -44,7 +196,159 @@
       "mean_path_gain_db": -73.63,
       "mean_rss_dbm": -43.63,
       "mean_sinr_db": 50.37,
-      "reward": 0.6835
+      "reward": 0.6835,
+      "user_results": [
+        {
+          "user_id": "user_1",
+          "position": [
+            -20.0,
+            -30.0,
+            1.5
+          ],
+          "rss_dbm": -45.21,
+          "sinr_db": 48.79,
+          "path_gain_db": -75.21,
+          "num_paths": 3,
+          "shortest_delay_sec": 2.1902812363805424e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_2",
+          "position": [
+            -10.0,
+            -20.0,
+            1.5
+          ],
+          "rss_dbm": -43.4,
+          "sinr_db": 50.6,
+          "path_gain_db": -73.4,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.7791903417219146e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_3",
+          "position": [
+            0.0,
+            -10.0,
+            1.5
+          ],
+          "rss_dbm": -47.23,
+          "sinr_db": 46.77,
+          "path_gain_db": -77.23,
+          "num_paths": 2,
+          "shortest_delay_sec": 1.406686465088569e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_4",
+          "position": [
+            10.0,
+            0.0,
+            1.5
+          ],
+          "rss_dbm": -41.79,
+          "sinr_db": 52.21,
+          "path_gain_db": -71.79,
+          "num_paths": 5,
+          "shortest_delay_sec": 1.1122381948780458e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_5",
+          "position": [
+            20.0,
+            10.0,
+            1.5
+          ],
+          "rss_dbm": -40.76,
+          "sinr_db": 53.24,
+          "path_gain_db": -70.76,
+          "num_paths": 3,
+          "shortest_delay_sec": 9.697635050542885e-08,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_6",
+          "position": [
+            -15.0,
+            25.0,
+            1.5
+          ],
+          "rss_dbm": -42.35,
+          "sinr_db": 51.65,
+          "path_gain_db": -72.35,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.1860661430773689e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_7",
+          "position": [
+            5.0,
+            35.0,
+            1.5
+          ],
+          "rss_dbm": -46.62,
+          "sinr_db": 47.38,
+          "path_gain_db": -76.62,
+          "num_paths": 2,
+          "shortest_delay_sec": 9.33935808689057e-08,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_8",
+          "position": [
+            25.0,
+            -15.0,
+            1.5
+          ],
+          "rss_dbm": -44.76,
+          "sinr_db": 49.24,
+          "path_gain_db": -74.76,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.5717652956936945e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_9",
+          "position": [
+            -30.0,
+            -10.0,
+            1.5
+          ],
+          "rss_dbm": -44.1,
+          "sinr_db": 49.9,
+          "path_gain_db": -74.1,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.921927434977988e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_10",
+          "position": [
+            0.0,
+            20.0,
+            1.5
+          ],
+          "rss_dbm": -40.1,
+          "sinr_db": 53.9,
+          "path_gain_db": -70.1,
+          "num_paths": 3,
+          "shortest_delay_sec": 8.950628682669048e-08,
+          "coverage": true,
+          "connected": true
+        }
+      ]
     },
     {
       "step": 2,
@@ -59,7 +363,159 @@
       "mean_path_gain_db": -73.1,
       "mean_rss_dbm": -43.1,
       "mean_sinr_db": 50.9,
-      "reward": 0.6859090909090908
+      "reward": 0.6859090909090908,
+      "user_results": [
+        {
+          "user_id": "user_1",
+          "position": [
+            -20.0,
+            -30.0,
+            1.5
+          ],
+          "rss_dbm": -44.68,
+          "sinr_db": 49.32,
+          "path_gain_db": -74.68,
+          "num_paths": 3,
+          "shortest_delay_sec": 2.0556389301873423e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_2",
+          "position": [
+            -10.0,
+            -20.0,
+            1.5
+          ],
+          "rss_dbm": -42.85,
+          "sinr_db": 51.15,
+          "path_gain_db": -72.85,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.678204171184916e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_3",
+          "position": [
+            0.0,
+            -10.0,
+            1.5
+          ],
+          "rss_dbm": -47.95,
+          "sinr_db": 46.05,
+          "path_gain_db": -77.95,
+          "num_paths": 2,
+          "shortest_delay_sec": 1.3609360394184478e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_4",
+          "position": [
+            10.0,
+            0.0,
+            1.5
+          ],
+          "rss_dbm": -42.08,
+          "sinr_db": 51.92,
+          "path_gain_db": -72.08,
+          "num_paths": 5,
+          "shortest_delay_sec": 1.154549451598541e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_5",
+          "position": [
+            20.0,
+            10.0,
+            1.5
+          ],
+          "rss_dbm": -41.91,
+          "sinr_db": 52.09,
+          "path_gain_db": -71.91,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.1219989914934558e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_6",
+          "position": [
+            -15.0,
+            25.0,
+            1.5
+          ],
+          "rss_dbm": -40.78,
+          "sinr_db": 53.22,
+          "path_gain_db": -70.78,
+          "num_paths": 3,
+          "shortest_delay_sec": 9.727992988928236e-08,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_7",
+          "position": [
+            5.0,
+            35.0,
+            1.5
+          ],
+          "rss_dbm": -42.89,
+          "sinr_db": 51.11,
+          "path_gain_db": -72.89,
+          "num_paths": 2,
+          "shortest_delay_sec": 9.256788047196096e-08,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_8",
+          "position": [
+            25.0,
+            -15.0,
+            1.5
+          ],
+          "rss_dbm": -45.47,
+          "sinr_db": 48.53,
+          "path_gain_db": -75.47,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.7029832122261723e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_9",
+          "position": [
+            -30.0,
+            -10.0,
+            1.5
+          ],
+          "rss_dbm": -42.99,
+          "sinr_db": 51.01,
+          "path_gain_db": -72.99,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.7028197873969475e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_10",
+          "position": [
+            0.0,
+            20.0,
+            1.5
+          ],
+          "rss_dbm": -39.37,
+          "sinr_db": 54.63,
+          "path_gain_db": -69.37,
+          "num_paths": 3,
+          "shortest_delay_sec": 8.212904134552446e-08,
+          "coverage": true,
+          "connected": true
+        }
+      ]
     },
     {
       "step": 3,
@@ -74,7 +530,159 @@
       "mean_path_gain_db": -73.63,
       "mean_rss_dbm": -43.63,
       "mean_sinr_db": 50.37,
-      "reward": 0.6835
+      "reward": 0.6835,
+      "user_results": [
+        {
+          "user_id": "user_1",
+          "position": [
+            -20.0,
+            -30.0,
+            1.5
+          ],
+          "rss_dbm": -44.31,
+          "sinr_db": 49.69,
+          "path_gain_db": -74.31,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.968883509562147e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_2",
+          "position": [
+            -10.0,
+            -20.0,
+            1.5
+          ],
+          "rss_dbm": -42.63,
+          "sinr_db": 51.37,
+          "path_gain_db": -72.63,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.640045610429297e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_3",
+          "position": [
+            0.0,
+            -10.0,
+            1.5
+          ],
+          "rss_dbm": -50.27,
+          "sinr_db": 43.73,
+          "path_gain_db": -80.27,
+          "num_paths": 2,
+          "shortest_delay_sec": 1.3957281908005825e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_4",
+          "position": [
+            10.0,
+            0.0,
+            1.5
+          ],
+          "rss_dbm": -42.96,
+          "sinr_db": 51.04,
+          "path_gain_db": -72.96,
+          "num_paths": 4,
+          "shortest_delay_sec": 1.2850776442974166e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_5",
+          "position": [
+            20.0,
+            10.0,
+            1.5
+          ],
+          "rss_dbm": -43.37,
+          "sinr_db": 50.63,
+          "path_gain_db": -73.37,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.341585829095493e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_6",
+          "position": [
+            -15.0,
+            25.0,
+            1.5
+          ],
+          "rss_dbm": -39.58,
+          "sinr_db": 54.42,
+          "path_gain_db": -69.58,
+          "num_paths": 3,
+          "shortest_delay_sec": 8.416969876634539e-08,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_7",
+          "position": [
+            5.0,
+            35.0,
+            1.5
+          ],
+          "rss_dbm": -44.87,
+          "sinr_db": 49.13,
+          "path_gain_db": -74.87,
+          "num_paths": 2,
+          "shortest_delay_sec": 1.0315312692910084e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_8",
+          "position": [
+            25.0,
+            -15.0,
+            1.5
+          ],
+          "rss_dbm": -46.43,
+          "sinr_db": 47.57,
+          "path_gain_db": -76.43,
+          "num_paths": 4,
+          "shortest_delay_sec": 1.8847777027986012e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_9",
+          "position": [
+            -30.0,
+            -10.0,
+            1.5
+          ],
+          "rss_dbm": -41.93,
+          "sinr_db": 52.07,
+          "path_gain_db": -71.93,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.5257509744515119e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_10",
+          "position": [
+            0.0,
+            20.0,
+            1.5
+          ],
+          "rss_dbm": -39.94,
+          "sinr_db": 54.06,
+          "path_gain_db": -69.94,
+          "num_paths": 3,
+          "shortest_delay_sec": 8.777405469118094e-08,
+          "coverage": true,
+          "connected": true
+        }
+      ]
     },
     {
       "step": 4,
@@ -89,7 +697,159 @@
       "mean_path_gain_db": -74.73,
       "mean_rss_dbm": -44.73,
       "mean_sinr_db": 49.27,
-      "reward": 0.6785
+      "reward": 0.6785,
+      "user_results": [
+        {
+          "user_id": "user_1",
+          "position": [
+            -20.0,
+            -30.0,
+            1.5
+          ],
+          "rss_dbm": -44.17,
+          "sinr_db": 49.83,
+          "path_gain_db": -74.17,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.9364613024208666e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_2",
+          "position": [
+            -10.0,
+            -20.0,
+            1.5
+          ],
+          "rss_dbm": -42.8,
+          "sinr_db": 51.2,
+          "path_gain_db": -72.8,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.6690296433807816e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_3",
+          "position": [
+            0.0,
+            -10.0,
+            1.5
+          ],
+          "rss_dbm": -54.38,
+          "sinr_db": 39.62,
+          "path_gain_db": -84.38,
+          "num_paths": 2,
+          "shortest_delay_sec": 1.5054891377985768e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_4",
+          "position": [
+            10.0,
+            0.0,
+            1.5
+          ],
+          "rss_dbm": -44.18,
+          "sinr_db": 49.82,
+          "path_gain_db": -74.18,
+          "num_paths": 4,
+          "shortest_delay_sec": 1.4806737169692497e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_5",
+          "position": [
+            20.0,
+            10.0,
+            1.5
+          ],
+          "rss_dbm": -44.91,
+          "sinr_db": 49.09,
+          "path_gain_db": -74.91,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.6010473302685568e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_6",
+          "position": [
+            -15.0,
+            25.0,
+            1.5
+          ],
+          "rss_dbm": -39.48,
+          "sinr_db": 54.52,
+          "path_gain_db": -69.48,
+          "num_paths": 3,
+          "shortest_delay_sec": 8.325257994101776e-08,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_7",
+          "position": [
+            5.0,
+            35.0,
+            1.5
+          ],
+          "rss_dbm": -47.47,
+          "sinr_db": 46.53,
+          "path_gain_db": -77.47,
+          "num_paths": 2,
+          "shortest_delay_sec": 1.2221956069424778e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_8",
+          "position": [
+            25.0,
+            -15.0,
+            1.5
+          ],
+          "rss_dbm": -47.49,
+          "sinr_db": 46.51,
+          "path_gain_db": -77.49,
+          "num_paths": 3,
+          "shortest_delay_sec": 2.1040797548721457e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_9",
+          "position": [
+            -30.0,
+            -10.0,
+            1.5
+          ],
+          "rss_dbm": -41.13,
+          "sinr_db": 52.87,
+          "path_gain_db": -71.13,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.406686322980022e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_10",
+          "position": [
+            0.0,
+            20.0,
+            1.5
+          ],
+          "rss_dbm": -41.34,
+          "sinr_db": 52.66,
+          "path_gain_db": -71.34,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.0434888508825679e-07,
+          "coverage": true,
+          "connected": true
+        }
+      ]
     },
     {
       "step": 5,
@@ -104,7 +864,159 @@
       "mean_path_gain_db": -74.51,
       "mean_rss_dbm": -44.51,
       "mean_sinr_db": 49.49,
-      "reward": 0.6795
+      "reward": 0.6795,
+      "user_results": [
+        {
+          "user_id": "user_1",
+          "position": [
+            -20.0,
+            -30.0,
+            1.5
+          ],
+          "rss_dbm": -44.28,
+          "sinr_db": 49.72,
+          "path_gain_db": -74.28,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.9610692447713518e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_2",
+          "position": [
+            -10.0,
+            -20.0,
+            1.5
+          ],
+          "rss_dbm": -43.31,
+          "sinr_db": 50.69,
+          "path_gain_db": -73.31,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.7618457093249162e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_3",
+          "position": [
+            0.0,
+            -10.0,
+            1.5
+          ],
+          "rss_dbm": -42.91,
+          "sinr_db": 51.09,
+          "path_gain_db": -72.91,
+          "num_paths": 2,
+          "shortest_delay_sec": 1.6755500098497578e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_4",
+          "position": [
+            10.0,
+            0.0,
+            1.5
+          ],
+          "rss_dbm": -45.55,
+          "sinr_db": 48.45,
+          "path_gain_db": -75.55,
+          "num_paths": 4,
+          "shortest_delay_sec": 1.719271836009284e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_5",
+          "position": [
+            20.0,
+            10.0,
+            1.5
+          ],
+          "rss_dbm": -46.4,
+          "sinr_db": 47.6,
+          "path_gain_db": -76.4,
+          "num_paths": 4,
+          "shortest_delay_sec": 1.8839806159576256e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_6",
+          "position": [
+            -15.0,
+            25.0,
+            1.5
+          ],
+          "rss_dbm": -40.58,
+          "sinr_db": 53.42,
+          "path_gain_db": -70.58,
+          "num_paths": 3,
+          "shortest_delay_sec": 9.48828073887853e-08,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_7",
+          "position": [
+            5.0,
+            35.0,
+            1.5
+          ],
+          "rss_dbm": -49.8,
+          "sinr_db": 44.2,
+          "path_gain_db": -79.8,
+          "num_paths": 2,
+          "shortest_delay_sec": 1.4649222634943726e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_8",
+          "position": [
+            25.0,
+            -15.0,
+            1.5
+          ],
+          "rss_dbm": -48.46,
+          "sinr_db": 45.54,
+          "path_gain_db": -78.46,
+          "num_paths": 5,
+          "shortest_delay_sec": 2.3504144053276832e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_9",
+          "position": [
+            -30.0,
+            -10.0,
+            1.5
+          ],
+          "rss_dbm": -40.81,
+          "sinr_db": 53.19,
+          "path_gain_db": -70.81,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.3609360394184478e-07,
+          "coverage": true,
+          "connected": true
+        },
+        {
+          "user_id": "user_10",
+          "position": [
+            0.0,
+            20.0,
+            1.5
+          ],
+          "rss_dbm": -42.96,
+          "sinr_db": 51.04,
+          "path_gain_db": -72.96,
+          "num_paths": 3,
+          "shortest_delay_sec": 1.2766516022111318e-07,
+          "coverage": true,
+          "connected": true
+        }
+      ]
     }
   ]
 }
