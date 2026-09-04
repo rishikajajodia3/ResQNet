@@ -15,7 +15,26 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PPO_SCRIPT = PROJECT_ROOT / "ml" / "run_ppo.py"
 POSITION_FILE = PROJECT_ROOT / "data" / "uav_positions.json"
 
-NS3_ROOT = Path.home() / "ns-allinone-3.47" / "ns-3.47"
+# NS-3 path is configured through the NS3_PATH environment variable.
+# This makes the project portable across different computers.
+NS3_PATH = os.environ.get("NS3_PATH")
+
+if not NS3_PATH:
+    raise RuntimeError(
+        "NS3_PATH is not set. "
+        "Please set it to your NS-3 installation path.\n"
+        "Example:\n"
+        "export NS3_PATH=/home/yourusername/ns-allinone-3.47/ns-3.47"
+    )
+
+NS3_ROOT = Path(NS3_PATH).expanduser().resolve()
+
+if not NS3_ROOT.exists():
+    raise FileNotFoundError(
+        f"NS-3 directory does not exist: {NS3_ROOT}\n"
+        "Please check your NS3_PATH environment variable."
+    )
+
 NS3_POSITION_FILE = NS3_ROOT / "data" / "uav_positions.json"
 NS3_PROGRAM = "scratch/uav-demo"
 
@@ -124,7 +143,7 @@ shutil.copy2(
     NS3_POSITION_FILE
 )
 
-print(f"Copied to:")
+print("Copied to:")
 print(NS3_POSITION_FILE)
 
 
@@ -154,7 +173,7 @@ expected_position_text = (
 )
 
 position_handoff_ok = (
-    "ML UAV Position:" in ns3_output
+    expected_position_text in ns3_output
 )
 
 print("\n")
@@ -282,6 +301,7 @@ overall_flow_loss = (
     if total_flows > 0
     else 100
 )
+
 
 # ============================================================
 # SAVE COMBINED RESULTS
