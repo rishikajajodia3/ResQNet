@@ -314,6 +314,34 @@ class TestSionnaApiSurface(unittest.TestCase):
         self.assertTrue(hasattr(sfe, "DEFAULT_10_USERS"))
         self.assertEqual(len(sfe.DEFAULT_10_USERS), 10)
 
+    def test_missing_scene_raises_instead_of_falling_back(self):
+        """A missing scene used to be silently replaced by simple_street_canyon,
+        producing metrics for the wrong geometry under the requested name."""
+        import sionna_feedback_engine as sfe
+        import sionna_pipeline as sp
+        with self.assertRaises(FileNotFoundError):
+            sfe.safe_load_scene_robust("no_such_scene.xml")
+        with self.assertRaises(FileNotFoundError):
+            sp.safe_load_scene("no_such_scene.xml")
+        with self.assertRaises(FileNotFoundError):
+            sfe.evaluate_multi_uav([[0.0, 0.0, 30.0]], scene_name="no_such_scene.xml")
+
+    def test_scenario_scenes_load_the_city_mesh(self):
+        """Every configured scenario scene loads the city mesh, not the placeholder."""
+        import sionna_feedback_engine as sfe
+        import sionna_pipeline as sp
+        for name in sorted({s["scene"] for s in scenarios.load_scenarios()["scenarios"].values()}):
+            scene = sfe.safe_load_scene_robust(name)
+            self.assertEqual(list(scene.objects), ["merged-shapes"], name)
+        # relative path used by sionna_pipeline's __main__, run from the repo root
+        cwd = os.getcwd()
+        try:
+            os.chdir(PROJECT_ROOT)
+            scene = sp.safe_load_scene("scenes/city_damaged.xml")
+        finally:
+            os.chdir(cwd)
+        self.assertEqual(list(scene.objects), ["merged-shapes"])
+
 
 @unittest.skipUnless(SLOW, "set RESQNET_SLOW_TESTS=1 to run Sionna ray tracing")
 class TestSionnaMultiUav(unittest.TestCase):
@@ -637,13 +665,14 @@ class TestJsonHandoffMultiUav(unittest.TestCase):
 NS3_ROOT = Path.home() / "ns-allinone-3.47" / "ns-3.47"
 
 
-def _run_ns3_with_handoff(handoff: dict) -> str:
+def _run_ns3_with_handoff(handoff: dict, args: str = "") -> str:
     import subprocess, shutil, json as _json
     (NS3_ROOT / "data").mkdir(parents=True, exist_ok=True)
     shutil.copy2(PROJECT_ROOT / "ns3" / "uav-demo.cc",
                  NS3_ROOT / "scratch" / "uav-demo.cc")
     (NS3_ROOT / "data" / "uav_positions.json").write_text(_json.dumps(handoff, indent=2))
-    r = subprocess.run(["/usr/bin/python3.12", "./ns3", "run", "scratch/uav-demo"],
+    program = f"scratch/uav-demo {args}".strip()
+    r = subprocess.run(["/usr/bin/python3.12", "./ns3", "run", program],
                        cwd=str(NS3_ROOT), capture_output=True, text=True, timeout=600)
     if r.returncode != 0:
         raise RuntimeError(r.stderr[-3000:])
@@ -702,6 +731,30 @@ class TestNs3MultiUavTopology(unittest.TestCase):
         self.assertIn("Loaded 10 ground-user positions", out)
         flows = re.findall(r"^Flow:\s+\S+\s+->\s+(\S+)", out, re.M)
         self.assertTrue(all(d == "10.1.1.1" for d in flows))  # all users -> the one UAV
+
+    def test_in_range_users_all_deliver(self):
+        """Regression: with dynamic ARP, synchronized ARP retries collided and
+        ns-3 blackholed whole flows for ArpCache::DeadTimeout (100 s). Every
+        user here is < 100 m from its UAV, well inside ns-3's range, so every
+        flow must deliver; the legacy --populateArp=false run must not."""
+        import multiuav_io as mio
+        uavs = scenarios.initial_uav_positions(3, "blocked_urban").tolist()
+        users = scenarios.generate_users("blocked_urban", 30, seed=42).tolist()
+        assoc = mio.nearest_uav_association(uavs, users)
+        for u, a in zip(users, assoc):
+            self.assertLess(float(np.linalg.norm(np.subtract(u, uavs[a]))), 100.0)
+        handoff = mio.build_uav_positions(uavs, users, associations=assoc)
+
+        def delivering(out):
+            return len(re.findall(r"^Packets Received:\s+[1-9]", out, re.M))
+
+        out = _run_ns3_with_handoff(handoff)
+        self.assertEqual(len(re.findall(r"^Flow:", out, re.M)), 30)
+        self.assertEqual(delivering(out), 30, "an in-range user delivered nothing")
+
+        legacy = _run_ns3_with_handoff(handoff, "--populateArp=false")
+        self.assertLess(delivering(legacy), 30,
+                        "legacy dynamic-ARP run no longer reproduces the blackhole")
 
 
 # ======================================================================

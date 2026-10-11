@@ -1,0 +1,68 @@
+{
+ "scenario": "flood_shelters",
+ "seed": 7,
+ "method": "ppo_network",
+ "delivering_users": 18.0,
+ "users_pdr_ge_90": 18,
+ "pdr": 0.5994791666666667,
+ "loss_pct": 40.052083333333336,
+ "mean_user_tput_mbps": 0.25897500000000007,
+ "min_user_tput_mbps": 0.0,
+ "jain_fairness": 0.5999992398566094,
+ "mean_latency_ms": 11.960396699708047,
+ "p95_flow_latency_ms": 16.9916225,
+ "per_user_pdr": [
+  0.9988,
+  0.0,
+  0.0,
+  0.9962,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  0.0,
+  1.0,
+  0.0,
+  0.9981,
+  0.0,
+  0.9994,
+  0.0,
+  0.9981,
+  0.9981,
+  1.0,
+  0.9975,
+  0.9981,
+  1.0,
+  0.0,
+  1.0,
+  0.0,
+  1.0,
+  1.0
+ ],
+ "calibrated_pdr": 0.6,
+ "uav_positions": [
+  [
+   20.0,
+   117.0,
+   40.0
+  ],
+  [
+   -37.0,
+   -37.0,
+   40.0
+  ],
+  [
+   77.0,
+   -37.0,
+   40.0
+  ]
+ ],
+ "movement_m": 13.333333333333334,
+ "surrogate_evals": 12,
+ "ns3_search_runs": 0,
+ "ns3_refine_history": null
+}

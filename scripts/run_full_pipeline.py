@@ -218,6 +218,13 @@ print(NS3_POSITION_FILE)
 
 print("\n[3/3] Running NS-3 network simulation...")
 
+# Run the repository's ns3/uav-demo.cc, not whatever copy happens to be in
+# the NS-3 scratch directory (the dashboard runner already does this).
+NS3_SCRATCH_FILE = NS3_ROOT / "scratch" / "uav-demo.cc"
+NS3_SCRATCH_FILE.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(PROJECT_ROOT / "ns3" / "uav-demo.cc", NS3_SCRATCH_FILE)
+print(f"Synced ns3/uav-demo.cc -> {NS3_SCRATCH_FILE}")
+
 ns3_output = run_command(
     [
         "./ns3",
@@ -284,6 +291,12 @@ for match in flow_pattern.finditer(ns3_output):
     if "No packets received." in block:
         flow["packets_received"] = 0
         flow["status"] = "NO_PACKETS_RECEIVED"
+        # uav-demo.cc also reports what a failed flow sent, so its packets
+        # count towards the aggregate loss below.
+        sent = re.search(r"Packets Sent:\s+(\d+)", block)
+        if sent:
+            flow["packets_sent"] = int(sent.group(1))
+            flow["packet_loss_percent"] = 100.0 if flow["packets_sent"] else 0.0
     else:
         sent = re.search(
             r"Packets Sent:\s+(\d+)",
@@ -380,12 +393,19 @@ else:
     average_throughput = 0
     average_delay = 0
 
-# A flow with no received packets is treated as 100% loss.
+# Share of flows that delivered nothing. Kept under its historical key
+# "overall_flow_loss_percent"; it is a flow-failure ratio, NOT packet loss.
 overall_flow_loss = (
     failed_count / total_flows * 100
     if total_flows > 0
     else 100
 )
+
+# Packet-level aggregates over ALL flows (failed flows included).
+total_sent = sum(f.get("packets_sent", 0) for f in flows)
+total_received = sum(f.get("packets_received", 0) for f in flows)
+flows_missing_sent = sum(1 for f in flows if "packets_sent" not in f)
+packet_delivery_ratio = total_received / total_sent if total_sent > 0 else 0.0
 
 
 # ============================================================
@@ -411,7 +431,23 @@ results = {
         "failed_flows": total_flows - successful_count,
         "average_throughput_mbps": average_throughput,
         "average_delay_ms": average_delay,
-        "overall_flow_loss_percent": overall_flow_loss
+        "overall_flow_loss_percent": overall_flow_loss,
+        "flow_failure_percent": overall_flow_loss,
+        "total_packets_sent": total_sent,
+        "total_packets_received": total_received,
+        "packet_delivery_ratio": packet_delivery_ratio,
+        "aggregate_packet_loss_percent": (1.0 - packet_delivery_ratio) * 100.0,
+        "flows_missing_packets_sent": flows_missing_sent,
+        "metric_notes": {
+            "average_throughput_mbps": "mean over delivering flows only; "
+            "FlowMonitor IP-layer bytes (incl. IP+UDP headers) / "
+            "(last rx - first tx)",
+            "average_delay_ms": "mean one-way delay over delivering flows only",
+            "overall_flow_loss_percent": "share of flows with zero received "
+            "packets (same as flow_failure_percent), not packet loss",
+            "aggregate_packet_loss_percent": "1 - total received / total sent, "
+            "all flows",
+        },
     },
 
     "flows": flows
@@ -484,7 +520,9 @@ print(f"Successful flows:  {successful_count}")
 print(f"Failed flows:      {total_flows - successful_count}")
 print(f"Avg throughput:    {average_throughput:.4f} Mbps")
 print(f"Avg delay:         {average_delay:.4f} ms")
-print(f"Overall flow loss: {overall_flow_loss:.2f} %")
+print(f"Overall flow loss: {overall_flow_loss:.2f} %  (flows with zero delivery)")
+print(f"Packet delivery:   {total_received}/{total_sent} "
+      f"({packet_delivery_ratio * 100:.2f} %)")
 if num_uavs > 1:
     for pu in per_uav:
         print(f"  UAV {pu['uav_index'] + 1}: {pu['delivering_flows']}/{pu['flows']} "

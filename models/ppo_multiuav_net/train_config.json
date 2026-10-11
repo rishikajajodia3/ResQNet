@@ -1,0 +1,101 @@
+{
+  "base_seed": 42,
+  "train": {
+    "scenarios": [
+      "open_area",
+      "dense_urban",
+      "clustered_survivors",
+      "sparse_clusters",
+      "wide_edge"
+    ],
+    "user_counts": [
+      10,
+      20,
+      30,
+      50
+    ],
+    "num_uavs": [
+      3
+    ],
+    "mode": "surrogate",
+    "reward_mode": "network",
+    "random_start_prob": 0.5,
+    "max_steps_per_episode": 12,
+    "total_timesteps": 300000
+  },
+  "extra_train_scenarios": {
+    "sparse_clusters": {
+      "name": "Sparse Survivor Clusters (training only)",
+      "scene": "city_damaged.xml",
+      "user_region": {
+        "x": [
+          -120.0,
+          140.0
+        ],
+        "y": [
+          -120.0,
+          140.0
+        ]
+      },
+      "uav_region": {
+        "x": [
+          -130.0,
+          150.0
+        ],
+        "y": [
+          -130.0,
+          150.0
+        ],
+        "z": [
+          20.0,
+          60.0
+        ]
+      },
+      "user_distribution": "clustered",
+      "num_clusters": 4,
+      "cluster_std_m": 12.0,
+      "purpose": "Training-only: separated survivor clusters over a mid-size area."
+    },
+    "wide_edge": {
+      "name": "Wide Area, Edge-Heavy (training only)",
+      "scene": "city_damaged.xml",
+      "user_region": {
+        "x": [
+          -170.0,
+          190.0
+        ],
+        "y": [
+          -170.0,
+          190.0
+        ]
+      },
+      "uav_region": {
+        "x": [
+          -180.0,
+          200.0
+        ],
+        "y": [
+          -180.0,
+          200.0
+        ],
+        "z": [
+          20.0,
+          60.0
+        ]
+      },
+      "user_distribution": "edge_heavy",
+      "purpose": "Training-only: users concentrated near the edges of a large area."
+    }
+  },
+  "reward_mode": "network",
+  "eval_scenarios_held_out": [
+    "blocked_urban",
+    "wide_area"
+  ],
+  "total_timesteps": 300000,
+  "smoke": false,
+  "rf_model": "surrogate/free_space",
+  "wall_time_sec": 1457.4,
+  "obs_len": 71,
+  "action_space": "MultiDiscrete([5]*5)"
+}

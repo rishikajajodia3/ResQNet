@@ -1,0 +1,68 @@
+{
+ "scenario": "wide_area",
+ "seed": 16,
+ "method": "random",
+ "delivering_users": 17.0,
+ "users_pdr_ge_90": 14,
+ "pdr": 0.49525,
+ "loss_pct": 50.475,
+ "mean_user_tput_mbps": 0.213948,
+ "min_user_tput_mbps": 0.0,
+ "jain_fairness": 0.5248366096476106,
+ "mean_latency_ms": 100.13686304226383,
+ "p95_flow_latency_ms": 535.187,
+ "per_user_pdr": [
+  0.99,
+  0.2044,
+  0.9731,
+  0.0,
+  0.9994,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  1.0,
+  0.9919,
+  0.9319,
+  0.46,
+  0.0,
+  0.0,
+  0.0,
+  1.0,
+  0.9975,
+  0.0,
+  0.0,
+  0.9938,
+  0.0,
+  0.0,
+  0.9362,
+  1.0,
+  0.99,
+  0.3912,
+  0.9981,
+  1.0
+ ],
+ "calibrated_pdr": 0.4929982502201271,
+ "uav_positions": [
+  [
+   4.29,
+   -55.08,
+   40.0
+  ],
+  [
+   -86.04,
+   -46.4,
+   40.0
+  ],
+  [
+   -142.32,
+   -62.02,
+   40.0
+  ]
+ ],
+ "movement_m": 121.99552884940694,
+ "surrogate_evals": 0,
+ "ns3_search_runs": 0,
+ "ns3_refine_history": null
+}

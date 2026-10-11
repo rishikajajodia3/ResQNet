@@ -12,7 +12,62 @@
 #include <vector>
 #include <cmath>
 #include <cstdio>
+#include <map>
 using namespace ns3;
+
+// ---------------------------------------------------------------------------
+// Optional MAC/PHY loss diagnostics (--macStats). Counters per node id.
+// ---------------------------------------------------------------------------
+struct NodeLossStats
+{
+    uint64_t txFailed = 0;     // data transmission attempts without ACK
+    uint64_t dropRetry = 0;    // MPDU dropped after FrameRetryLimit attempts
+    uint64_t dropLifetime = 0; // MPDU expired in the MAC queue (MaxDelay)
+    uint64_t dropEnqueue = 0;  // MAC queue full
+    uint64_t rxError = 0;      // PSDU received but failed to decode (SINR)
+    std::map<std::string, uint64_t> rxDrop; // PHY receive drops by reason
+};
+
+static std::map<uint32_t, NodeLossStats> g_lossStats;
+
+static uint32_t
+ContextNodeId(const std::string& context)
+{
+    size_t a = context.find("/NodeList/") + 10;
+    return static_cast<uint32_t>(std::stoul(context.substr(a, context.find('/', a) - a)));
+}
+
+static void
+OnMacDrop(std::string context, WifiMacDropReason reason, Ptr<const WifiMpdu>)
+{
+    auto& s = g_lossStats[ContextNodeId(context)];
+    if (reason == WIFI_MAC_DROP_REACHED_RETRY_LIMIT)
+        s.dropRetry++;
+    else if (reason == WIFI_MAC_DROP_EXPIRED_LIFETIME)
+        s.dropLifetime++;
+    else if (reason == WIFI_MAC_DROP_FAILED_ENQUEUE)
+        s.dropEnqueue++;
+}
+
+static void
+OnTxDataFailed(std::string context, Mac48Address)
+{
+    g_lossStats[ContextNodeId(context)].txFailed++;
+}
+
+static void
+OnRxError(std::string context, Ptr<const Packet>, double)
+{
+    g_lossStats[ContextNodeId(context)].rxError++;
+}
+
+static void
+OnPhyRxDrop(std::string context, Ptr<const Packet>, WifiPhyRxfailureReason reason)
+{
+    std::ostringstream r;
+    r << reason;
+    g_lossStats[ContextNodeId(context)].rxDrop[r.str()]++;
+}
 
 // ---------------------------------------------------------------------------
 // Minimal JSON helpers (no external deps) for the ML handoff file
@@ -138,6 +193,23 @@ static void ParseIntArray(const std::string &json, const std::string &key,
 
 int main(int argc, char *argv[])
 {
+    // Static ARP is the default. With dynamic ARP every client starts at
+    // t = 2 s, the per-node ARP retry timers fire in lock-step (3, 4, 5 s),
+    // the un-ACKed broadcast requests collide, and ns-3 marks the entry dead
+    // for ArpCache::DeadTimeout (100 s) - longer than the whole run - so the
+    // affected users deliver nothing regardless of their radio link.
+    // --populateArp=false restores the previous dynamic-ARP behaviour.
+    bool populateArp = true;
+    CommandLine cmd(__FILE__);
+    cmd.AddValue("populateArp", "Pre-populate ARP caches (no ARP exchange)", populateArp);
+    bool macStats = false;
+    cmd.AddValue("macStats", "Print per-node MAC/PHY loss counters (MACSTATS lines)", macStats);
+    double trafficSeconds = 8.0;
+    cmd.AddValue("trafficSeconds", "UDP traffic duration in seconds (clients start at 2 s)",
+                 trafficSeconds);
+    cmd.Parse(argc, argv);
+    const double stopTime = 2.0 + trafficSeconds;
+
     // =========================================
     // 1. READ ML HANDOFF
     // =========================================
@@ -309,6 +381,12 @@ int main(int argc, char *argv[])
     Ipv4InterfaceContainer interfaces = address.Assign(devices);
     // interface index 0..nUav-1  -> UAVs ;  nUav..  -> users
 
+    if (populateArp)
+    {
+        NeighborCacheHelper neighborCache;
+        neighborCache.PopulateNeighborCache(interfaces);
+    }
+
     if (multi)
     {
         for (int k = 0; k < nUav; k++)
@@ -327,7 +405,7 @@ int main(int argc, char *argv[])
         UdpServerHelper server(port);
         ApplicationContainer serverApp = server.Install(uav.Get(k));
         serverApp.Start(Seconds(1.0));
-        serverApp.Stop(Seconds(10.0));
+        serverApp.Stop(Seconds(stopTime));
     }
 
     // =========================================
@@ -342,7 +420,7 @@ int main(int argc, char *argv[])
         client.SetAttribute("PacketSize", UintegerValue(512));
         ApplicationContainer clientApp = client.Install(users.Get(i));
         clientApp.Start(Seconds(2.0));
-        clientApp.Stop(Seconds(10.0));
+        clientApp.Stop(Seconds(stopTime));
     }
 
     // =========================================
@@ -351,7 +429,17 @@ int main(int argc, char *argv[])
     FlowMonitorHelper flowmon;
     Ptr<FlowMonitor> monitor = flowmon.InstallAll();
 
-    Simulator::Stop(Seconds(10.0));
+    if (macStats)
+    {
+        const std::string dev = "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/";
+        Config::Connect(dev + "Mac/DroppedMpdu", MakeCallback(&OnMacDrop));
+        Config::Connect(dev + "RemoteStationManager/MacTxDataFailed",
+                        MakeCallback(&OnTxDataFailed));
+        Config::Connect(dev + "Phy/State/RxError", MakeCallback(&OnRxError));
+        Config::Connect(dev + "Phy/PhyRxDrop", MakeCallback(&OnPhyRxDrop));
+    }
+
+    Simulator::Stop(Seconds(stopTime));
     Simulator::Run();
 
     // =========================================
@@ -375,6 +463,8 @@ int main(int argc, char *argv[])
 
         if (flow.second.rxPackets == 0)
         {
+            // Report what was sent so a failed flow still counts towards loss.
+            std::cout << "Packets Sent: " << flow.second.txPackets << "\n";
             std::cout << "No packets received.\n";
             continue;
         }
@@ -398,6 +488,22 @@ int main(int argc, char *argv[])
     }
 
     std::cout << "\n====================================\n";
+
+    if (macStats)
+    {
+        for (uint32_t n = 0; n < NodeList::GetNNodes(); n++)
+        {
+            const auto& s = g_lossStats[n];
+            std::cout << "MACSTATS node=" << n << " txFailed=" << s.txFailed
+                      << " dropRetry=" << s.dropRetry << " dropLifetime=" << s.dropLifetime
+                      << " dropEnqueue=" << s.dropEnqueue << " rxError=" << s.rxError;
+            for (const auto& [reason, count] : s.rxDrop)
+            {
+                std::cout << " rxDrop_" << reason << "=" << count;
+            }
+            std::cout << "\n";
+        }
+    }
 
     Simulator::Destroy();
     return 0;

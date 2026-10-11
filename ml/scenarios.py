@@ -53,13 +53,28 @@ def scenario_ids() -> list[str]:
     return list(load_scenarios()["scenarios"].keys())
 
 
+# Scenarios registered at runtime, e.g. training-only scenarios defined in a
+# training config. They are not part of configs/scenarios.json, so
+# scenario_ids() and the dashboard are unaffected.
+_EXTRA_SCENARIOS: dict[str, dict[str, Any]] = {}
+
+
+def register_scenarios(defs: dict[str, dict[str, Any]]) -> None:
+    for sid, s in defs.items():
+        if sid in load_scenarios()["scenarios"]:
+            raise ValueError(f"scenario '{sid}' is already defined in configs/scenarios.json")
+        _EXTRA_SCENARIOS[sid] = s
+
+
 def get_scenario(scenario_id: str) -> dict[str, Any]:
     scen = load_scenarios()["scenarios"]
-    if scenario_id not in scen:
-        raise KeyError(
-            f"Unknown scenario '{scenario_id}'. Known: {list(scen.keys())}"
-        )
-    return scen[scenario_id]
+    if scenario_id in scen:
+        return scen[scenario_id]
+    if scenario_id in _EXTRA_SCENARIOS:
+        return _EXTRA_SCENARIOS[scenario_id]
+    raise KeyError(
+        f"Unknown scenario '{scenario_id}'. Known: {list(scen.keys()) + list(_EXTRA_SCENARIOS)}"
+    )
 
 
 def user_height() -> float:

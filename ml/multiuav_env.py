@@ -33,6 +33,19 @@ Reward (multi-objective; weights in ``DEFAULT_REWARD_WEIGHTS``):
     + w_balance * load balance across UAVs        (even users-per-UAV)
     - w_overlap * UAV overlap penalty             (UAVs closer than min_sep)
     - w_move  * fraction of UAVs that moved
+
+reward_mode="network" (``NETWORK_REWARD_WEIGHTS``, see ml/network_model.py)
+replaces the threshold terms above, which saturate at 100 % in every
+configured scenario, with what ns-3 can actually deliver:
+    + w_conn * fraction of users with a usable ns-3 link (RSS >= -82 dBm)
+    + w_pdr  * predicted packet delivery (shared-channel airtime model)
+    + w_rate * mean normalised MCS link rate over ALL users (0 if unusable)
+    + w_prog * change in usable fraction this step
+    - w_overlap * UAV overlap penalty
+    - w_move  * fraction of UAVs that moved
+In this mode the observation's global block and per-UAV coverage use the
+same network-layer quantities (same length, so the action/observation
+spaces are unchanged).
 """
 
 from __future__ import annotations
@@ -53,6 +66,7 @@ for p in (_ROOT, _HERE, _ROOT / "sionna"):
         sys.path.insert(0, str(p))
 
 import scenarios  # noqa: E402
+import network_model  # noqa: E402
 
 try:
     from sionna_feedback_engine import (  # noqa: E402
@@ -80,6 +94,27 @@ DEFAULT_REWARD_WEIGHTS = {
     "w_overlap": 0.15,
     "w_move": 0.05,
 }
+
+NETWORK_REWARD_WEIGHTS = {
+    "w_conn": 0.40,
+    "w_pdr": 0.30,
+    "w_rate": 0.20,
+    "w_prog": 0.10,
+    "w_overlap": 0.05,
+    "w_move": 0.03,
+}
+
+# reward_mode="calibrated": ns-3-calibrated per-user PDR (ml/calibrated_model.py),
+# which models hidden-node collisions and contention measured in ns-3.
+CALIBRATED_REWARD_WEIGHTS = {
+    "w_pdr": 0.70,        # mean predicted ns-3 PDR over ALL users (unusable = 0)
+    "w_fair": 0.20,       # mean PDR of the worst 10 % of users
+    "w_prog": 0.10,       # change in mean PDR this step
+    "w_overlap": 0.05,
+    "w_move": 0.03,
+}
+
+REWARD_MODES = ("legacy", "network", "calibrated")
 
 RSS_MIN_DBM, RSS_MAX_DBM = -95.0, -40.0
 SINR_MIN_DB, SINR_MAX_DB = -10.0, 40.0
@@ -228,10 +263,18 @@ class MultiUAVEnv(gym.Env):
         connectivity_config: Optional[Any] = None,
         reward_weights: Optional[dict] = None,
         sampler: Optional[Callable[[int], dict]] = None,
+        reward_mode: str = "legacy",
+        random_start_prob: float = 0.0,
+        calibrated_model_path: Optional[str] = None,
     ):
         super().__init__()
         if mode not in ("surrogate", "sionna"):
             raise ValueError("mode must be 'surrogate' or 'sionna'")
+        if reward_mode not in REWARD_MODES:
+            raise ValueError(f"reward_mode must be one of {REWARD_MODES}")
+        self.reward_mode = reward_mode
+        # training-only: share of episodes that start from random positions
+        self.random_start_prob = float(random_start_prob)
         self.num_uavs = int(num_uavs)
         self.num_users = int(num_users)
         self.scenario = scenario
@@ -242,7 +285,15 @@ class MultiUAVEnv(gym.Env):
         self.min_sep = float(min_separation_m)
         self.interference_model = interference_model
         self.cfg = connectivity_config or (ConnectivityConfig() if ConnectivityConfig else None)
-        self.w = {**DEFAULT_REWARD_WEIGHTS, **(reward_weights or {})}
+        base_w = {"network": NETWORK_REWARD_WEIGHTS,
+                  "calibrated": CALIBRATED_REWARD_WEIGHTS}.get(reward_mode, DEFAULT_REWARD_WEIGHTS)
+        self.w = {**base_w, **(reward_weights or {})}
+        self.calibrated = None
+        self.last_cal: dict | None = None
+        if reward_mode == "calibrated":
+            import calibrated_model
+            self.calibrated = calibrated_model.CalibratedNetworkModel(
+                calibrated_model_path or calibrated_model.DEFAULT_MODEL)
         self.sampler = sampler
         self._episode = 0
 
@@ -255,6 +306,7 @@ class MultiUAVEnv(gym.Env):
         self.user_positions: np.ndarray | None = None
         self.current_step = 0
         self.last_eval: dict | None = None
+        self.last_net: dict | None = None
         self.initial_positions: np.ndarray | None = None
 
     # -- RF evaluation ------------------------------------------------
@@ -277,6 +329,17 @@ class MultiUAVEnv(gym.Env):
     def _scene_xml(self) -> str:
         return scenarios.get_scenario(self.scenario)["scene"]
 
+    def _refresh(self) -> None:
+        """RF evaluation of the current positions plus its network-layer view."""
+        self.last_eval = self._evaluate()
+        if self.calibrated is not None:
+            self.last_cal = self.calibrated.evaluate(self.last_eval, self.uav_positions, self.user_positions)
+            self.last_net = self.last_cal["network"]
+        else:
+            self.last_net = network_model.evaluate_network(
+                self.last_eval, self.uav_positions, self.user_positions
+            )
+
     # -- observation ------------------------------------------------
     def _region(self):
         return scenarios.get_scenario(self.scenario)["uav_region"], \
@@ -292,12 +355,22 @@ class MultiUAVEnv(gym.Env):
         upu = agg["users_per_uav"]
         # local coverage per UAV: connected users it serves / users it serves
         serve_conn = {f"uav_{k+1}": [0, 0] for k in range(self.num_uavs)}
-        for u in self.last_eval["user_results"]:
+        network = self.reward_mode in ("network", "calibrated")
+        calibrated = self.reward_mode == "calibrated"
+        for i, u in enumerate(self.last_eval["user_results"]):
             key = u["serving_uav_id"]
             if key in serve_conn:
                 serve_conn[key][1] += 1
-                if u["connected"]:
-                    serve_conn[key][0] += 1
+                if calibrated:     # local coverage = mean predicted PDR of served users
+                    serve_conn[key][0] += float(self.last_cal["per_user_pdr"][i])
+                else:
+                    ok = self.last_net["per_user"][i]["usable"] if network else u["connected"]
+                    if ok:
+                        serve_conn[key][0] += 1
+        if network:
+            # users served per UAV (by association), not the saturated
+            # threshold-based connected count
+            upu = {k: tot for k, (_, tot) in serve_conn.items()}
         for k in range(MAX_UAVS):
             if k < self.num_uavs:
                 x, y, z = self.uav_positions[k]
@@ -315,16 +388,37 @@ class MultiUAVEnv(gym.Env):
                 parts += [0.0, 0.0, 0.0, 0.0, 0.0]
 
         # global
-        rss_n = np.clip((agg["mean_best_rss_dbm"] - RSS_MIN_DBM) / (RSS_MAX_DBM - RSS_MIN_DBM), 0, 1)
-        sinr_n = np.clip((agg["mean_best_sinr_db"] - SINR_MIN_DB) / (SINR_MAX_DB - SINR_MIN_DB), 0, 1)
-        parts += [
-            agg["coverage_percentage"] / 100.0,
-            agg["connected_users_percentage"] / 100.0,
-            float(rss_n),
-            float(sinr_n),
-            min(self.num_users / 60.0, 1.0),
-            self.num_uavs / MAX_UAVS,
-        ]
+        if calibrated:
+            cal = self.last_cal["aggregate"]
+            parts += [
+                cal["net_connected_fraction"],
+                cal["calibrated_pdr"],
+                cal["worst_decile_pdr"],
+                cal["users_pdr_ge_90"] / max(self.num_users, 1),
+                min(self.num_users / 60.0, 1.0),
+                self.num_uavs / MAX_UAVS,
+            ]
+        elif network:
+            net = self.last_net["aggregate"]
+            parts += [
+                net["net_connected_fraction"],
+                net["predicted_pdr"],
+                net["mean_rate_norm"],
+                float(np.clip(net["airtime_utilisation"], 0.0, 2.0) / 2.0),
+                min(self.num_users / 60.0, 1.0),
+                self.num_uavs / MAX_UAVS,
+            ]
+        else:
+            rss_n = np.clip((agg["mean_best_rss_dbm"] - RSS_MIN_DBM) / (RSS_MAX_DBM - RSS_MIN_DBM), 0, 1)
+            sinr_n = np.clip((agg["mean_best_sinr_db"] - SINR_MIN_DB) / (SINR_MAX_DB - SINR_MIN_DB), 0, 1)
+            parts += [
+                agg["coverage_percentage"] / 100.0,
+                agg["connected_users_percentage"] / 100.0,
+                float(rss_n),
+                float(sinr_n),
+                min(self.num_users / 60.0, 1.0),
+                self.num_uavs / MAX_UAVS,
+            ]
 
         # user distribution summary
         xs = (self.user_positions[:, 0] - user_reg["x"][0]) / (user_reg["x"][1] - user_reg["x"][0])
@@ -386,6 +480,52 @@ class MultiUAVEnv(gym.Env):
             "overlap": overlap, "balance": balance, "moved_frac": moved_frac,
         }
 
+    def _reward_network(self, prev_conn_frac: float, moved_frac: float) -> tuple[float, dict]:
+        net = self.last_net["aggregate"]
+        conn = net["net_connected_fraction"]
+        pdr = net["predicted_pdr"]
+        rate_n = net["mean_rate_norm"]
+        d_conn = conn - prev_conn_frac
+        overlap = self._overlap_penalty()
+        w = self.w
+        r = (
+            w["w_conn"] * conn
+            + w["w_pdr"] * pdr
+            + w["w_rate"] * rate_n
+            + w["w_prog"] * d_conn
+            - w["w_overlap"] * overlap
+            - w["w_move"] * moved_frac
+        )
+        return float(r), {
+            "net_conn": conn, "pdr": pdr, "rate_n": rate_n, "d_conn": d_conn,
+            "airtime": net["airtime_utilisation"], "overlap": overlap,
+            "moved_frac": moved_frac,
+        }
+
+    def _reward_calibrated(self, prev_pdr: float, moved_frac: float) -> tuple[float, dict]:
+        cal = self.last_cal["aggregate"]
+        pdr, fair = cal["calibrated_pdr"], cal["worst_decile_pdr"]
+        overlap = self._overlap_penalty()
+        w = self.w
+        r = (
+            w["w_pdr"] * pdr
+            + w["w_fair"] * fair
+            + w["w_prog"] * (pdr - prev_pdr)
+            - w["w_overlap"] * overlap
+            - w["w_move"] * moved_frac
+        )
+        return float(r), {"pdr": pdr, "fair": fair, "d_pdr": pdr - prev_pdr,
+                          "overlap": overlap, "moved_frac": moved_frac}
+
+    def state_reward(self) -> float:
+        """Reward of the current placement with no movement / progress term,
+        so placements from different baselines can be compared directly."""
+        if self.reward_mode == "calibrated":
+            return self._reward_calibrated(self.last_cal["aggregate"]["calibrated_pdr"], 0.0)[0]
+        if self.reward_mode == "network":
+            return self._reward_network(self.last_net["aggregate"]["net_connected_fraction"], 0.0)[0]
+        return self._reward(self.last_eval["aggregate"]["connected_users_percentage"] / 100.0, 0.0)[0]
+
     # -- gym API ------------------------------------------------
     def reset(self, *, seed=None, options=None):
         super().reset(seed=seed)
@@ -401,14 +541,20 @@ class MultiUAVEnv(gym.Env):
 
         self.user_positions = scenarios.generate_users(self.scenario, self.num_users, ep_seed)
         self.uav_positions = scenarios.initial_uav_positions(self.num_uavs, self.scenario).astype(float)
+        if self.random_start_prob > 0 and self.np_random.random() < self.random_start_prob:
+            reg = self._region()[0]
+            self.uav_positions[:, 0] = self.np_random.uniform(*reg["x"], self.num_uavs)
+            self.uav_positions[:, 1] = self.np_random.uniform(*reg["y"], self.num_uavs)
         self.initial_positions = self.uav_positions.copy()
         self.current_step = 0
-        self.last_eval = self._evaluate()
+        self._refresh()
 
         obs = self._obs()
         info = {"scenario": self.scenario, "num_uavs": self.num_uavs,
                 "num_users": self.num_users, "episode_seed": ep_seed,
-                "eval": self.last_eval}
+                "eval": self.last_eval, "network": self.last_net["aggregate"]}
+        if self.last_cal is not None:
+            info["calibrated"] = self.last_cal["aggregate"]
         return obs, info
 
     def _apply(self, actions):
@@ -432,10 +578,20 @@ class MultiUAVEnv(gym.Env):
 
     def step(self, actions):
         actions = np.asarray(actions).reshape(-1)
-        prev_conn = self.last_eval["aggregate"]["connected_users_percentage"] / 100.0
+        if self.reward_mode == "calibrated":
+            prev_conn = self.last_cal["aggregate"]["calibrated_pdr"]
+        elif self.reward_mode == "network":
+            prev_conn = self.last_net["aggregate"]["net_connected_fraction"]
+        else:
+            prev_conn = self.last_eval["aggregate"]["connected_users_percentage"] / 100.0
         moved_frac = self._apply(actions)
-        self.last_eval = self._evaluate()
-        reward, breakdown = self._reward(prev_conn, moved_frac)
+        self._refresh()
+        if self.reward_mode == "calibrated":
+            reward, breakdown = self._reward_calibrated(prev_conn, moved_frac)
+        elif self.reward_mode == "network":
+            reward, breakdown = self._reward_network(prev_conn, moved_frac)
+        else:
+            reward, breakdown = self._reward(prev_conn, moved_frac)
         self.current_step += 1
         truncated = self.current_step >= self.max_steps
         terminated = False
@@ -444,7 +600,10 @@ class MultiUAVEnv(gym.Env):
             "actions": [int(actions[k]) for k in range(self.num_uavs)],
             "uav_positions": self.uav_positions.tolist(),
             "reward_breakdown": breakdown,
+            "network": self.last_net["aggregate"],
         }
+        if self.last_cal is not None:
+            info["calibrated"] = self.last_cal["aggregate"]
         return self._obs(), reward, terminated, truncated, info
 
     def close(self):

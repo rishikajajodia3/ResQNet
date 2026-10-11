@@ -1,44 +1,67 @@
 import { Panel } from "./Panel.jsx";
 
-const NODES = [
-  { main: "3D disaster environment", kind: "scenario scene (city_damaged / baseline)" },
-  { main: "Sionna RT", kind: "PathSolver ray tracing, K transmitters", cls: "sionna" },
-  { main: "Wireless metrics", kind: "per-user × per-UAV: RSS / SNR / SINR / paths", cls: "sionna" },
-  { main: "Multi-UAV PPO", kind: "MultiDiscrete([5]×K) policy" },
-  { main: "UAV repositioning", kind: "K UAVs, discrete moves" },
-  { main: "uav_positions.json", kind: "handoff: K UAVs + N users + associations" },
-  { main: "NS-3", kind: "K UDP servers, per-user association, FlowMonitor", cls: "ns3" },
-  { main: "Network validation", kind: "per-flow + per-UAV throughput / delay", cls: "ns3" },
+const COLS = [
+  {
+    tag: "sionna",
+    name: "SIONNA RT",
+    sub: "Radio propagation",
+    items: [
+      "Shoot-and-bounce ray tracing (Mitsuba)",
+      "K transmitters over the 3D city mesh",
+      "Per-user × per-UAV RSS, path gain, delay",
+      "SNR and co-channel SINR",
+      "Best-RSS user→UAV association",
+    ],
+  },
+  {
+    tag: "ppo",
+    name: "PPO",
+    sub: "Reinforcement learning",
+    items: [
+      "MultiDiscrete([5]×K) policy",
+      "Per-UAV actions: stay / ±X / ±Y",
+      "Reward: coverage + connectivity + balance − overlap − move",
+      "Trajectory of K UAV positions",
+    ],
+  },
+  {
+    tag: "ns3",
+    name: "NS-3",
+    sub: "Network validation",
+    items: [
+      "One UDP server per UAV",
+      "Each user is a client of its associated UAV",
+      "802.11n ad-hoc, YansWifiChannel",
+      "FlowMonitor: throughput, delay, delivery",
+    ],
+  },
 ];
 
 export function PipelineDiagram() {
   return (
-    <Panel title="Pipeline" hint="each stage runs the existing code unchanged">
-      <div className="pipeline">
-        {NODES.map((n, i) => (
-          <div key={n.main}>
-            <div className={`node ${n.cls || ""}`}>
-              <span className="n-main">{n.main}</span>
-              <span className="n-kind">{n.kind}</span>
+    <Panel title="Methodology" flush right={<span className="hint">scenario → Sionna → PPO → JSON → NS-3</span>}>
+      <div className="method-grid">
+        {COLS.map((c) => (
+          <div className="method-col" key={c.name}>
+            <div className="mc-head">
+              <span className={`tag ${c.tag}`}>{c.name}</span>
             </div>
-            {i < NODES.length - 1 && <div className="arrow">&darr;</div>}
-            {i === 2 && (
-              <div className="sep-label">
-                metrics inform the agent &mdash; separate models below
-              </div>
-            )}
+            <div className="mc-sub">{c.sub}</div>
+            <ul>{c.items.map((it) => <li key={it}>{it}</li>)}</ul>
           </div>
         ))}
       </div>
-      <p className="inline-note">
-        <span className="tag sionna">Sionna RT</span> propagation / radio analysis
-        &nbsp;&middot;&nbsp;
-        <span className="tag ns3">NS-3</span> network / MAC / traffic validation.
-        NS-3 uses its own Wi-Fi channel model; it does not consume Sionna&rsquo;s
-        ray-traced channel loss. Multi-UAV SINR is co-channel (all UAVs share one
-        channel, full buffer); for 1 UAV, SINR = SNR. No inter-UAV interference is
-        claimed beyond this shared-channel model.
-      </p>
+      <div className="method-flow">
+        scenario <span className="arrow">→</span> sionna <span className="arrow">→</span> ppo
+        <span className="arrow">→</span> uav_positions.json <span className="arrow">→</span> ns-3
+        <span className="arrow">→</span> results
+      </div>
+      <div className="scene-note">
+        Sionna and NS-3 use <b>different channel / network models</b>. NS-3 does <b>not</b>{" "}
+        directly consume Sionna&rsquo;s ray-traced channel loss — only the geometry (UAV
+        positions, user positions, association) is handed over. Multi-UAV SINR assumes all
+        UAVs share one channel with a full buffer; for a single UAV, SINR = SNR.
+      </div>
     </Panel>
   );
 }

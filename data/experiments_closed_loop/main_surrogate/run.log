@@ -1,0 +1,17 @@
+[03:10:23] STARTING data/experiments_closed_loop/main_surrogate with 4 workers
+[03:12:40] wide_area: placements ready
+[03:14:28] blocked_urban: placements ready
+[03:16:40] flood_shelters: placements ready
+[03:49:46] [checkpoint] stop requested: signal SIGHUP - finishing running jobs, no new jobs will start
+[04:55:00] RESUMING data/experiments_closed_loop/main_surrogate with 4 workers
+[04:55:00] wide_area: placements ready
+[04:55:00] blocked_urban: placements ready
+[04:55:00] flood_shelters: placements ready
+[05:47:26] [checkpoint] stop requested: signal SIGINT - finishing running jobs, no new jobs will start
+[06:59:36] RESUMING data/experiments_closed_loop/main_surrogate with 4 workers
+[06:59:36] wide_area: placements ready
+[06:59:36] blocked_urban: placements ready
+[06:59:36] flood_shelters: placements ready
+[07:31:22] ns-3 in-the-loop refinement done ({'cached': 1196, 'simulated': 422, 'low_mem_waits': 0, 'min_mem_available_mb': 11215.6171875})
+[07:31:25] final scoring: 1080 ns-3 runs (0 cached)
+[09:33:34] COMPLETE -> data/experiments_closed_loop/main_surrogate ({'cached': 1490, 'simulated': 1208, 'low_mem_waits': 0, 'min_mem_available_mb': 11026.49609375})

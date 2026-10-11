@@ -93,18 +93,26 @@ def resolve_scene_path(scene_name: Optional[str] = None) -> str:
 
 def safe_load_scene_robust(scene_path: Optional[str] = None) -> Any:
     """
-    Loads scene from path with material validation and fallback.
+    Loads scene from path with material validation.
+
+    Raises if the scene cannot be found or loaded instead of silently
+    substituting another scene: a fallback would return metrics for a
+    different geometry while results stay labelled with the requested name.
+    The built-in placeholder is only used when explicitly requested as
+    "simple_street_canyon".
     """
-    resolved = resolve_scene_path(scene_path)
-    try:
-        scene = load_scene(resolved)
-        for name, obj in scene.objects.items():
-            if obj.radio_material is None:
-                obj.radio_material = "itu_concrete"
-        return scene
-    except Exception as e:
-        print(f"[WARN] Failed loading '{resolved}': {e}. Falling back to default street canyon.")
+    if scene_path == "simple_street_canyon":
         return load_scene(sionna.rt.scene.simple_street_canyon)
+    resolved = resolve_scene_path(scene_path)
+    if not os.path.exists(resolved):
+        raise FileNotFoundError(
+            f"Sionna scene '{scene_path}' not found (resolved to '{resolved}')."
+        )
+    scene = load_scene(resolved)
+    for name, obj in scene.objects.items():
+        if obj.radio_material is None:
+            obj.radio_material = "itu_concrete"
+    return scene
 
 
 def evaluate_connectivity(

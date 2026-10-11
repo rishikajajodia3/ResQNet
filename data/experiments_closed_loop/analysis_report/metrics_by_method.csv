@@ -1,0 +1,217 @@
+scenario,method,family,metric,mean,ci95_half_width,n_seeds
+wide_area,fixed,baseline,pdr,0.746414,0.0228543,20
+wide_area,fixed,baseline,loss_pct,25.3586,2.28543,20
+wide_area,fixed,baseline,mean_latency_ms,115.422,6.92889,20
+wide_area,fixed,baseline,p95_flow_latency_ms,535.336,21.1529,20
+wide_area,fixed,baseline,mean_user_tput_mbps,0.322451,0.00987308,20
+wide_area,fixed,baseline,min_user_tput_mbps,0,0,20
+wide_area,fixed,baseline,jain_fairness,0.807415,0.0253226,20
+wide_area,fixed,baseline,movement_m,0,0,20
+wide_area,random,baseline,pdr,0.68596,0.0665588,20
+wide_area,random,baseline,loss_pct,31.404,6.65588,20
+wide_area,random,baseline,mean_latency_ms,93.363,20.4269,20
+wide_area,random,baseline,p95_flow_latency_ms,415.202,80.3044,20
+wide_area,random,baseline,mean_user_tput_mbps,0.296335,0.0287534,20
+wide_area,random,baseline,min_user_tput_mbps,0,0,20
+wide_area,random,baseline,jain_fairness,0.725751,0.0666799,20
+wide_area,random,baseline,movement_m,131.147,19.1336,20
+wide_area,ppo_network,PPO policy,pdr,0.75144,0.0209719,20
+wide_area,ppo_network,PPO policy,loss_pct,24.856,2.09719,20
+wide_area,ppo_network,PPO policy,mean_latency_ms,115.399,7.88609,20
+wide_area,ppo_network,PPO policy,p95_flow_latency_ms,529.624,20.7008,20
+wide_area,ppo_network,PPO policy,mean_user_tput_mbps,0.324622,0.00905986,20
+wide_area,ppo_network,PPO policy,min_user_tput_mbps,0,0,20
+wide_area,ppo_network,PPO policy,jain_fairness,0.811914,0.0243717,20
+wide_area,ppo_network,PPO policy,movement_m,1.16667,1.69955,20
+wide_area,ppo_calibrated,PPO policy,pdr,0.881883,0.0154081,20
+wide_area,ppo_calibrated,PPO policy,loss_pct,11.8117,1.54081,20
+wide_area,ppo_calibrated,PPO policy,mean_latency_ms,80.7554,9.98543,20
+wide_area,ppo_calibrated,PPO policy,p95_flow_latency_ms,365.451,58.1518,20
+wide_area,ppo_calibrated,PPO policy,mean_user_tput_mbps,0.380974,0.0066563,20
+wide_area,ppo_calibrated,PPO policy,min_user_tput_mbps,0.006804,0.00802999,20
+wide_area,ppo_calibrated,PPO policy,jain_fairness,0.917095,0.0139009,20
+wide_area,ppo_calibrated,PPO policy,movement_m,46.5494,10.4028,20
+wide_area,ppo_calibrated_30,PPO policy,pdr,0.859443,0.0296742,20
+wide_area,ppo_calibrated_30,PPO policy,loss_pct,14.0557,2.96742,20
+wide_area,ppo_calibrated_30,PPO policy,mean_latency_ms,72.6106,14.2683,20
+wide_area,ppo_calibrated_30,PPO policy,p95_flow_latency_ms,331.58,78.3403,20
+wide_area,ppo_calibrated_30,PPO policy,mean_user_tput_mbps,0.371279,0.0128193,20
+wide_area,ppo_calibrated_30,PPO policy,min_user_tput_mbps,0.006804,0.00802999,20
+wide_area,ppo_calibrated_30,PPO policy,jain_fairness,0.890673,0.0339544,20
+wide_area,ppo_calibrated_30,PPO policy,movement_m,61.8536,19.039,20
+wide_area,greedy_joint,surrogate search,pdr,0.812035,0.0241878,20
+wide_area,greedy_joint,surrogate search,loss_pct,18.7965,2.41878,20
+wide_area,greedy_joint,surrogate search,mean_latency_ms,113.113,8.18808,20
+wide_area,greedy_joint,surrogate search,p95_flow_latency_ms,501.675,29.4406,20
+wide_area,greedy_joint,surrogate search,mean_user_tput_mbps,0.350799,0.0104491,20
+wide_area,greedy_joint,surrogate search,min_user_tput_mbps,0.0156735,0.023456,20
+wide_area,greedy_joint,surrogate search,jain_fairness,0.870812,0.0243659,20
+wide_area,greedy_joint,surrogate search,movement_m,11.691,3.43399,20
+wide_area,coordinate,surrogate search,pdr,0.965079,0.0141532,20
+wide_area,coordinate,surrogate search,loss_pct,3.49208,1.41532,20
+wide_area,coordinate,surrogate search,mean_latency_ms,62.4087,10.0979,20
+wide_area,coordinate,surrogate search,p95_flow_latency_ms,214.982,39.3727,20
+wide_area,coordinate,surrogate search,mean_user_tput_mbps,0.416914,0.0061142,20
+wide_area,coordinate,surrogate search,min_user_tput_mbps,0.234225,0.080741,20
+wide_area,coordinate,surrogate search,jain_fairness,0.983266,0.00987031,20
+wide_area,coordinate,surrogate search,movement_m,70.5797,4.62049,20
+wide_area,evolution,surrogate search,pdr,0.973784,0.00960661,20
+wide_area,evolution,surrogate search,loss_pct,2.62156,0.960661,20
+wide_area,evolution,surrogate search,mean_latency_ms,62.6153,11.7569,20
+wide_area,evolution,surrogate search,p95_flow_latency_ms,218.401,44.0225,20
+wide_area,evolution,surrogate search,mean_user_tput_mbps,0.420675,0.00415005,20
+wide_area,evolution,surrogate search,min_user_tput_mbps,0.290412,0.0634053,20
+wide_area,evolution,surrogate search,jain_fairness,0.99143,0.00635587,20
+wide_area,evolution,surrogate search,movement_m,74.441,5.67244,20
+wide_area,ns3_refine,ns-3 in the loop,pdr,0.97234,0.0097279,20
+wide_area,ns3_refine,ns-3 in the loop,loss_pct,2.76604,0.97279,20
+wide_area,ns3_refine,ns-3 in the loop,mean_latency_ms,56.5684,9.44775,20
+wide_area,ns3_refine,ns-3 in the loop,p95_flow_latency_ms,193.716,36.1675,20
+wide_area,ns3_refine,ns-3 in the loop,mean_user_tput_mbps,0.420051,0.00420245,20
+wide_area,ns3_refine,ns-3 in the loop,min_user_tput_mbps,0.23945,0.0758603,20
+wide_area,ns3_refine,ns-3 in the loop,jain_fairness,0.987273,0.00734863,20
+wide_area,ns3_refine,ns-3 in the loop,movement_m,74.2727,5.93487,20
+blocked_urban,fixed,baseline,pdr,0.999461,9.08222e-05,20
+blocked_urban,fixed,baseline,loss_pct,0.0538542,0.00908222,20
+blocked_urban,fixed,baseline,mean_latency_ms,10.9534,0.152138,20
+blocked_urban,fixed,baseline,p95_flow_latency_ms,15.033,0.385916,20
+blocked_urban,fixed,baseline,mean_user_tput_mbps,0.431767,3.92352e-05,20
+blocked_urban,fixed,baseline,min_user_tput_mbps,0.429705,0.000541575,20
+blocked_urban,fixed,baseline,jain_fairness,0.999998,5.80572e-07,20
+blocked_urban,fixed,baseline,movement_m,0,0,20
+blocked_urban,random,baseline,pdr,0.999371,0.00021966,20
+blocked_urban,random,baseline,loss_pct,0.0629167,0.021966,20
+blocked_urban,random,baseline,mean_latency_ms,11.3253,1.09825,20
+blocked_urban,random,baseline,p95_flow_latency_ms,16.1441,2.03986,20
+blocked_urban,random,baseline,mean_user_tput_mbps,0.431728,9.48933e-05,20
+blocked_urban,random,baseline,min_user_tput_mbps,0.429287,0.000823511,20
+blocked_urban,random,baseline,jain_fairness,0.999997,1.90672e-06,20
+blocked_urban,random,baseline,movement_m,46.2882,6.75295,20
+blocked_urban,ppo_network,PPO policy,pdr,0.999461,9.08222e-05,20
+blocked_urban,ppo_network,PPO policy,loss_pct,0.0538542,0.00908222,20
+blocked_urban,ppo_network,PPO policy,mean_latency_ms,10.9534,0.152138,20
+blocked_urban,ppo_network,PPO policy,p95_flow_latency_ms,15.033,0.385916,20
+blocked_urban,ppo_network,PPO policy,mean_user_tput_mbps,0.431767,3.92352e-05,20
+blocked_urban,ppo_network,PPO policy,min_user_tput_mbps,0.429705,0.000541575,20
+blocked_urban,ppo_network,PPO policy,jain_fairness,0.999998,5.80572e-07,20
+blocked_urban,ppo_network,PPO policy,movement_m,0,0,20
+blocked_urban,ppo_calibrated,PPO policy,pdr,0.999461,9.08222e-05,20
+blocked_urban,ppo_calibrated,PPO policy,loss_pct,0.0538542,0.00908222,20
+blocked_urban,ppo_calibrated,PPO policy,mean_latency_ms,10.9534,0.152138,20
+blocked_urban,ppo_calibrated,PPO policy,p95_flow_latency_ms,15.033,0.385916,20
+blocked_urban,ppo_calibrated,PPO policy,mean_user_tput_mbps,0.431767,3.92352e-05,20
+blocked_urban,ppo_calibrated,PPO policy,min_user_tput_mbps,0.429705,0.000541575,20
+blocked_urban,ppo_calibrated,PPO policy,jain_fairness,0.999998,5.80572e-07,20
+blocked_urban,ppo_calibrated,PPO policy,movement_m,0,0,20
+blocked_urban,ppo_calibrated_30,PPO policy,pdr,0.999461,9.08222e-05,20
+blocked_urban,ppo_calibrated_30,PPO policy,loss_pct,0.0538542,0.00908222,20
+blocked_urban,ppo_calibrated_30,PPO policy,mean_latency_ms,10.9534,0.152138,20
+blocked_urban,ppo_calibrated_30,PPO policy,p95_flow_latency_ms,15.033,0.385916,20
+blocked_urban,ppo_calibrated_30,PPO policy,mean_user_tput_mbps,0.431767,3.92352e-05,20
+blocked_urban,ppo_calibrated_30,PPO policy,min_user_tput_mbps,0.429705,0.000541575,20
+blocked_urban,ppo_calibrated_30,PPO policy,jain_fairness,0.999998,5.80572e-07,20
+blocked_urban,ppo_calibrated_30,PPO policy,movement_m,0,0,20
+blocked_urban,greedy_joint,surrogate search,pdr,0.999461,9.08222e-05,20
+blocked_urban,greedy_joint,surrogate search,loss_pct,0.0538542,0.00908222,20
+blocked_urban,greedy_joint,surrogate search,mean_latency_ms,10.9534,0.152138,20
+blocked_urban,greedy_joint,surrogate search,p95_flow_latency_ms,15.033,0.385916,20
+blocked_urban,greedy_joint,surrogate search,mean_user_tput_mbps,0.431767,3.92352e-05,20
+blocked_urban,greedy_joint,surrogate search,min_user_tput_mbps,0.429705,0.000541575,20
+blocked_urban,greedy_joint,surrogate search,jain_fairness,0.999998,5.80572e-07,20
+blocked_urban,greedy_joint,surrogate search,movement_m,0,0,20
+blocked_urban,coordinate,surrogate search,pdr,0.999461,9.08222e-05,20
+blocked_urban,coordinate,surrogate search,loss_pct,0.0538542,0.00908222,20
+blocked_urban,coordinate,surrogate search,mean_latency_ms,10.9534,0.152138,20
+blocked_urban,coordinate,surrogate search,p95_flow_latency_ms,15.033,0.385916,20
+blocked_urban,coordinate,surrogate search,mean_user_tput_mbps,0.431767,3.92352e-05,20
+blocked_urban,coordinate,surrogate search,min_user_tput_mbps,0.429705,0.000541575,20
+blocked_urban,coordinate,surrogate search,jain_fairness,0.999998,5.80572e-07,20
+blocked_urban,coordinate,surrogate search,movement_m,0,0,20
+blocked_urban,evolution,surrogate search,pdr,0.999461,9.08222e-05,20
+blocked_urban,evolution,surrogate search,loss_pct,0.0538542,0.00908222,20
+blocked_urban,evolution,surrogate search,mean_latency_ms,10.9534,0.152138,20
+blocked_urban,evolution,surrogate search,p95_flow_latency_ms,15.033,0.385916,20
+blocked_urban,evolution,surrogate search,mean_user_tput_mbps,0.431767,3.92352e-05,20
+blocked_urban,evolution,surrogate search,min_user_tput_mbps,0.429705,0.000541575,20
+blocked_urban,evolution,surrogate search,jain_fairness,0.999998,5.80572e-07,20
+blocked_urban,evolution,surrogate search,movement_m,0,0,20
+blocked_urban,ns3_refine,ns-3 in the loop,pdr,0.999481,9.31947e-05,20
+blocked_urban,ns3_refine,ns-3 in the loop,loss_pct,0.051875,0.00931947,20
+blocked_urban,ns3_refine,ns-3 in the loop,mean_latency_ms,10.9307,0.174279,20
+blocked_urban,ns3_refine,ns-3 in the loop,p95_flow_latency_ms,14.9444,0.40502,20
+blocked_urban,ns3_refine,ns-3 in the loop,mean_user_tput_mbps,0.431776,4.02601e-05,20
+blocked_urban,ns3_refine,ns-3 in the loop,min_user_tput_mbps,0.429719,0.000546172,20
+blocked_urban,ns3_refine,ns-3 in the loop,jain_fairness,0.999998,5.83844e-07,20
+blocked_urban,ns3_refine,ns-3 in the loop,movement_m,1.33333,1.28046,20
+flood_shelters,fixed,baseline,pdr,0.598813,0.0452577,20
+flood_shelters,fixed,baseline,loss_pct,40.1187,4.52577,20
+flood_shelters,fixed,baseline,mean_latency_ms,121.322,30.5901,20
+flood_shelters,fixed,baseline,p95_flow_latency_ms,460.057,60.9323,20
+flood_shelters,fixed,baseline,mean_user_tput_mbps,0.258687,0.0195513,20
+flood_shelters,fixed,baseline,min_user_tput_mbps,0.0016875,0.00203833,20
+flood_shelters,fixed,baseline,jain_fairness,0.661784,0.0459207,20
+flood_shelters,fixed,baseline,movement_m,0,0,20
+flood_shelters,random,baseline,pdr,0.56935,0.0743461,20
+flood_shelters,random,baseline,loss_pct,43.065,7.43461,20
+flood_shelters,random,baseline,mean_latency_ms,108.471,44.2467,20
+flood_shelters,random,baseline,p95_flow_latency_ms,338.876,108.603,20
+flood_shelters,random,baseline,mean_user_tput_mbps,0.245959,0.0321175,20
+flood_shelters,random,baseline,min_user_tput_mbps,0.013662,0.0199385,20
+flood_shelters,random,baseline,jain_fairness,0.616752,0.0747264,20
+flood_shelters,random,baseline,movement_m,146.575,21.3848,20
+flood_shelters,ppo_network,PPO policy,pdr,0.664903,0.0564728,20
+flood_shelters,ppo_network,PPO policy,loss_pct,33.5097,5.64728,20
+flood_shelters,ppo_network,PPO policy,mean_latency_ms,120.784,34.3733,20
+flood_shelters,ppo_network,PPO policy,p95_flow_latency_ms,466.618,75.9971,20
+flood_shelters,ppo_network,PPO policy,mean_user_tput_mbps,0.287238,0.0243963,20
+flood_shelters,ppo_network,PPO policy,min_user_tput_mbps,0.017631,0.0202627,20
+flood_shelters,ppo_network,PPO policy,jain_fairness,0.738694,0.0477924,20
+flood_shelters,ppo_network,PPO policy,movement_m,21.6533,8.2964,20
+flood_shelters,ppo_calibrated,PPO policy,pdr,0.80779,0.0527308,20
+flood_shelters,ppo_calibrated,PPO policy,loss_pct,19.221,5.27308,20
+flood_shelters,ppo_calibrated,PPO policy,mean_latency_ms,98.1645,24.0621,20
+flood_shelters,ppo_calibrated,PPO policy,p95_flow_latency_ms,334.691,77.7972,20
+flood_shelters,ppo_calibrated,PPO policy,mean_user_tput_mbps,0.348965,0.0227797,20
+flood_shelters,ppo_calibrated,PPO policy,min_user_tput_mbps,0.079056,0.048559,20
+flood_shelters,ppo_calibrated,PPO policy,jain_fairness,0.859245,0.0519037,20
+flood_shelters,ppo_calibrated,PPO policy,movement_m,77.6717,14.4703,20
+flood_shelters,ppo_calibrated_30,PPO policy,pdr,0.777572,0.0659757,20
+flood_shelters,ppo_calibrated_30,PPO policy,loss_pct,22.2428,6.59757,20
+flood_shelters,ppo_calibrated_30,PPO policy,mean_latency_ms,66.8326,25.4809,20
+flood_shelters,ppo_calibrated_30,PPO policy,p95_flow_latency_ms,229.145,94.5658,20
+flood_shelters,ppo_calibrated_30,PPO policy,mean_user_tput_mbps,0.335911,0.0285015,20
+flood_shelters,ppo_calibrated_30,PPO policy,min_user_tput_mbps,0.076977,0.0485414,20
+flood_shelters,ppo_calibrated_30,PPO policy,jain_fairness,0.812131,0.07423,20
+flood_shelters,ppo_calibrated_30,PPO policy,movement_m,101.673,22.8601,20
+flood_shelters,greedy_joint,surrogate search,pdr,0.723058,0.0513027,20
+flood_shelters,greedy_joint,surrogate search,loss_pct,27.6942,5.13027,20
+flood_shelters,greedy_joint,surrogate search,mean_latency_ms,128.841,22.3522,20
+flood_shelters,greedy_joint,surrogate search,p95_flow_latency_ms,394.152,56.6669,20
+flood_shelters,greedy_joint,surrogate search,mean_user_tput_mbps,0.312361,0.0221628,20
+flood_shelters,greedy_joint,surrogate search,min_user_tput_mbps,0.0506385,0.0537419,20
+flood_shelters,greedy_joint,surrogate search,jain_fairness,0.78727,0.0509486,20
+flood_shelters,greedy_joint,surrogate search,movement_m,11.4424,3.40125,20
+flood_shelters,coordinate,surrogate search,pdr,0.901145,0.0444623,20
+flood_shelters,coordinate,surrogate search,loss_pct,9.88552,4.44623,20
+flood_shelters,coordinate,surrogate search,mean_latency_ms,45.7249,15.6304,20
+flood_shelters,coordinate,surrogate search,p95_flow_latency_ms,131.787,58.2017,20
+flood_shelters,coordinate,surrogate search,mean_user_tput_mbps,0.389295,0.0192077,20
+flood_shelters,coordinate,surrogate search,min_user_tput_mbps,0.20763,0.0901981,20
+flood_shelters,coordinate,surrogate search,jain_fairness,0.914665,0.0456277,20
+flood_shelters,coordinate,surrogate search,movement_m,60.5275,7.47935,20
+flood_shelters,evolution,surrogate search,pdr,0.933887,0.0367841,20
+flood_shelters,evolution,surrogate search,loss_pct,6.61125,3.67841,20
+flood_shelters,evolution,surrogate search,mean_latency_ms,56.0428,24.9526,20
+flood_shelters,evolution,surrogate search,p95_flow_latency_ms,142.493,67.1649,20
+flood_shelters,evolution,surrogate search,mean_user_tput_mbps,0.403439,0.0158907,20
+flood_shelters,evolution,surrogate search,min_user_tput_mbps,0.284054,0.0775537,20
+flood_shelters,evolution,surrogate search,jain_fairness,0.955109,0.0374365,20
+flood_shelters,evolution,surrogate search,movement_m,102.919,9.24156,20
+flood_shelters,ns3_refine,ns-3 in the loop,pdr,0.941825,0.0400156,20
+flood_shelters,ns3_refine,ns-3 in the loop,loss_pct,5.8175,4.00156,20
+flood_shelters,ns3_refine,ns-3 in the loop,mean_latency_ms,41.651,12.5751,20
+flood_shelters,ns3_refine,ns-3 in the loop,p95_flow_latency_ms,104.863,35.8127,20
+flood_shelters,ns3_refine,ns-3 in the loop,mean_user_tput_mbps,0.406868,0.0172867,20
+flood_shelters,ns3_refine,ns-3 in the loop,min_user_tput_mbps,0.291749,0.0854027,20
+flood_shelters,ns3_refine,ns-3 in the loop,jain_fairness,0.949011,0.0413261,20
+flood_shelters,ns3_refine,ns-3 in the loop,movement_m,66.9475,8.27294,20

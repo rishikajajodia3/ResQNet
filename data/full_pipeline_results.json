@@ -2,95 +2,417 @@
   "pipeline": "ResQNet",
   "scene": "city_damaged.xml",
   "uav_position": {
-    "x": -29.31,
-    "y": 22.64,
-    "z": 25.97
+    "x": 10.0,
+    "y": 10.0,
+    "z": 40.0
   },
   "position_handoff_to_ns3": true,
   "ns3_summary": {
-    "total_flows": 10,
-    "successful_flows": 4,
-    "failed_flows": 6,
-    "average_throughput_mbps": 0.4324875,
-    "average_delay_ms": 1.0902025,
-    "overall_flow_loss_percent": 60.0
+    "total_flows": 30,
+    "successful_flows": 16,
+    "failed_flows": 14,
+    "average_throughput_mbps": 0.43229131249999997,
+    "average_delay_ms": 4.548729375,
+    "overall_flow_loss_percent": 46.666666666666664
   },
   "flows": [
     {
-      "source": "10.1.1.2",
-      "destination": "10.1.1.1",
-      "packets_received": 0,
-      "status": "NO_PACKETS_RECEIVED"
-    },
-    {
-      "source": "10.1.1.3",
-      "destination": "10.1.1.1",
-      "packets_received": 0,
-      "status": "NO_PACKETS_RECEIVED"
-    },
-    {
-      "source": "10.1.1.4",
-      "destination": "10.1.1.1",
+      "source": "10.1.1.6",
+      "destination": "10.1.1.3",
       "packets_sent": 800,
       "packets_received": 800,
-      "throughput_mbps": 0.432456,
-      "average_delay_ms": 1.08093,
+      "throughput_mbps": 0.432426,
+      "average_delay_ms": 3.07488,
       "packet_loss_percent": 0.0,
-      "status": "OK"
-    },
-    {
-      "source": "10.1.1.5",
-      "destination": "10.1.1.1",
-      "packets_received": 0,
-      "status": "NO_PACKETS_RECEIVED"
-    },
-    {
-      "source": "10.1.1.6",
-      "destination": "10.1.1.1",
-      "packets_received": 0,
-      "status": "NO_PACKETS_RECEIVED"
+      "status": "OK",
+      "uav_index": 2
     },
     {
       "source": "10.1.1.7",
       "destination": "10.1.1.1",
-      "packets_sent": 800,
-      "packets_received": 800,
-      "throughput_mbps": 0.432474,
-      "average_delay_ms": 1.09131,
-      "packet_loss_percent": 0.0,
-      "status": "OK"
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 0
     },
     {
       "source": "10.1.1.8",
-      "destination": "10.1.1.1",
-      "packets_sent": 800,
-      "packets_received": 800,
-      "throughput_mbps": 0.43252,
-      "average_delay_ms": 1.06786,
-      "packet_loss_percent": 0.0,
-      "status": "OK"
+      "destination": "10.1.1.5",
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 4
     },
     {
       "source": "10.1.1.9",
-      "destination": "10.1.1.1",
+      "destination": "10.1.1.5",
       "packets_received": 0,
-      "status": "NO_PACKETS_RECEIVED"
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 4
     },
     {
       "source": "10.1.1.10",
-      "destination": "10.1.1.1",
-      "packets_received": 0,
-      "status": "NO_PACKETS_RECEIVED"
+      "destination": "10.1.1.4",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432296,
+      "average_delay_ms": 4.35088,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 3
     },
     {
       "source": "10.1.1.11",
+      "destination": "10.1.1.5",
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 4
+    },
+    {
+      "source": "10.1.1.12",
+      "destination": "10.1.1.5",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432178,
+      "average_delay_ms": 4.04922,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 4
+    },
+    {
+      "source": "10.1.1.13",
+      "destination": "10.1.1.3",
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 2
+    },
+    {
+      "source": "10.1.1.14",
+      "destination": "10.1.1.4",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432394,
+      "average_delay_ms": 4.2655,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 3
+    },
+    {
+      "source": "10.1.1.15",
       "destination": "10.1.1.1",
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 0
+    },
+    {
+      "source": "10.1.1.16",
+      "destination": "10.1.1.2",
       "packets_sent": 800,
       "packets_received": 800,
       "throughput_mbps": 0.4325,
-      "average_delay_ms": 1.12071,
+      "average_delay_ms": 2.86799,
       "packet_loss_percent": 0.0,
-      "status": "OK"
+      "status": "OK",
+      "uav_index": 1
+    },
+    {
+      "source": "10.1.1.17",
+      "destination": "10.1.1.3",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432102,
+      "average_delay_ms": 7.36358,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 2
+    },
+    {
+      "source": "10.1.1.18",
+      "destination": "10.1.1.3",
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 2
+    },
+    {
+      "source": "10.1.1.19",
+      "destination": "10.1.1.5",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432255,
+      "average_delay_ms": 5.02035,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 4
+    },
+    {
+      "source": "10.1.1.20",
+      "destination": "10.1.1.1",
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 0
+    },
+    {
+      "source": "10.1.1.21",
+      "destination": "10.1.1.2",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432212,
+      "average_delay_ms": 9.86263,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 1
+    },
+    {
+      "source": "10.1.1.22",
+      "destination": "10.1.1.1",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432443,
+      "average_delay_ms": 4.48936,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 0
+    },
+    {
+      "source": "10.1.1.23",
+      "destination": "10.1.1.4",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432191,
+      "average_delay_ms": 4.87437,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 3
+    },
+    {
+      "source": "10.1.1.24",
+      "destination": "10.1.1.3",
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 2
+    },
+    {
+      "source": "10.1.1.25",
+      "destination": "10.1.1.5",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432289,
+      "average_delay_ms": 2.56682,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 4
+    },
+    {
+      "source": "10.1.1.26",
+      "destination": "10.1.1.5",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432356,
+      "average_delay_ms": 3.3967,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 4
+    },
+    {
+      "source": "10.1.1.27",
+      "destination": "10.1.1.5",
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 4
+    },
+    {
+      "source": "10.1.1.28",
+      "destination": "10.1.1.3",
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 2
+    },
+    {
+      "source": "10.1.1.29",
+      "destination": "10.1.1.3",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432235,
+      "average_delay_ms": 2.60824,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 2
+    },
+    {
+      "source": "10.1.1.30",
+      "destination": "10.1.1.3",
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 2
+    },
+    {
+      "source": "10.1.1.31",
+      "destination": "10.1.1.2",
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 1
+    },
+    {
+      "source": "10.1.1.32",
+      "destination": "10.1.1.1",
+      "packets_received": 0,
+      "status": "NO_PACKETS_RECEIVED",
+      "uav_index": 0
+    },
+    {
+      "source": "10.1.1.33",
+      "destination": "10.1.1.4",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432164,
+      "average_delay_ms": 5.7714,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 3
+    },
+    {
+      "source": "10.1.1.34",
+      "destination": "10.1.1.4",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432277,
+      "average_delay_ms": 5.36609,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 3
+    },
+    {
+      "source": "10.1.1.35",
+      "destination": "10.1.1.5",
+      "packets_sent": 800,
+      "packets_received": 800,
+      "throughput_mbps": 0.432343,
+      "average_delay_ms": 2.85166,
+      "packet_loss_percent": 0.0,
+      "status": "OK",
+      "uav_index": 4
+    }
+  ],
+  "num_uavs": 5,
+  "uav_positions": [
+    {
+      "x": 10.0,
+      "y": 10.0,
+      "z": 40.0
+    },
+    {
+      "x": -41.0,
+      "y": 11.0,
+      "z": 40.0
+    },
+    {
+      "x": 111.0,
+      "y": 61.0,
+      "z": 40.0
+    },
+    {
+      "x": -91.0,
+      "y": -41.0,
+      "z": 40.0
+    },
+    {
+      "x": 61.0,
+      "y": -91.0,
+      "z": 40.0
+    }
+  ],
+  "associations": [
+    2,
+    0,
+    4,
+    4,
+    3,
+    4,
+    4,
+    2,
+    3,
+    0,
+    1,
+    2,
+    2,
+    4,
+    0,
+    1,
+    0,
+    3,
+    2,
+    4,
+    4,
+    4,
+    2,
+    2,
+    2,
+    1,
+    0,
+    3,
+    3,
+    4
+  ],
+  "interference_model": "co_channel",
+  "scenario": "wide_area",
+  "per_uav": [
+    {
+      "uav_index": 0,
+      "position": {
+        "x": 10.0,
+        "y": 10.0,
+        "z": 40.0
+      },
+      "flows": 5,
+      "delivering_flows": 1,
+      "avg_throughput_mbps": 0.432443,
+      "avg_delay_ms": 4.48936
+    },
+    {
+      "uav_index": 1,
+      "position": {
+        "x": -41.0,
+        "y": 11.0,
+        "z": 40.0
+      },
+      "flows": 3,
+      "delivering_flows": 2,
+      "avg_throughput_mbps": 0.43235599999999996,
+      "avg_delay_ms": 6.365309999999999
+    },
+    {
+      "uav_index": 2,
+      "position": {
+        "x": 111.0,
+        "y": 61.0,
+        "z": 40.0
+      },
+      "flows": 8,
+      "delivering_flows": 3,
+      "avg_throughput_mbps": 0.4322543333333333,
+      "avg_delay_ms": 4.3488999999999995
+    },
+    {
+      "uav_index": 3,
+      "position": {
+        "x": -91.0,
+        "y": -41.0,
+        "z": 40.0
+      },
+      "flows": 5,
+      "delivering_flows": 5,
+      "avg_throughput_mbps": 0.43226440000000005,
+      "avg_delay_ms": 4.925648
+    },
+    {
+      "uav_index": 4,
+      "position": {
+        "x": 61.0,
+        "y": -91.0,
+        "z": 40.0
+      },
+      "flows": 9,
+      "delivering_flows": 5,
+      "avg_throughput_mbps": 0.43228419999999995,
+      "avg_delay_ms": 3.57695
     }
   ]
 }

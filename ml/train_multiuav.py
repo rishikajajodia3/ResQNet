@@ -70,6 +70,7 @@ class CsvLogger:
         self._ep_len += 1
         if done:
             ev = info.get("eval", {}).get("aggregate", {})
+            net = info.get("network", {})
             self.rows.append({
                 "episode": len(self.rows) + 1,
                 "scenario": info.get("scenario", info.get("eval", {}).get("scene_name", "")),
@@ -81,6 +82,10 @@ class CsvLogger:
                 "connected_pct": ev.get("connected_users_percentage", ""),
                 "mean_best_rss_dbm": ev.get("mean_best_rss_dbm", ""),
                 "mean_best_sinr_db": ev.get("mean_best_sinr_db", ""),
+                "net_connected_pct": round(100 * net["net_connected_fraction"], 2) if net else "",
+                "predicted_pdr": round(net["predicted_pdr"], 4) if net else "",
+                "calibrated_pdr": round(info["calibrated"]["calibrated_pdr"], 4)
+                if info.get("calibrated") else "",
             })
             self._ep_reward = 0.0
             self._ep_len = 0
@@ -124,8 +129,14 @@ def main() -> None:
 
     cfg = json.loads(Path(args.config).read_text())
     scenarios.assert_train_eval_disjoint()
+    scenarios.register_scenarios(cfg.get("extra_train_scenarios", {}))
     base_seed = int(cfg.get("seed", 42))
     tr = cfg["train"]
+    held_out = cfg.get("eval", {}).get("scenarios", scenarios.eval_scenarios())
+    overlap = set(tr["scenarios"]) & set(held_out)
+    if overlap:
+        raise AssertionError(f"train / eval scenarios overlap: {overlap}")
+    reward_mode = tr.get("reward_mode", "legacy")
     model_dir = _ROOT / cfg.get("model_dir", "models/ppo_multiuav")
     model_dir.mkdir(parents=True, exist_ok=True)
 
@@ -143,6 +154,8 @@ def main() -> None:
             seed=base_seed,
             max_steps=int(tr.get("max_steps_per_episode", 12)),
             sampler=sampler,
+            reward_mode=reward_mode,
+            random_start_prob=float(tr.get("random_start_prob", 0.0)),
         )
         return LoggingEnv(base, logger)
 
@@ -155,7 +168,8 @@ def main() -> None:
     print("MULTI-UAV PPO TRAINING (surrogate / free-space RF model)")
     print("=" * 66)
     print(f"train scenarios : {tr['scenarios']}")
-    print(f"held-out (eval) : {scenarios.eval_scenarios()}")
+    print(f"held-out (eval) : {held_out}")
+    print(f"reward mode     : {reward_mode}")
     print(f"user counts     : {tr['user_counts']}   num_uavs: {tr['num_uavs']}")
     print(f"episode combos  : {len(combos)}   total_timesteps: {total_timesteps}")
     print()
@@ -177,7 +191,9 @@ def main() -> None:
     (model_dir / "train_config.json").write_text(json.dumps({
         "base_seed": base_seed,
         "train": tr,
-        "eval_scenarios_held_out": scenarios.eval_scenarios(),
+        "extra_train_scenarios": cfg.get("extra_train_scenarios", {}),
+        "reward_mode": reward_mode,
+        "eval_scenarios_held_out": held_out,
         "total_timesteps": total_timesteps,
         "smoke": args.smoke,
         "rf_model": "surrogate/free_space",

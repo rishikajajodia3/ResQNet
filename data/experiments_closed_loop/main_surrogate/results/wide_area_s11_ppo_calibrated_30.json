@@ -1,0 +1,68 @@
+{
+ "scenario": "wide_area",
+ "seed": 11,
+ "method": "ppo_calibrated_30",
+ "delivering_users": 22.0,
+ "users_pdr_ge_90": 22,
+ "pdr": 0.732375,
+ "loss_pct": 26.7625,
+ "mean_user_tput_mbps": 0.316386,
+ "min_user_tput_mbps": 0.0,
+ "jain_fairness": 0.7333266516427135,
+ "mean_latency_ms": 13.580322536685312,
+ "p95_flow_latency_ms": 32.641135000000006,
+ "per_user_pdr": [
+  1.0,
+  0.0,
+  0.9888,
+  1.0,
+  0.9994,
+  1.0,
+  1.0,
+  1.0,
+  0.0,
+  1.0,
+  0.99,
+  0.0,
+  1.0,
+  0.9981,
+  1.0,
+  0.0,
+  0.9994,
+  0.0,
+  1.0,
+  0.9981,
+  1.0,
+  1.0,
+  0.0,
+  0.0,
+  0.9988,
+  0.0,
+  1.0,
+  1.0,
+  0.9988,
+  1.0
+ ],
+ "calibrated_pdr": 0.6591581355585323,
+ "uav_positions": [
+  [
+   -90.0,
+   161.0,
+   40.0
+  ],
+  [
+   -150.0,
+   -81.0,
+   40.0
+  ],
+  [
+   180.0,
+   -81.0,
+   40.0
+  ]
+ ],
+ "movement_m": 127.69062874428614,
+ "surrogate_evals": 30,
+ "ns3_search_runs": 0,
+ "ns3_refine_history": null
+}

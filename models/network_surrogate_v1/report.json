@@ -1,0 +1,71 @@
+{
+  "features": [
+    "snr_db",
+    "own_airtime",
+    "hidden_load",
+    "hidden_unusable",
+    "sensed_load",
+    "uav_load",
+    "num_users"
+  ],
+  "monotone": [
+    1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    0
+  ],
+  "train_scenarios": [
+    "open_area",
+    "dense_urban",
+    "clustered_survivors",
+    "sparse_clusters",
+    "wide_edge"
+  ],
+  "validation_scenarios": [
+    "wide_area",
+    "blocked_urban",
+    "flood_shelters"
+  ],
+  "train_placements": 280,
+  "train_user_rows": 7820,
+  "in_distribution_holdout": {
+    "n_placements": 56,
+    "true_mean_pdr": 0.804779761904762,
+    "calibrated": {
+      "mae": 0.02927218066276836,
+      "spearman": 0.9378241075859665,
+      "pearson": 0.9768412433202044
+    },
+    "per_user_mae_calibrated": 0.07222852953451062
+  },
+  "held_out_scenarios": {
+    "n_placements": 60,
+    "true_mean_pdr": 0.8214725694444444,
+    "calibrated": {
+      "mae": 0.02087286224908863,
+      "spearman": 0.9372947993520646,
+      "pearson": 0.9868478537989575
+    },
+    "per_user_mae_calibrated": 0.05608104943534437,
+    "old_airtime_model": {
+      "mae": 0.04823380263672834,
+      "spearman": 0.9230819605453221,
+      "pearson": 0.9079975086336943
+    },
+    "all_users_usable_subset": {
+      "n_placements": 32,
+      "calibrated_spearman": 0.5913414852961822,
+      "calibrated_mae": 0.013007389357112258,
+      "old_airtime_spearman": 0.7613388247181492,
+      "old_airtime_mae": 0.02733467641388321
+    }
+  },
+  "unusable_rule_check": {
+    "unusable_users": 686,
+    "unusable_users_with_delivery": 0
+  },
+  "wall_time_sec": 2403.0
+}

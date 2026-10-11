@@ -1,0 +1,11 @@
+{
+ "stage": "complete",
+ "updated_at": "2026-10-11T09:33:34Z",
+ "elapsed_s": 9237.9,
+ "runner": {
+  "cached": 1490,
+  "simulated": 1208,
+  "low_mem_waits": 0,
+  "min_mem_available_mb": 11026.49609375
+ }
+}

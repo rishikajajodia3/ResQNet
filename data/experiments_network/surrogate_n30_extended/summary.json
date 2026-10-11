@@ -1,0 +1,2331 @@
+{
+ "meta": {
+  "label": "surrogate_n30_extended",
+  "rf_mode": "surrogate",
+  "num_users": 30,
+  "num_uavs": 3,
+  "steps": 12,
+  "num_seeds": 20,
+  "scenarios": [
+   "blocked_urban",
+   "wide_area"
+  ],
+  "models": {
+   "ppo_legacy": "/home/rishika/ResQNet/models/ppo_multiuav/model.zip",
+   "ppo_network": "/home/rishika/ResQNet/models/ppo_multiuav_net/model.zip"
+  },
+  "placements": [
+   "fixed",
+   "random",
+   "ppo_legacy",
+   "ppo_network",
+   "greedy_oracle",
+   "ppo_network_from_random",
+   "ppo_legacy_from_random"
+  ],
+  "generated_at": "2026-10-10T17:07:43Z",
+  "wall_time_sec": 4433.4
+ },
+ "summary": {
+  "blocked_urban": {
+   "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+   ],
+   "placements": {
+    "fixed": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.9994124999999998,
+      "sd": 0.00022250073920634223,
+      "ci95": 0.00010413355138764961,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.4317462000000001,
+      "sd": 9.61203193371396e-05,
+      "ci95": 4.498569419946451e-05,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.42876000000000003,
+      "sd": 0.002102389617854683,
+      "ci95": 0.000983948629063661,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 11.018789385677604,
+      "sd": 0.5539558136896928,
+      "ci95": 0.2592593013268452,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.8999999999999998,
+      "sd": 1.1390647892519134e-16,
+      "ci95": 5.330987312155652e-17,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7716141161415043,
+      "sd": 0.015625372954713043,
+      "ci95": 0.007312899648489891,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     }
+    },
+    "random": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 29.95,
+      "sd": 0.22360679774997894,
+      "ci95": 0.10465120272041542,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.9979020833333333,
+      "sd": 0.006800685205308068,
+      "ci95": 0.003182818649610985,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.4310937000000001,
+      "sd": 0.002937896008693078,
+      "ci95": 0.001374977656631942,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.40932,
+      "sd": 0.08746877120916988,
+      "ci95": 0.040936645037739396,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 11.315295954979458,
+      "sd": 2.469165649074998,
+      "ci95": 1.155605095604291,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.8950451037723841,
+      "sd": 0.006721420187817115,
+      "ci95": 0.0031457214795000917,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7456624709934925,
+      "sd": 0.02852662948187163,
+      "ci95": 0.01335087356411913,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     }
+    },
+    "ppo_legacy": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 29.95,
+      "sd": 0.22360679774997894,
+      "ci95": 0.10465120272041542,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.9978812499999998,
+      "sd": 0.006743692566920195,
+      "ci95": 0.0031561452737855792,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.4310847000000001,
+      "sd": 0.002913275188909511,
+      "ci95": 0.0013634547582753642,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.40891500000000003,
+      "sd": 0.08776320386489762,
+      "ci95": 0.04107444376234046,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 10.921755862362904,
+      "sd": 0.6964609215882887,
+      "ci95": 0.3259537448118131,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.8999876769230767,
+      "sd": 5.511047538391572e-05,
+      "ci95": 2.5792496424322906e-05,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7825455980251081,
+      "sd": 0.005901073701357782,
+      "ci95": 0.002761787505581161,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 5.647724919562113,
+      "sd": 6.499780476221735,
+      "ci95": 3.041990901438698,
+      "n": 20
+     }
+    },
+    "ppo_network": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.9994124999999998,
+      "sd": 0.00022250073920634223,
+      "ci95": 0.00010413355138764961,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.4317462000000001,
+      "sd": 9.61203193371396e-05,
+      "ci95": 4.498569419946451e-05,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.42876000000000003,
+      "sd": 0.002102389617854683,
+      "ci95": 0.000983948629063661,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 11.018789385677604,
+      "sd": 0.5539558136896928,
+      "ci95": 0.2592593013268452,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.8999999999999998,
+      "sd": 1.1390647892519134e-16,
+      "ci95": 5.330987312155652e-17,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7716141161415043,
+      "sd": 0.015625372954713043,
+      "ci95": 0.007312899648489891,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     }
+    },
+    "greedy_oracle": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.9994124999999998,
+      "sd": 0.00022250073920634223,
+      "ci95": 0.00010413355138764961,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.4317462000000001,
+      "sd": 9.61203193371396e-05,
+      "ci95": 4.498569419946451e-05,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.42876000000000003,
+      "sd": 0.002102389617854683,
+      "ci95": 0.000983948629063661,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 11.018789385677604,
+      "sd": 0.5539558136896928,
+      "ci95": 0.2592593013268452,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.8999999999999998,
+      "sd": 1.1390647892519134e-16,
+      "ci95": 5.330987312155652e-17,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7716141161415043,
+      "sd": 0.015625372954713043,
+      "ci95": 0.007312899648489891,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     }
+    },
+    "ppo_network_from_random": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 29.95,
+      "sd": 0.22360679774997894,
+      "ci95": 0.10465120272041542,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.9979770833333333,
+      "sd": 0.006804462370429048,
+      "ci95": 0.0031845864173030303,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.4311261,
+      "sd": 0.0029395277440253417,
+      "ci95": 0.0013757413322749057,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.409671,
+      "sd": 0.0875459882696247,
+      "ci95": 0.040972783734453656,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 11.31226902741047,
+      "sd": 2.3842043387131704,
+      "ci95": 1.1158419783666416,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.8954896725362398,
+      "sd": 0.006302062515612322,
+      "ci95": 0.0029494560474655263,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7503884546599359,
+      "sd": 0.025084607785835152,
+      "ci95": 0.011739957823164133,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 5.04756388096434,
+      "sd": 5.626783172156442,
+      "ci95": 2.63341558637039,
+      "n": 20
+     }
+    },
+    "ppo_legacy_from_random": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 29.95,
+      "sd": 0.22360679774997894,
+      "ci95": 0.10465120272041542,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.9979145833333334,
+      "sd": 0.006731448882448521,
+      "ci95": 0.003150415053065176,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.43109910000000007,
+      "sd": 0.002907985917217763,
+      "ci95": 0.0013609793029241571,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.40869900000000003,
+      "sd": 0.08796083206686221,
+      "ci95": 0.041166936607974755,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 11.416217622456932,
+      "sd": 2.2031710008406695,
+      "ci95": 1.0311157682000263,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.8946447146343495,
+      "sd": 0.00653791076466326,
+      "ci95": 0.0030598364257502786,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7568294622419339,
+      "sd": 0.023866183237829422,
+      "ci95": 0.011169717581561772,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 16.27238910318797,
+      "sd": 17.196544167741113,
+      "ci95": 8.048230411139288,
+      "n": 20
+     }
+    }
+   },
+   "paired": {
+    "ppo_network_vs_fixed": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_delivering_users": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_pdr": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "reward_network": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "reward_legacy": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "movement_m": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     }
+    },
+    "ppo_network_vs_random": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_delivering_users": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": 0.05,
+      "wins": 1,
+      "ties": 19,
+      "losses": 0,
+      "wilcoxon_p": 0.6766573217164245
+     },
+     "ns3_pdr": {
+      "mean_diff": 0.0015104166666666697,
+      "wins": 10,
+      "ties": 2,
+      "losses": 8,
+      "wilcoxon_p": 0.9850851842842371
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": 0.0006525000000000003,
+      "wins": 10,
+      "ties": 2,
+      "losses": 8,
+      "wilcoxon_p": 0.9851046895658867
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": 0.019440000000000006,
+      "wins": 9,
+      "ties": 2,
+      "losses": 9,
+      "wilcoxon_p": 0.940387617453219
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": -0.2965065693018535,
+      "wins": 11,
+      "ties": 0,
+      "losses": 9,
+      "wilcoxon_p": 0.7561664581298828
+     },
+     "reward_network": {
+      "mean_diff": 0.00495489622761564,
+      "wins": 15,
+      "ties": 5,
+      "losses": 0,
+      "wilcoxon_p": 0.00026605033692308485
+     },
+     "reward_legacy": {
+      "mean_diff": 0.02595164514801173,
+      "wins": 17,
+      "ties": 0,
+      "losses": 3,
+      "wilcoxon_p": 0.0042209625244140625
+     },
+     "movement_m": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     }
+    },
+    "ppo_network_vs_ppo_legacy": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_delivering_users": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": 0.05,
+      "wins": 1,
+      "ties": 19,
+      "losses": 0,
+      "wilcoxon_p": 0.6766573217164245
+     },
+     "ns3_pdr": {
+      "mean_diff": 0.0015312500000000061,
+      "wins": 5,
+      "ties": 11,
+      "losses": 4,
+      "wilcoxon_p": 0.7034306971787817
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": 0.0006614999999999982,
+      "wins": 5,
+      "ties": 11,
+      "losses": 4,
+      "wilcoxon_p": 0.7318812357199489
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": 0.019845,
+      "wins": 5,
+      "ties": 11,
+      "losses": 4,
+      "wilcoxon_p": 0.6203527772615554
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": 0.09703352331470008,
+      "wins": 7,
+      "ties": 9,
+      "losses": 4,
+      "wilcoxon_p": 0.33600293308320117
+     },
+     "reward_network": {
+      "mean_diff": 1.2323076923076436e-05,
+      "wins": 1,
+      "ties": 19,
+      "losses": 0,
+      "wilcoxon_p": 0.6766573217164245
+     },
+     "reward_legacy": {
+      "mean_diff": -0.010931481883603943,
+      "wins": 1,
+      "ties": 9,
+      "losses": 10,
+      "wilcoxon_p": 0.006231166848728302
+     },
+     "movement_m": {
+      "mean_diff": -5.647724919562113,
+      "wins": 0,
+      "ties": 9,
+      "losses": 11,
+      "wilcoxon_p": 0.0018437163931686125
+     }
+    },
+    "greedy_oracle_vs_fixed": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_delivering_users": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_pdr": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "reward_network": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "reward_legacy": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "movement_m": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     }
+    },
+    "ppo_network_vs_greedy_oracle": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_delivering_users": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_pdr": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "reward_network": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "reward_legacy": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "movement_m": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     }
+    },
+    "ppo_network_from_random_vs_random": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_delivering_users": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_pdr": {
+      "mean_diff": 7.499999999998618e-05,
+      "wins": 6,
+      "ties": 9,
+      "losses": 5,
+      "wilcoxon_p": 0.6780457962546853
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": 3.2399999999999093e-05,
+      "wins": 6,
+      "ties": 9,
+      "losses": 5,
+      "wilcoxon_p": 0.6780998828889723
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": 0.0003510000000000041,
+      "wins": 6,
+      "ties": 10,
+      "losses": 4,
+      "wilcoxon_p": 0.4260718655131549
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": -0.0030269275689902564,
+      "wins": 4,
+      "ties": 9,
+      "losses": 7,
+      "wilcoxon_p": 0.4851840876338681
+     },
+     "reward_network": {
+      "mean_diff": 0.00044456876385531863,
+      "wins": 7,
+      "ties": 10,
+      "losses": 3,
+      "wilcoxon_p": 0.24793751467603786
+     },
+     "reward_legacy": {
+      "mean_diff": 0.004725983666443223,
+      "wins": 5,
+      "ties": 9,
+      "losses": 6,
+      "wilcoxon_p": 0.8356113991472724
+     },
+     "movement_m": {
+      "mean_diff": 5.04756388096434,
+      "wins": 11,
+      "ties": 9,
+      "losses": 0,
+      "wilcoxon_p": 0.0018437163931686125
+     }
+    },
+    "ppo_legacy_from_random_vs_random": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_delivering_users": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": 0.0,
+      "wins": 1,
+      "ties": 18,
+      "losses": 1,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_pdr": {
+      "mean_diff": 1.2500000000009726e-05,
+      "wins": 5,
+      "ties": 9,
+      "losses": 6,
+      "wilcoxon_p": 0.8062541987254472
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": 5.400000000008176e-06,
+      "wins": 5,
+      "ties": 9,
+      "losses": 6,
+      "wilcoxon_p": 0.9400414687096625
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": -0.000620999999999991,
+      "wins": 5,
+      "ties": 10,
+      "losses": 5,
+      "wilcoxon_p": 0.834944195856638
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": 0.10092166747747475,
+      "wins": 6,
+      "ties": 8,
+      "losses": 6,
+      "wilcoxon_p": 0.7923485732126319
+     },
+     "reward_network": {
+      "mean_diff": -0.000400389138034607,
+      "wins": 6,
+      "ties": 9,
+      "losses": 5,
+      "wilcoxon_p": 0.9849491459875288
+     },
+     "reward_legacy": {
+      "mean_diff": 0.011166991248441371,
+      "wins": 10,
+      "ties": 8,
+      "losses": 2,
+      "wilcoxon_p": 0.024037318353200936
+     },
+     "movement_m": {
+      "mean_diff": 16.27238910318797,
+      "wins": 12,
+      "ties": 8,
+      "losses": 0,
+      "wilcoxon_p": 0.0010669101957786191
+     }
+    }
+   },
+   "model_vs_ns3_user_agreement": 1.0,
+   "model_vs_ns3_pdr_spearman": null
+  },
+  "wide_area": {
+   "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+   ],
+   "placements": {
+    "fixed": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 27.8,
+      "sd": 1.2396943596157717,
+      "ci95": 0.5801948198576978,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 27.75,
+      "sd": 1.2513150976809202,
+      "ci95": 0.5856334926854196,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 18.55,
+      "sd": 1.5719582155957417,
+      "ci95": 0.7356990911889572,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.7456979166666666,
+      "sd": 0.04936166704096272,
+      "ci95": 0.023101971300073878,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.32214149999999997,
+      "sd": 0.021324240161695894,
+      "ci95": 0.009980051601631915,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 115.23604195442628,
+      "sd": 14.307591128052062,
+      "ci95": 6.696158769094195,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.8061539230769231,
+      "sd": 0.03728941756635904,
+      "ci95": 0.017451984628064052,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.759048207847081,
+      "sd": 0.015708624459886387,
+      "ci95": 0.007351862552267158,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     }
+    },
+    "random": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 23.7,
+      "sd": 4.543358368339206,
+      "ci95": 2.126357169911248,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 23.7,
+      "sd": 4.543358368339206,
+      "ci95": 2.126357169911248,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 18.15,
+      "sd": 4.614336925621914,
+      "ci95": 2.159576157266457,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.6822729166666666,
+      "sd": 0.1439113621894217,
+      "ci95": 0.06735259075216427,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.29474190000000006,
+      "sd": 0.06216970846583018,
+      "ci95": 0.029096319204934964,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 92.30072188891066,
+      "sd": 41.721970811518545,
+      "ci95": 19.526483404022063,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.6834449177710495,
+      "sd": 0.13109732952114223,
+      "ci95": 0.06135543885907399,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7438000936283437,
+      "sd": 0.023768328203737265,
+      "ci95": 0.01112392001586593,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     }
+    },
+    "ppo_legacy": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 27.75,
+      "sd": 1.2513150976809202,
+      "ci95": 0.5856334926854196,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 27.7,
+      "sd": 1.260743306232687,
+      "ci95": 0.590046030114378,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 19.5,
+      "sd": 2.115108557622118,
+      "ci95": 0.9899012761092079,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.7485583333333334,
+      "sd": 0.054404557571061295,
+      "ci95": 0.0254621167181586,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.32337720000000003,
+      "sd": 0.023502768870698496,
+      "ci95": 0.010999634422244522,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 110.75243348277692,
+      "sd": 16.701625492892298,
+      "ci95": 7.8166013413037865,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.8055455076923078,
+      "sd": 0.03766485307990857,
+      "ci95": 0.01762769385708689,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7687869273944192,
+      "sd": 0.005731482665837757,
+      "ci95": 0.0026824164577581165,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 12.550858020603854,
+      "sd": 16.444960965322448,
+      "ci95": 7.6964786447841345,
+      "n": 20
+     }
+    },
+    "ppo_network": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 27.8,
+      "sd": 1.3611140947574412,
+      "ci95": 0.6370210051276901,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 27.75,
+      "sd": 1.3717065820970682,
+      "ci95": 0.6419784418024561,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 18.5,
+      "sd": 1.6383560438182505,
+      "ci95": 0.7667742313520864,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.7497187500000001,
+      "sd": 0.04577683095202456,
+      "ci95": 0.02142421636579678,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.3238785,
+      "sd": 0.019775590971274612,
+      "ci95": 0.00925526147002421,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 114.8698135783255,
+      "sd": 16.35496187280908,
+      "ci95": 7.654357772923159,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.8064136358974359,
+      "sd": 0.04017785969398111,
+      "ci95": 0.018803817155901386,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7590883331795111,
+      "sd": 0.015128067252697622,
+      "ci95": 0.007080153415551902,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 1.1666666666666667,
+      "sd": 3.631409437522018,
+      "ci95": 1.6995519323695614,
+      "n": 20
+     }
+    },
+    "greedy_oracle": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 28.6,
+      "sd": 1.046296727561194,
+      "ci95": 0.4896819418886566,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 28.5,
+      "sd": 1.0513149660756937,
+      "ci95": 0.49203054980829375,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 19.15,
+      "sd": 2.0589982234597786,
+      "ci95": 0.9636408313721972,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.7567375000000001,
+      "sd": 0.05555609043967654,
+      "ci95": 0.026001050690136588,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.3269106,
+      "sd": 0.02400023106994028,
+      "ci95": 0.011232453898139013,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.00045900000000000004,
+      "sd": 0.0015401090186976,
+      "ci95": 0.0007207932082077222,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 113.16009553014635,
+      "sd": 16.57649317214825,
+      "ci95": 7.758037612486814,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.8283577846153847,
+      "sd": 0.03201651147046892,
+      "ci95": 0.01498418861148806,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7589879257251015,
+      "sd": 0.01452633321319485,
+      "ci95": 0.006798533216231352,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 2.666666666666667,
+      "sd": 2.3195079131281977,
+      "ci95": 1.085563119149,
+      "n": 20
+     }
+    },
+    "ppo_network_from_random": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 26.0,
+      "sd": 2.5546654946340204,
+      "ci95": 1.1956202550725916,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 26.0,
+      "sd": 2.5546654946340204,
+      "ci95": 1.1956202550725916,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 18.8,
+      "sd": 4.047091223140523,
+      "ci95": 1.8940969965253784,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.7309791666666665,
+      "sd": 0.10422780355017915,
+      "ci95": 0.048780113610989086,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.31578300000000004,
+      "sd": 0.0450264111336774,
+      "ci95": 0.02107300907994729,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 109.03455620436276,
+      "sd": 38.85216340176967,
+      "ci95": 18.18337219260896,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.7503346879380781,
+      "sd": 0.07444564083476803,
+      "ci95": 0.03484163240583449,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7520217700970819,
+      "sd": 0.020554045854091506,
+      "ci95": 0.009619589569930446,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 47.67892726418804,
+      "sd": 35.673318496318004,
+      "ci95": 16.69562698108301,
+      "n": 20
+     }
+    },
+    "ppo_legacy_from_random": {
+     "rf_coverage_pct": {
+      "mean": 100.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "rf_connected": {
+      "mean": 30.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "net_usable": {
+      "mean": 23.35,
+      "sd": 4.498830257323622,
+      "ci95": 2.105517372465289,
+      "n": 20
+     },
+     "ns3_delivering_users": {
+      "mean": 23.35,
+      "sd": 4.498830257323622,
+      "ci95": 2.105517372465289,
+      "n": 20
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean": 17.9,
+      "sd": 4.22897275071805,
+      "ci95": 1.9792201716933233,
+      "n": 20
+     },
+     "ns3_pdr": {
+      "mean": 0.6668916666666668,
+      "sd": 0.13020392897814193,
+      "ci95": 0.06093731453424647,
+      "n": 20
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean": 0.2880972,
+      "sd": 0.05624809731855733,
+      "ci95": 0.026324919878794484,
+      "n": 20
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "ci95": 0.0,
+      "n": 20
+     },
+     "ns3_mean_latency_ms": {
+      "mean": 88.73393143332288,
+      "sd": 38.45234727172461,
+      "ci95": 17.996252483828812,
+      "n": 20
+     },
+     "reward_network": {
+      "mean": 0.6733930664889981,
+      "sd": 0.129312702276872,
+      "ci95": 0.06052020759866604,
+      "n": 20
+     },
+     "reward_legacy": {
+      "mean": 0.7457601009736943,
+      "sd": 0.0287413258696334,
+      "ci95": 0.013451354566597958,
+      "n": 20
+     },
+     "movement_m": {
+      "mean": 26.092314527700996,
+      "sd": 27.2755703097793,
+      "ci95": 12.765359848296143,
+      "n": 20
+     }
+    }
+   },
+   "paired": {
+    "ppo_network_vs_fixed": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": 0.0,
+      "wins": 1,
+      "ties": 18,
+      "losses": 1,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_delivering_users": {
+      "mean_diff": 0.0,
+      "wins": 1,
+      "ties": 18,
+      "losses": 1,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": -0.05,
+      "wins": 1,
+      "ties": 18,
+      "losses": 1,
+      "wilcoxon_p": 0.9836649672612962
+     },
+     "ns3_pdr": {
+      "mean_diff": 0.004020833333333329,
+      "wins": 2,
+      "ties": 18,
+      "losses": 0,
+      "wilcoxon_p": 0.42458041863779383
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": 0.0017369999999999914,
+      "wins": 2,
+      "ties": 18,
+      "losses": 0,
+      "wilcoxon_p": 0.42458041863779383
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": -0.3662283761007664,
+      "wins": 1,
+      "ties": 18,
+      "losses": 1,
+      "wilcoxon_p": 0.9836649672612962
+     },
+     "reward_network": {
+      "mean_diff": 0.00025971282051283074,
+      "wins": 1,
+      "ties": 18,
+      "losses": 1,
+      "wilcoxon_p": 0.9836649672612962
+     },
+     "reward_legacy": {
+      "mean_diff": 4.01253324299411e-05,
+      "wins": 1,
+      "ties": 18,
+      "losses": 1,
+      "wilcoxon_p": 0.9836649672612962
+     },
+     "movement_m": {
+      "mean_diff": 1.1666666666666667,
+      "wins": 2,
+      "ties": 18,
+      "losses": 0,
+      "wilcoxon_p": 0.42458041863779383
+     }
+    },
+    "ppo_network_vs_random": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": 4.1,
+      "wins": 20,
+      "ties": 0,
+      "losses": 0,
+      "wilcoxon_p": 7.94206406944059e-05
+     },
+     "ns3_delivering_users": {
+      "mean_diff": 4.05,
+      "wins": 20,
+      "ties": 0,
+      "losses": 0,
+      "wilcoxon_p": 8.01158765602935e-05
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": 0.35,
+      "wins": 9,
+      "ties": 3,
+      "losses": 8,
+      "wilcoxon_p": 0.7930268256745449
+     },
+     "ns3_pdr": {
+      "mean_diff": 0.06744583333333334,
+      "wins": 13,
+      "ties": 0,
+      "losses": 7,
+      "wilcoxon_p": 0.069580078125
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": 0.029136600000000002,
+      "wins": 13,
+      "ties": 0,
+      "losses": 7,
+      "wilcoxon_p": 0.069580078125
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": 22.569091689414872,
+      "wins": 15,
+      "ties": 0,
+      "losses": 5,
+      "wilcoxon_p": 0.039989471435546875
+     },
+     "reward_network": {
+      "mean_diff": 0.12296871812638643,
+      "wins": 20,
+      "ties": 0,
+      "losses": 0,
+      "wilcoxon_p": 1.9073486328125e-06
+     },
+     "reward_legacy": {
+      "mean_diff": 0.015288239551167376,
+      "wins": 15,
+      "ties": 0,
+      "losses": 5,
+      "wilcoxon_p": 0.03623390197753906
+     },
+     "movement_m": {
+      "mean_diff": 1.1666666666666667,
+      "wins": 2,
+      "ties": 18,
+      "losses": 0,
+      "wilcoxon_p": 0.42458041863779383
+     }
+    },
+    "ppo_network_vs_ppo_legacy": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": 0.05,
+      "wins": 4,
+      "ties": 14,
+      "losses": 2,
+      "wilcoxon_p": 0.5457136561612238
+     },
+     "ns3_delivering_users": {
+      "mean_diff": 0.05,
+      "wins": 4,
+      "ties": 14,
+      "losses": 2,
+      "wilcoxon_p": 0.5457136561612238
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": -1.0,
+      "wins": 4,
+      "ties": 8,
+      "losses": 8,
+      "wilcoxon_p": 0.11350044562733397
+     },
+     "ns3_pdr": {
+      "mean_diff": 0.0011604166666666694,
+      "wins": 6,
+      "ties": 8,
+      "losses": 6,
+      "wilcoxon_p": 0.8214711412736979
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": 0.000501299999999999,
+      "wins": 6,
+      "ties": 8,
+      "losses": 6,
+      "wilcoxon_p": 0.8214711412736979
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": 4.117380095548585,
+      "wins": 8,
+      "ties": 8,
+      "losses": 4,
+      "wilcoxon_p": 0.2592075465395992
+     },
+     "reward_network": {
+      "mean_diff": 0.0008681282051282102,
+      "wins": 7,
+      "ties": 8,
+      "losses": 5,
+      "wilcoxon_p": 0.6790956011231366
+     },
+     "reward_legacy": {
+      "mean_diff": -0.009698594214908212,
+      "wins": 1,
+      "ties": 8,
+      "losses": 11,
+      "wilcoxon_p": 0.0033517238219315766
+     },
+     "movement_m": {
+      "mean_diff": -11.384191353937187,
+      "wins": 1,
+      "ties": 8,
+      "losses": 11,
+      "wilcoxon_p": 0.004511750786595024
+     }
+    },
+    "greedy_oracle_vs_fixed": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": 0.8,
+      "wins": 13,
+      "ties": 7,
+      "losses": 0,
+      "wilcoxon_p": 0.0005284974491239368
+     },
+     "ns3_delivering_users": {
+      "mean_diff": 0.75,
+      "wins": 12,
+      "ties": 8,
+      "losses": 0,
+      "wilcoxon_p": 0.0009381754686793896
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": 0.6,
+      "wins": 8,
+      "ties": 10,
+      "losses": 2,
+      "wilcoxon_p": 0.06566504792570382
+     },
+     "ns3_pdr": {
+      "mean_diff": 0.01103958333333333,
+      "wins": 10,
+      "ties": 7,
+      "losses": 3,
+      "wilcoxon_p": 0.024387600931241843
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": 0.004769099999999996,
+      "wins": 10,
+      "ties": 7,
+      "losses": 3,
+      "wilcoxon_p": 0.024387600931241843
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": 0.00045900000000000004,
+      "wins": 2,
+      "ties": 18,
+      "losses": 0,
+      "wilcoxon_p": 0.42458041863779383
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": -2.075946424279951,
+      "wins": 5,
+      "ties": 7,
+      "losses": 8,
+      "wilcoxon_p": 0.2766094170916621
+     },
+     "reward_network": {
+      "mean_diff": 0.022203861538461538,
+      "wins": 13,
+      "ties": 7,
+      "losses": 0,
+      "wilcoxon_p": 0.0006402427027768719
+     },
+     "reward_legacy": {
+      "mean_diff": -6.0282121979438055e-05,
+      "wins": 9,
+      "ties": 7,
+      "losses": 4,
+      "wilcoxon_p": 0.22993901894124014
+     },
+     "movement_m": {
+      "mean_diff": 2.666666666666667,
+      "wins": 13,
+      "ties": 7,
+      "losses": 0,
+      "wilcoxon_p": 0.0005284974491239368
+     }
+    },
+    "ppo_network_vs_greedy_oracle": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": -0.8,
+      "wins": 1,
+      "ties": 6,
+      "losses": 13,
+      "wilcoxon_p": 0.0016270515092968163
+     },
+     "ns3_delivering_users": {
+      "mean_diff": -0.75,
+      "wins": 1,
+      "ties": 7,
+      "losses": 12,
+      "wilcoxon_p": 0.0027990545289914587
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": -0.65,
+      "wins": 3,
+      "ties": 8,
+      "losses": 9,
+      "wilcoxon_p": 0.07941463499156082
+     },
+     "ns3_pdr": {
+      "mean_diff": -0.0070187500000000016,
+      "wins": 5,
+      "ties": 6,
+      "losses": 9,
+      "wilcoxon_p": 0.19638418862456897
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": -0.003032100000000004,
+      "wins": 5,
+      "ties": 6,
+      "losses": 9,
+      "wilcoxon_p": 0.19638418862456897
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": -0.00045900000000000004,
+      "wins": 0,
+      "ties": 18,
+      "losses": 2,
+      "wilcoxon_p": 0.42458041863779383
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": 1.7097180481791845,
+      "wins": 9,
+      "ties": 6,
+      "losses": 5,
+      "wilcoxon_p": 0.3210288607053401
+     },
+     "reward_network": {
+      "mean_diff": -0.021944148717948708,
+      "wins": 1,
+      "ties": 6,
+      "losses": 13,
+      "wilcoxon_p": 0.003286463454886234
+     },
+     "reward_legacy": {
+      "mean_diff": 0.00010040745440937915,
+      "wins": 4,
+      "ties": 6,
+      "losses": 10,
+      "wilcoxon_p": 0.18372628522839218
+     },
+     "movement_m": {
+      "mean_diff": -1.5,
+      "wins": 2,
+      "ties": 6,
+      "losses": 12,
+      "wilcoxon_p": 0.03172903288743002
+     }
+    },
+    "ppo_network_from_random_vs_random": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": 2.3,
+      "wins": 16,
+      "ties": 3,
+      "losses": 1,
+      "wilcoxon_p": 0.0011633494893396373
+     },
+     "ns3_delivering_users": {
+      "mean_diff": 2.3,
+      "wins": 16,
+      "ties": 3,
+      "losses": 1,
+      "wilcoxon_p": 0.0011633494893396373
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": 0.65,
+      "wins": 10,
+      "ties": 2,
+      "losses": 8,
+      "wilcoxon_p": 0.24437262049664132
+     },
+     "ns3_pdr": {
+      "mean_diff": 0.048706249999999986,
+      "wins": 16,
+      "ties": 1,
+      "losses": 3,
+      "wilcoxon_p": 0.0054144366604542285
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": 0.021041099999999986,
+      "wins": 16,
+      "ties": 1,
+      "losses": 3,
+      "wilcoxon_p": 0.0054144366604542285
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": 16.73383431545212,
+      "wins": 14,
+      "ties": 1,
+      "losses": 5,
+      "wilcoxon_p": 0.02896510115341337
+     },
+     "reward_network": {
+      "mean_diff": 0.0668897701670286,
+      "wins": 17,
+      "ties": 1,
+      "losses": 2,
+      "wilcoxon_p": 0.0012410409283112615
+     },
+     "reward_legacy": {
+      "mean_diff": 0.008221676468738299,
+      "wins": 16,
+      "ties": 1,
+      "losses": 3,
+      "wilcoxon_p": 0.01963283275017219
+     },
+     "movement_m": {
+      "mean_diff": 47.67892726418804,
+      "wins": 19,
+      "ties": 1,
+      "losses": 0,
+      "wilcoxon_p": 9.555744839077428e-05
+     }
+    },
+    "ppo_legacy_from_random_vs_random": {
+     "rf_coverage_pct": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "rf_connected": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "net_usable": {
+      "mean_diff": -0.35,
+      "wins": 5,
+      "ties": 10,
+      "losses": 5,
+      "wilcoxon_p": 0.9546303292444724
+     },
+     "ns3_delivering_users": {
+      "mean_diff": -0.35,
+      "wins": 5,
+      "ties": 10,
+      "losses": 5,
+      "wilcoxon_p": 0.9546303292444724
+     },
+     "ns3_users_pdr_ge_90": {
+      "mean_diff": -0.25,
+      "wins": 5,
+      "ties": 9,
+      "losses": 6,
+      "wilcoxon_p": 0.6635277659910477
+     },
+     "ns3_pdr": {
+      "mean_diff": -0.015381249999999999,
+      "wins": 4,
+      "ties": 8,
+      "losses": 8,
+      "wilcoxon_p": 0.2436649911904012
+     },
+     "ns3_mean_user_throughput_mbps": {
+      "mean_diff": -0.006644700000000015,
+      "wins": 4,
+      "ties": 8,
+      "losses": 8,
+      "wilcoxon_p": 0.2436649911904012
+     },
+     "ns3_min_user_throughput_mbps": {
+      "mean_diff": 0.0,
+      "wins": 0,
+      "ties": 20,
+      "losses": 0,
+      "wilcoxon_p": 1.0
+     },
+     "ns3_mean_latency_ms": {
+      "mean_diff": -3.5667904555877774,
+      "wins": 4,
+      "ties": 8,
+      "losses": 8,
+      "wilcoxon_p": 0.4080131253075232
+     },
+     "reward_network": {
+      "mean_diff": -0.010051851282051294,
+      "wins": 6,
+      "ties": 8,
+      "losses": 6,
+      "wilcoxon_p": 0.9400414687096625
+     },
+     "reward_legacy": {
+      "mean_diff": 0.0019600073453507117,
+      "wins": 6,
+      "ties": 8,
+      "losses": 6,
+      "wilcoxon_p": 0.7923485732126319
+     },
+     "movement_m": {
+      "mean_diff": 26.092314527700996,
+      "wins": 12,
+      "ties": 8,
+      "losses": 0,
+      "wilcoxon_p": 0.0010680024595485693
+     }
+    }
+   },
+   "model_vs_ns3_user_agreement": 0.9988095238095238,
+   "model_vs_ns3_pdr_spearman": 0.5176972245098489
+  }
+ }
+}
