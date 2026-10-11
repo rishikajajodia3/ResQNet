@@ -1,0 +1,68 @@
+{
+ "scenario": "blocked_urban",
+ "seed": 11,
+ "method": "ppo_calibrated_30",
+ "delivering_users": 30.0,
+ "users_pdr_ge_90": 30,
+ "pdr": 0.999625,
+ "loss_pct": 0.03750000000000142,
+ "mean_user_tput_mbps": 0.4318380000000001,
+ "min_user_tput_mbps": 0.42984,
+ "jain_fairness": 0.9999986031211542,
+ "mean_latency_ms": 10.899544327994203,
+ "p95_flow_latency_ms": 15.2390525,
+ "per_user_pdr": [
+  0.9994,
+  1.0,
+  1.0,
+  0.9956,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  0.9988,
+  1.0,
+  1.0,
+  0.995,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0,
+  1.0
+ ],
+ "calibrated_pdr": 1.0,
+ "uav_positions": [
+  [
+   10.0,
+   28.0,
+   30.0
+  ],
+  [
+   -8.0,
+   -8.0,
+   30.0
+  ],
+  [
+   28.0,
+   -8.0,
+   30.0
+  ]
+ ],
+ "movement_m": 0.0,
+ "surrogate_evals": 30,
+ "ns3_search_runs": 0,
+ "ns3_refine_history": null
+}

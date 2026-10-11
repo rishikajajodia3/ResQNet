@@ -1,0 +1,27 @@
+{
+  "_comment": "Multi-UAV PPO training / evaluation configuration. Training scenarios and evaluation scenarios are DISJOINT so the held-out scenarios test generalization. Training uses the surrogate (free-space approximation) RF model for speed; final validation uses real Sionna RT. Surrogate results are never labelled as Sionna.",
+  "seed": 42,
+  "train": {
+    "scenarios": ["open_area", "dense_urban", "clustered_survivors"],
+    "user_counts": [10, 20, 30, 50],
+    "num_uavs": [3],
+    "mode": "surrogate",
+    "max_steps_per_episode": 12,
+    "total_timesteps": 120000
+  },
+  "eval": {
+    "scenarios": ["blocked_urban", "wide_area"],
+    "user_counts": [10, 20, 30, 50],
+    "num_uavs": [3],
+    "surrogate_episodes_per_combo": 20,
+    "sionna_validation": {
+      "enabled": true,
+      "scenarios": ["blocked_urban", "wide_area"],
+      "user_counts": [30],
+      "num_uavs": [3],
+      "episodes_per_combo": 3,
+      "max_steps_per_episode": 10
+    }
+  },
+  "model_dir": "models/ppo_multiuav"
+}

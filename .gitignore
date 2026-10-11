@@ -3,3 +3,13 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 data/processed/
+
+# dashboard-generated artefacts and per-run snapshots
+data/runs/
+dashboard/assets/*.glb
+dashboard/frontend/node_modules/
+dashboard/frontend/dist/
+
+# multi-UAV training artefacts and experiment outputs (reproducible via scripts)
+models/ppo_multiuav/
+data/experiments/

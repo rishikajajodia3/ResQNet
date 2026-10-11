@@ -93,18 +93,26 @@ def resolve_scene_path(scene_name: Optional[str] = None) -> str:
 
 def safe_load_scene_robust(scene_path: Optional[str] = None) -> Any:
     """
-    Loads scene from path with material validation and fallback.
+    Loads scene from path with material validation.
+
+    Raises if the scene cannot be found or loaded instead of silently
+    substituting another scene: a fallback would return metrics for a
+    different geometry while results stay labelled with the requested name.
+    The built-in placeholder is only used when explicitly requested as
+    "simple_street_canyon".
     """
-    resolved = resolve_scene_path(scene_path)
-    try:
-        scene = load_scene(resolved)
-        for name, obj in scene.objects.items():
-            if obj.radio_material is None:
-                obj.radio_material = "itu_concrete"
-        return scene
-    except Exception as e:
-        print(f"[WARN] Failed loading '{resolved}': {e}. Falling back to default street canyon.")
+    if scene_path == "simple_street_canyon":
         return load_scene(sionna.rt.scene.simple_street_canyon)
+    resolved = resolve_scene_path(scene_path)
+    if not os.path.exists(resolved):
+        raise FileNotFoundError(
+            f"Sionna scene '{scene_path}' not found (resolved to '{resolved}')."
+        )
+    scene = load_scene(resolved)
+    for name, obj in scene.objects.items():
+        if obj.radio_material is None:
+            obj.radio_material = "itu_concrete"
+    return scene
 
 
 def evaluate_connectivity(
@@ -319,6 +327,186 @@ class SionnaFeedbackEngine:
             }
         }
 
+    # ------------------------------------------------------------------
+    # MULTI-UAV EVALUATION
+    # ------------------------------------------------------------------
+    def evaluate_multi_uav(
+        self,
+        uav_positions: List[List[float]],
+        user_positions: Optional[List[List[float]]] = None,
+        interference_model: str = "co_channel",
+    ) -> Dict[str, Any]:
+        """Ray-trace K UAV transmitters against N ground users.
+
+        Per (user, UAV) metrics are preserved - results are NOT averaged
+        across UAVs. Each user is associated with the UAV giving the
+        strongest received power (best-server association).
+
+        SNR   = P_serving / noise                       (interference-free)
+        SINR  = P_serving / (noise + sum of other-UAV received powers)
+                for interference_model == "co_channel" (all UAVs share one
+                channel, full buffer, no scheduling). For "orthogonal",
+                SINR == SNR. For a single UAV the two are identical.
+        """
+        if user_positions is None:
+            user_positions = DEFAULT_10_USERS
+        if interference_model not in ("co_channel", "orthogonal"):
+            raise ValueError(f"interference_model must be co_channel|orthogonal, got {interference_model}")
+
+        num_uavs = len(uav_positions)
+        num_users = len(user_positions)
+        if num_uavs < 1:
+            raise ValueError("need at least one UAV position")
+
+        for name in list(self.scene.transmitters.keys()):
+            self.scene.remove(name)
+        for name in list(self.scene.receivers.keys()):
+            self.scene.remove(name)
+
+        for k, pos in enumerate(uav_positions):
+            self.scene.add(Transmitter(name=f"uav_{k+1}", position=[float(x) for x in pos]))
+        for idx, pos in enumerate(user_positions):
+            self.scene.add(Receiver(name=f"user_{idx+1}", position=[float(x) for x in pos]))
+
+        paths = self.solver(self.scene, seed=self.seed)
+        a_real, a_imag = paths.a
+        a_complex = a_real.numpy() + 1j * a_imag.numpy()   # [rx, rx_ant, tx, tx_ant, path]
+        taus = paths.tau.numpy()                           # [rx, tx, path]
+
+        if a_complex.ndim != 5 or taus.ndim != 3:
+            raise RuntimeError(
+                f"Unexpected Sionna path tensor shapes a={a_complex.shape} tau={taus.shape}; "
+                "multi-UAV extraction expects [rx,rx_ant,tx,tx_ant,path] and [rx,tx,path]."
+            )
+        if a_complex.shape[2] != num_uavs:
+            raise RuntimeError(
+                f"path tensor tx axis = {a_complex.shape[2]} but {num_uavs} UAVs were added."
+            )
+
+        tx_power_watts = 10 ** ((self.tx_power_dbm - 30.0) / 10.0)
+        noise_dbm = self.config.noise_power_dbm
+        noise_mw = 10 ** (noise_dbm / 10.0) if noise_dbm is not None else None
+        pg_thresh = self.config.path_gain_threshold_db
+
+        user_results: List[Dict[str, Any]] = []
+        best_rss_list: List[float] = []
+        best_snr_list: List[float] = []
+        best_sinr_list: List[float] = []
+        best_pg_list: List[float] = []
+        connected_count = 0
+        covered_count = 0
+        users_per_uav = {f"uav_{k+1}": 0 for k in range(num_uavs)}
+
+        for u_idx, u_pos in enumerate(user_positions):
+            per_uav = []
+            p_mw = np.zeros(num_uavs)          # received power per UAV, mW
+            for k in range(num_uavs):
+                ak = a_complex[u_idx, 0, k, 0, :]
+                tk = taus[u_idx, k, :]
+                gains_lin = np.abs(ak) ** 2
+                total_gain = float(np.sum(gains_lin))
+
+                if total_gain > 1e-20:
+                    pg_db = round(float(10.0 * np.log10(total_gain)), 2)
+                    rx_mw = total_gain * tx_power_watts * 1000.0
+                    rss_db = round(float(10.0 * np.log10(rx_mw)), 2)
+                else:
+                    pg_db, rx_mw, rss_db = -200.0, 0.0, -200.0
+                p_mw[k] = rx_mw
+
+                valid = tk[tk > 0]
+                delay = float(np.min(valid)) if len(valid) > 0 else None
+                npaths = int(np.count_nonzero(gains_lin > 1e-20))
+
+                snr_db = None
+                if noise_mw is not None:
+                    snr_db = round(float(10.0 * np.log10(rx_mw / noise_mw)), 2) if rx_mw > 1e-20 else -50.0
+
+                per_uav.append({
+                    "uav_id": f"uav_{k+1}",
+                    "uav_position": [round(float(p), 2) for p in uav_positions[k]],
+                    "path_gain_db": pg_db,
+                    "rss_dbm": rss_db,
+                    "snr_db": snr_db,
+                    "num_paths": npaths,
+                    "shortest_delay_sec": delay,
+                })
+
+            # best-server association (strongest received power)
+            serving = int(np.argmax(p_mw))
+            serving_p = p_mw[serving]
+
+            # co-channel SINR from real ray-traced powers
+            sinr_db = None
+            if noise_mw is not None:
+                if serving_p > 1e-20:
+                    if interference_model == "co_channel":
+                        interf = float(np.sum(p_mw)) - serving_p
+                    else:  # orthogonal
+                        interf = 0.0
+                    sinr_db = round(float(10.0 * np.log10(serving_p / (noise_mw + interf))), 2)
+                else:
+                    sinr_db = -50.0
+
+            best = per_uav[serving]
+            best_rss = best["rss_dbm"]
+            best_snr = best["snr_db"]
+            best_pg = best["path_gain_db"]
+
+            coverage = bool(best_pg >= pg_thresh)
+            connected = evaluate_connectivity(
+                rss_dbm=best_rss, sinr_db=sinr_db, path_gain_db=best_pg, config=self.config
+            )
+            if coverage:
+                covered_count += 1
+            if connected:
+                connected_count += 1
+                users_per_uav[f"uav_{serving+1}"] += 1
+
+            if best_pg > -199.0:
+                best_rss_list.append(best_rss)
+                best_pg_list.append(best_pg)
+                if best_snr is not None:
+                    best_snr_list.append(best_snr)
+                if sinr_db is not None:
+                    best_sinr_list.append(sinr_db)
+
+            user_results.append({
+                "user_id": f"user_{u_idx+1}",
+                "position": [round(float(p), 2) for p in u_pos],
+                "per_uav": per_uav,
+                "serving_uav": serving + 1,
+                "serving_uav_id": f"uav_{serving+1}",
+                "best_rss_dbm": best_rss,
+                "best_snr_db": best_snr,
+                "best_sinr_db": sinr_db,
+                "best_path_gain_db": best_pg,
+                "num_paths": best["num_paths"],
+                "shortest_delay_sec": best["shortest_delay_sec"],
+                "coverage": coverage,
+                "connected": connected,
+            })
+
+        m = lambda xs: round(float(np.mean(xs)), 2) if xs else -200.0  # noqa: E731
+        return {
+            "uav_positions": [[round(float(p), 2) for p in q] for q in uav_positions],
+            "scene_name": self.scene_name,
+            "num_uavs": num_uavs,
+            "num_users": num_users,
+            "interference_model": interference_model,
+            "user_results": user_results,
+            "aggregate": {
+                "connected_users_count": connected_count,
+                "connected_users_percentage": round(connected_count / num_users * 100.0, 2),
+                "coverage_percentage": round(covered_count / num_users * 100.0, 2),
+                "mean_best_path_gain_db": m(best_pg_list),
+                "mean_best_rss_dbm": m(best_rss_list),
+                "mean_best_snr_db": m(best_snr_list),
+                "mean_best_sinr_db": m(best_sinr_list),
+                "users_per_uav": users_per_uav,
+            },
+        }
+
 
 # Global singleton engine instance for fast reuse across steps
 _GLOBAL_ENGINE = None
@@ -354,6 +542,46 @@ def evaluate_uav_position(
         _GLOBAL_ENGINE.config = connectivity_config
 
     return _GLOBAL_ENGINE.evaluate(uav_position, user_positions)
+
+
+def evaluate_multi_uav(
+    uav_positions: List[List[float]],
+    user_positions: Optional[List[List[float]]] = None,
+    scene_name: str = "city_damaged.xml",
+    freq: float = 2.1e9,
+    tx_power_dbm: float = 30.0,
+    connectivity_config: Optional[ConnectivityConfig] = None,
+    seed: int = 42,
+    interference_model: str = "co_channel",
+) -> Dict[str, Any]:
+    """Multi-UAV Sionna RT evaluation.
+
+    Adds one transmitter per UAV, ray-traces once, and returns per-user AND
+    per-UAV metrics with best-server association. See
+    :meth:`SionnaFeedbackEngine.evaluate_multi_uav`.
+
+    For len(uav_positions) == 1 this reduces to a single-UAV evaluation and
+    SINR == SNR.
+    """
+    global _GLOBAL_ENGINE
+    if (_GLOBAL_ENGINE is None or
+        _GLOBAL_ENGINE.scene_name != scene_name or
+        _GLOBAL_ENGINE.freq != freq or
+        _GLOBAL_ENGINE.tx_power_dbm != tx_power_dbm or
+        _GLOBAL_ENGINE.seed != seed):
+        _GLOBAL_ENGINE = SionnaFeedbackEngine(
+            scene_name=scene_name,
+            freq=freq,
+            tx_power_dbm=tx_power_dbm,
+            connectivity_config=connectivity_config,
+            seed=seed,
+        )
+    elif connectivity_config is not None:
+        _GLOBAL_ENGINE.config = connectivity_config
+
+    return _GLOBAL_ENGINE.evaluate_multi_uav(
+        uav_positions, user_positions, interference_model=interference_model
+    )
 
 
 def export_evaluation_to_json(data: Dict[str, Any], filepath: str) -> None:

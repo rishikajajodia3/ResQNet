@@ -1,0 +1,5368 @@
+{
+ "meta": {
+  "label": "sionna_n30",
+  "rf_mode": "sionna",
+  "num_users": 30,
+  "num_uavs": 3,
+  "steps": 12,
+  "num_seeds": 5,
+  "scenarios": [
+   "blocked_urban",
+   "wide_area"
+  ],
+  "models": {
+   "ppo_legacy": "/home/rishika/ResQNet/models/ppo_multiuav/model.zip",
+   "ppo_network": "/home/rishika/ResQNet/models/ppo_multiuav_net/model.zip"
+  },
+  "placements": [
+   "fixed",
+   "random",
+   "ppo_legacy",
+   "ppo_network"
+  ],
+  "generated_at": "2026-10-10T17:04:12Z",
+  "wall_time_sec": 3206.6
+ },
+ "rows": [
+  {
+   "scenario": "blocked_urban",
+   "seed": 0,
+   "placement": "fixed",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     28.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     -8.0,
+     30.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8999999999999999,
+   "reward_legacy": 0.7753066219165583,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9996666666666667,
+   "ns3_mean_user_throughput_mbps": 0.431856,
+   "ns3_min_user_throughput_mbps": 0.4293,
+   "ns3_mean_latency_ms": 11.050224616538847,
+   "ns3_p95_flow_latency_ms": 13.944295,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    795,
+    799,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 0,
+   "placement": "random",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     50.65,
+     41.44,
+     30.0
+    ],
+    [
+     -18.52,
+     44.67,
+     30.0
+    ],
+    [
+     -20.76,
+     19.12,
+     30.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.895750358974359,
+   "reward_legacy": 0.7589551937089092,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.99975,
+   "ns3_mean_user_throughput_mbps": 0.4318920000000001,
+   "ns3_min_user_throughput_mbps": 0.43038,
+   "ns3_mean_latency_ms": 10.161227664832875,
+   "ns3_p95_flow_latency_ms": 13.14587,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    797,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    797,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 0,
+   "placement": "ppo_legacy",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     28.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     -8.0,
+     30.0
+    ]
+   ],
+   "actions": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8999999999999999,
+   "reward_legacy": 0.7753066219165583,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9996666666666667,
+   "ns3_mean_user_throughput_mbps": 0.431856,
+   "ns3_min_user_throughput_mbps": 0.4293,
+   "ns3_mean_latency_ms": 11.050224616538847,
+   "ns3_p95_flow_latency_ms": 13.944295,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    795,
+    799,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 0,
+   "placement": "ppo_network",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     28.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     -8.0,
+     30.0
+    ]
+   ],
+   "actions": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8999999999999999,
+   "reward_legacy": 0.7752884400983765,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9996666666666667,
+   "ns3_mean_user_throughput_mbps": 0.431856,
+   "ns3_min_user_throughput_mbps": 0.4293,
+   "ns3_mean_latency_ms": 11.050224616538847,
+   "ns3_p95_flow_latency_ms": 13.944295,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    795,
+    799,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 1,
+   "placement": "fixed",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     28.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     -8.0,
+     30.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.897919282051282,
+   "reward_legacy": 0.7459708155554924,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9998333333333334,
+   "ns3_mean_user_throughput_mbps": 0.43192800000000003,
+   "ns3_min_user_throughput_mbps": 0.42984,
+   "ns3_mean_latency_ms": 10.90657453575596,
+   "ns3_p95_flow_latency_ms": 15.665215,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    800,
+    796,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 1,
+   "placement": "random",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     12.0,
+     0.84,
+     30.0
+    ],
+    [
+     18.91,
+     -24.09,
+     30.0
+    ],
+    [
+     -29.61,
+     44.36,
+     30.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8996996923076923,
+   "reward_legacy": 0.779415522928533,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.999625,
+   "ns3_mean_user_throughput_mbps": 0.43183800000000006,
+   "ns3_min_user_throughput_mbps": 0.43038,
+   "ns3_mean_latency_ms": 10.099429037555751,
+   "ns3_p95_flow_latency_ms": 13.334899999999998,
+   "ns3_per_user_rx": [
+    798,
+    800,
+    797,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    798,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 1,
+   "placement": "ppo_legacy",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     48.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     12.0,
+     30.0
+    ]
+   ],
+   "actions": [
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 13.333333333333334,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8999999999999999,
+   "reward_legacy": 0.7753429855529219,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.998625,
+   "ns3_mean_user_throughput_mbps": 0.431406,
+   "ns3_min_user_throughput_mbps": 0.42498,
+   "ns3_mean_latency_ms": 11.362624238327701,
+   "ns3_p95_flow_latency_ms": 16.534169999999992,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    794,
+    796,
+    787,
+    800,
+    792,
+    800,
+    800,
+    800,
+    800,
+    798,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 1,
+   "placement": "ppo_network",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     28.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     -8.0,
+     30.0
+    ]
+   ],
+   "actions": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.897919282051282,
+   "reward_legacy": 0.7459708155554924,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9998333333333334,
+   "ns3_mean_user_throughput_mbps": 0.43192800000000003,
+   "ns3_min_user_throughput_mbps": 0.42984,
+   "ns3_mean_latency_ms": 10.90657453575596,
+   "ns3_p95_flow_latency_ms": 15.665215,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    800,
+    796,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 2,
+   "placement": "fixed",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     28.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     -8.0,
+     30.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8999999999999999,
+   "reward_legacy": 0.767906251660639,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.999625,
+   "ns3_mean_user_throughput_mbps": 0.43183800000000006,
+   "ns3_min_user_throughput_mbps": 0.43092,
+   "ns3_mean_latency_ms": 10.895565225292819,
+   "ns3_p95_flow_latency_ms": 15.302395,
+   "ns3_per_user_rx": [
+    799,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    798,
+    800,
+    798
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 2,
+   "placement": "random",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     35.78,
+     25.54,
+     30.0
+    ],
+    [
+     -9.38,
+     -6.36,
+     30.0
+    ],
+    [
+     -13.62,
+     -16.99,
+     30.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8907673496666579,
+   "reward_legacy": 0.7241373034877606,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9996666666666667,
+   "ns3_mean_user_throughput_mbps": 0.431856,
+   "ns3_min_user_throughput_mbps": 0.43038,
+   "ns3_mean_latency_ms": 10.779386279593199,
+   "ns3_p95_flow_latency_ms": 14.417864999999999,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    797,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    798,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 2,
+   "placement": "ppo_legacy",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     0.0,
+     38.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     12.0,
+     30.0
+    ]
+   ],
+   "actions": [
+    [
+     1,
+     0,
+     4
+    ],
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 11.380711874576983,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8999999999999999,
+   "reward_legacy": 0.7814337047467148,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9994166666666666,
+   "ns3_mean_user_throughput_mbps": 0.431748,
+   "ns3_min_user_throughput_mbps": 0.4293,
+   "ns3_mean_latency_ms": 10.168842243391978,
+   "ns3_p95_flow_latency_ms": 12.861609999999999,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    797,
+    799,
+    800,
+    800,
+    800,
+    795,
+    798,
+    800,
+    800,
+    800,
+    800,
+    798,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 2,
+   "placement": "ppo_network",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     28.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     -8.0,
+     30.0
+    ]
+   ],
+   "actions": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8999999999999999,
+   "reward_legacy": 0.767906251660639,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.999625,
+   "ns3_mean_user_throughput_mbps": 0.43183800000000006,
+   "ns3_min_user_throughput_mbps": 0.43092,
+   "ns3_mean_latency_ms": 10.895565225292819,
+   "ns3_p95_flow_latency_ms": 15.302395,
+   "ns3_per_user_rx": [
+    799,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    798,
+    800,
+    798
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 3,
+   "placement": "fixed",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     28.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     -8.0,
+     30.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8999999999999999,
+   "reward_legacy": 0.7548645022239588,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9989583333333333,
+   "ns3_mean_user_throughput_mbps": 0.43155,
+   "ns3_min_user_throughput_mbps": 0.42822,
+   "ns3_mean_latency_ms": 10.736596091762252,
+   "ns3_p95_flow_latency_ms": 14.823489999999994,
+   "ns3_per_user_rx": [
+    800,
+    795,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    800,
+    799,
+    800,
+    797,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    793,
+    800,
+    793,
+    800,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 3,
+   "placement": "random",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     26.22,
+     -20.0,
+     30.0
+    ],
+    [
+     15.93,
+     -49.03,
+     30.0
+    ],
+    [
+     27.56,
+     56.45,
+     30.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8959403076923077,
+   "reward_legacy": 0.7591006482543636,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.999125,
+   "ns3_mean_user_throughput_mbps": 0.431622,
+   "ns3_min_user_throughput_mbps": 0.42768,
+   "ns3_mean_latency_ms": 11.888313963468036,
+   "ns3_p95_flow_latency_ms": 20.375944999999998,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    792,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    800,
+    798,
+    796,
+    800,
+    795,
+    800,
+    800,
+    800,
+    800,
+    799
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 3,
+   "placement": "ppo_legacy",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     48.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     12.0,
+     30.0
+    ]
+   ],
+   "actions": [
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 13.333333333333334,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8997866666666666,
+   "reward_legacy": 0.7754520764620129,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9995833333333334,
+   "ns3_mean_user_throughput_mbps": 0.4318200000000001,
+   "ns3_min_user_throughput_mbps": 0.4293,
+   "ns3_mean_latency_ms": 10.490421658607753,
+   "ns3_p95_flow_latency_ms": 13.702489999999997,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    800,
+    800,
+    797,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    795,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    798,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 3,
+   "placement": "ppo_network",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     28.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     -8.0,
+     30.0
+    ]
+   ],
+   "actions": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8999999999999999,
+   "reward_legacy": 0.7548645022239588,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9989583333333333,
+   "ns3_mean_user_throughput_mbps": 0.43155,
+   "ns3_min_user_throughput_mbps": 0.42822,
+   "ns3_mean_latency_ms": 10.736596091762252,
+   "ns3_p95_flow_latency_ms": 14.823489999999994,
+   "ns3_per_user_rx": [
+    800,
+    795,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    800,
+    800,
+    799,
+    800,
+    797,
+    800,
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    793,
+    800,
+    793,
+    800,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 4,
+   "placement": "fixed",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     28.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     -8.0,
+     30.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.898391076923077,
+   "reward_legacy": 0.7723960116655268,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9997916666666666,
+   "ns3_mean_user_throughput_mbps": 0.43191000000000007,
+   "ns3_min_user_throughput_mbps": 0.43092,
+   "ns3_mean_latency_ms": 10.082571931652428,
+   "ns3_p95_flow_latency_ms": 12.514884999999998,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    798,
+    800,
+    800,
+    800,
+    798,
+    800,
+    799,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 4,
+   "placement": "random",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     32.58,
+     38.57,
+     30.0
+    ],
+    [
+     69.77,
+     -20.48,
+     30.0
+    ],
+    [
+     17.62,
+     -12.58,
+     30.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8995756923076923,
+   "reward_legacy": 0.7678880698424572,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9996666666666667,
+   "ns3_mean_user_throughput_mbps": 0.431856,
+   "ns3_min_user_throughput_mbps": 0.42984,
+   "ns3_mean_latency_ms": 10.443572341197065,
+   "ns3_p95_flow_latency_ms": 14.788264999999997,
+   "ns3_per_user_rx": [
+    799,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    799,
+    800,
+    799,
+    800,
+    800,
+    800,
+    799,
+    800,
+    796
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 4,
+   "placement": "ppo_legacy",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     38.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     2.0,
+     30.0
+    ]
+   ],
+   "actions": [
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 6.666666666666667,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8973935384615385,
+   "reward_legacy": 0.7834578643776833,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.99975,
+   "ns3_mean_user_throughput_mbps": 0.4318920000000001,
+   "ns3_min_user_throughput_mbps": 0.43038,
+   "ns3_mean_latency_ms": 10.83453505876469,
+   "ns3_p95_flow_latency_ms": 14.658405,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    798,
+    800,
+    800,
+    799,
+    800,
+    800,
+    797,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800
+   ]
+  },
+  {
+   "scenario": "blocked_urban",
+   "seed": 4,
+   "placement": "ppo_network",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     28.0,
+     30.0
+    ],
+    [
+     -8.0,
+     -8.0,
+     30.0
+    ],
+    [
+     28.0,
+     -8.0,
+     30.0
+    ]
+   ],
+   "actions": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 30,
+   "net_predicted_pdr": 1.0,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.898391076923077,
+   "reward_legacy": 0.7723960116655268,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 30,
+   "ns3_users_pdr_ge_90": 30,
+   "ns3_pdr": 0.9997916666666666,
+   "ns3_mean_user_throughput_mbps": 0.43191000000000007,
+   "ns3_min_user_throughput_mbps": 0.43092,
+   "ns3_mean_latency_ms": 10.082571931652428,
+   "ns3_p95_flow_latency_ms": 12.514884999999998,
+   "ns3_per_user_rx": [
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    800,
+    798,
+    800,
+    800,
+    800,
+    798,
+    800,
+    799,
+    800
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 0,
+   "placement": "fixed",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     61.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -41.0,
+     40.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 24,
+   "net_predicted_pdr": 0.8,
+   "net_usable_per_user": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true
+   ],
+   "reward_network": 0.696244717948718,
+   "reward_legacy": 0.7627611673711037,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 27,
+   "ns3_users_pdr_ge_90": 19,
+   "ns3_pdr": 0.7612083333333334,
+   "ns3_mean_user_throughput_mbps": 0.328842,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 112.52473896217637,
+   "ns3_p95_flow_latency_ms": 486.2148,
+   "ns3_per_user_rx": [
+    792,
+    800,
+    200,
+    0,
+    698,
+    795,
+    770,
+    569,
+    792,
+    771,
+    613,
+    607,
+    498,
+    728,
+    800,
+    23,
+    785,
+    798,
+    798,
+    800,
+    0,
+    789,
+    773,
+    767,
+    800,
+    793,
+    149,
+    0,
+    800,
+    761
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 0,
+   "placement": "random",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     125.17,
+     99.08,
+     40.0
+    ],
+    [
+     -70.8,
+     108.22,
+     40.0
+    ],
+    [
+     -77.15,
+     35.84,
+     40.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 21,
+   "net_predicted_pdr": 0.7,
+   "net_usable_per_user": [
+    true,
+    true,
+    false,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ],
+   "reward_network": 0.6034421538461539,
+   "reward_legacy": 0.7306098048691712,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 21,
+   "ns3_users_pdr_ge_90": 19,
+   "ns3_pdr": 0.657875,
+   "ns3_mean_user_throughput_mbps": 0.28420199999999995,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 70.34012317436189,
+   "ns3_p95_flow_latency_ms": 245.779,
+   "ns3_per_user_rx": [
+    797,
+    800,
+    0,
+    799,
+    799,
+    0,
+    779,
+    800,
+    800,
+    69,
+    799,
+    792,
+    799,
+    799,
+    731,
+    800,
+    0,
+    739,
+    0,
+    800,
+    800,
+    700,
+    799,
+    0,
+    0,
+    0,
+    794,
+    794,
+    0,
+    0
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 0,
+   "placement": "ppo_legacy",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     61.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -41.0,
+     40.0
+    ]
+   ],
+   "actions": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 24,
+   "net_predicted_pdr": 0.8,
+   "net_usable_per_user": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true
+   ],
+   "reward_network": 0.696244717948718,
+   "reward_legacy": 0.7627611673711037,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 27,
+   "ns3_users_pdr_ge_90": 19,
+   "ns3_pdr": 0.7612083333333334,
+   "ns3_mean_user_throughput_mbps": 0.328842,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 112.52473896217637,
+   "ns3_p95_flow_latency_ms": 486.2148,
+   "ns3_per_user_rx": [
+    792,
+    800,
+    200,
+    0,
+    698,
+    795,
+    770,
+    569,
+    792,
+    771,
+    613,
+    607,
+    498,
+    728,
+    800,
+    23,
+    785,
+    798,
+    798,
+    800,
+    0,
+    789,
+    773,
+    767,
+    800,
+    793,
+    149,
+    0,
+    800,
+    761
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 0,
+   "placement": "ppo_network",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     0.0,
+     61.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -41.0,
+     40.0
+    ]
+   ],
+   "actions": [
+    [
+     1,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 3.3333333333333335,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 24,
+   "net_predicted_pdr": 0.8,
+   "net_usable_per_user": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true
+   ],
+   "reward_network": 0.6958572307692308,
+   "reward_legacy": 0.7626520764620128,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 27,
+   "ns3_users_pdr_ge_90": 18,
+   "ns3_pdr": 0.7217083333333333,
+   "ns3_mean_user_throughput_mbps": 0.311778,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 119.6830766064315,
+   "ns3_p95_flow_latency_ms": 484.1847,
+   "ns3_per_user_rx": [
+    788,
+    800,
+    327,
+    0,
+    651,
+    781,
+    797,
+    309,
+    775,
+    772,
+    550,
+    67,
+    596,
+    65,
+    799,
+    221,
+    800,
+    800,
+    797,
+    795,
+    0,
+    800,
+    761,
+    779,
+    799,
+    800,
+    338,
+    0,
+    800,
+    754
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 1,
+   "placement": "fixed",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     61.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -41.0,
+     40.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 27,
+   "net_predicted_pdr": 0.9,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.7790025641025642,
+   "reward_legacy": 0.733716270100947,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 28,
+   "ns3_users_pdr_ge_90": 17,
+   "ns3_pdr": 0.76,
+   "ns3_mean_user_throughput_mbps": 0.32832,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 137.10990758223684,
+   "ns3_p95_flow_latency_ms": 466.4437499999999,
+   "ns3_per_user_rx": [
+    788,
+    341,
+    718,
+    0,
+    786,
+    794,
+    503,
+    795,
+    711,
+    14,
+    639,
+    797,
+    781,
+    800,
+    761,
+    796,
+    795,
+    799,
+    799,
+    791,
+    674,
+    748,
+    787,
+    0,
+    496,
+    774,
+    800,
+    69,
+    125,
+    559
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 1,
+   "placement": "random",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     15.67,
+     -15.94,
+     40.0
+    ],
+    [
+     35.25,
+     -86.59,
+     40.0
+    ],
+    [
+     -102.23,
+     107.35,
+     40.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 26,
+   "net_predicted_pdr": 0.8666666666666667,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false
+   ],
+   "reward_network": 0.7527259487179487,
+   "reward_legacy": 0.7609596480291632,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 26,
+   "ns3_users_pdr_ge_90": 21,
+   "ns3_pdr": 0.7996666666666666,
+   "ns3_mean_user_throughput_mbps": 0.3454560000000001,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 83.45680097749063,
+   "ns3_p95_flow_latency_ms": 432.90700000000004,
+   "ns3_per_user_rx": [
+    800,
+    477,
+    800,
+    0,
+    800,
+    800,
+    799,
+    800,
+    800,
+    0,
+    520,
+    789,
+    796,
+    800,
+    800,
+    800,
+    796,
+    783,
+    511,
+    796,
+    418,
+    800,
+    794,
+    0,
+    530,
+    800,
+    787,
+    796,
+    800,
+    0
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 1,
+   "placement": "ppo_legacy",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     91.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -11.0,
+     40.0
+    ]
+   ],
+   "actions": [
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 20.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 27,
+   "net_predicted_pdr": 0.9,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.7784232820512822,
+   "reward_legacy": 0.7697305916504106,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 29,
+   "ns3_users_pdr_ge_90": 20,
+   "ns3_pdr": 0.7425833333333334,
+   "ns3_mean_user_throughput_mbps": 0.32079599999999997,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 105.94918365503311,
+   "ns3_p95_flow_latency_ms": 580.2895999999998,
+   "ns3_per_user_rx": [
+    793,
+    38,
+    521,
+    3,
+    783,
+    800,
+    62,
+    783,
+    800,
+    15,
+    759,
+    798,
+    770,
+    800,
+    788,
+    771,
+    789,
+    792,
+    800,
+    787,
+    794,
+    798,
+    800,
+    0,
+    128,
+    541,
+    798,
+    787,
+    626,
+    98
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 1,
+   "placement": "ppo_network",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     71.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -41.0,
+     40.0
+    ]
+   ],
+   "actions": [
+    [
+     4,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 3.3333333333333335,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 27,
+   "net_predicted_pdr": 0.9,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.7796836923076924,
+   "reward_legacy": 0.734007179191856,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 28,
+   "ns3_users_pdr_ge_90": 18,
+   "ns3_pdr": 0.7725833333333333,
+   "ns3_mean_user_throughput_mbps": 0.33375600000000005,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 143.54955987487864,
+   "ns3_p95_flow_latency_ms": 555.67955,
+   "ns3_per_user_rx": [
+    743,
+    252,
+    684,
+    0,
+    782,
+    770,
+    520,
+    751,
+    758,
+    7,
+    490,
+    791,
+    783,
+    800,
+    789,
+    774,
+    763,
+    798,
+    798,
+    751,
+    606,
+    773,
+    787,
+    0,
+    570,
+    774,
+    795,
+    696,
+    94,
+    643
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 2,
+   "placement": "fixed",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     61.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -41.0,
+     40.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 27,
+   "net_predicted_pdr": 0.9,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.7856046153846155,
+   "reward_legacy": 0.7653975310074673,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 27,
+   "ns3_users_pdr_ge_90": 19,
+   "ns3_pdr": 0.777625,
+   "ns3_mean_user_throughput_mbps": 0.335934,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 104.93461625676471,
+   "ns3_p95_flow_latency_ms": 405.8014999999999,
+   "ns3_per_user_rx": [
+    799,
+    609,
+    649,
+    14,
+    779,
+    798,
+    791,
+    444,
+    70,
+    800,
+    773,
+    642,
+    800,
+    800,
+    800,
+    800,
+    569,
+    800,
+    780,
+    583,
+    785,
+    800,
+    0,
+    0,
+    800,
+    0,
+    800,
+    787,
+    800,
+    791
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 2,
+   "placement": "random",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     83.03,
+     54.02,
+     40.0
+    ],
+    [
+     -44.92,
+     -36.36,
+     40.0
+    ],
+    [
+     -56.92,
+     -66.46,
+     40.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 27,
+   "net_predicted_pdr": 0.9,
+   "net_usable_per_user": [
+    true,
+    false,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.7803598974358976,
+   "reward_legacy": 0.7283543302498655,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 27,
+   "ns3_users_pdr_ge_90": 21,
+   "ns3_pdr": 0.791375,
+   "ns3_mean_user_throughput_mbps": 0.341874,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 105.16111296267046,
+   "ns3_p95_flow_latency_ms": 427.81099999999986,
+   "ns3_per_user_rx": [
+    800,
+    0,
+    800,
+    0,
+    800,
+    798,
+    797,
+    68,
+    0,
+    800,
+    771,
+    771,
+    667,
+    793,
+    668,
+    752,
+    797,
+    180,
+    800,
+    800,
+    529,
+    788,
+    737,
+    788,
+    800,
+    323,
+    783,
+    786,
+    797,
+    800
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 2,
+   "placement": "ppo_legacy",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     -20.0,
+     71.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -1.0,
+     40.0
+    ]
+   ],
+   "actions": [
+    [
+     1,
+     0,
+     4
+    ],
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     1,
+     0,
+     4
+    ],
+    [
+     1,
+     0,
+     4
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 23.874258867227933,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 28,
+   "net_predicted_pdr": 0.9333333333333333,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8151206153846154,
+   "reward_legacy": 0.7733669552867741,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 28,
+   "ns3_users_pdr_ge_90": 22,
+   "ns3_pdr": 0.815875,
+   "ns3_mean_user_throughput_mbps": 0.3524580000000001,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 101.81499088453093,
+   "ns3_p95_flow_latency_ms": 518.9689999999998,
+   "ns3_per_user_rx": [
+    788,
+    799,
+    799,
+    153,
+    800,
+    781,
+    790,
+    204,
+    800,
+    797,
+    755,
+    782,
+    800,
+    797,
+    799,
+    606,
+    787,
+    787,
+    797,
+    512,
+    798,
+    777,
+    0,
+    97,
+    798,
+    0,
+    800,
+    641,
+    759,
+    778
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 2,
+   "placement": "ppo_network",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     61.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -41.0,
+     40.0
+    ]
+   ],
+   "actions": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 27,
+   "net_predicted_pdr": 0.9,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.7856046153846155,
+   "reward_legacy": 0.7653975310074673,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 27,
+   "ns3_users_pdr_ge_90": 19,
+   "ns3_pdr": 0.777625,
+   "ns3_mean_user_throughput_mbps": 0.335934,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 104.93461625676471,
+   "ns3_p95_flow_latency_ms": 405.8014999999999,
+   "ns3_per_user_rx": [
+    799,
+    609,
+    649,
+    14,
+    779,
+    798,
+    791,
+    444,
+    70,
+    800,
+    773,
+    642,
+    800,
+    800,
+    800,
+    800,
+    569,
+    800,
+    780,
+    583,
+    785,
+    800,
+    0,
+    0,
+    800,
+    0,
+    800,
+    787,
+    800,
+    791
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 3,
+   "placement": "fixed",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     61.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -41.0,
+     40.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 29,
+   "net_predicted_pdr": 0.9666666666666667,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8421732307692309,
+   "reward_legacy": 0.7504925170450931,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 29,
+   "ns3_users_pdr_ge_90": 21,
+   "ns3_pdr": 0.791375,
+   "ns3_mean_user_throughput_mbps": 0.341874,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 93.84154502185015,
+   "ns3_p95_flow_latency_ms": 546.9127999999998,
+   "ns3_per_user_rx": [
+    771,
+    799,
+    684,
+    792,
+    780,
+    800,
+    796,
+    196,
+    789,
+    800,
+    800,
+    800,
+    799,
+    798,
+    800,
+    0,
+    690,
+    800,
+    65,
+    799,
+    267,
+    308,
+    775,
+    793,
+    3,
+    795,
+    794,
+    800,
+    100,
+    800
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 3,
+   "placement": "random",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     55.96,
+     -74.99,
+     40.0
+    ],
+    [
+     26.8,
+     -157.24,
+     40.0
+    ],
+    [
+     59.77,
+     141.59,
+     40.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 23,
+   "net_predicted_pdr": 0.7666666666666667,
+   "net_usable_per_user": [
+    false,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    false,
+    true,
+    false,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true
+   ],
+   "reward_network": 0.6638847179487181,
+   "reward_legacy": 0.7245215942303689,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 24,
+   "ns3_users_pdr_ge_90": 22,
+   "ns3_pdr": 0.7813333333333333,
+   "ns3_mean_user_throughput_mbps": 0.33753600000000006,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 69.30107815166383,
+   "ns3_p95_flow_latency_ms": 229.82459999999995,
+   "ns3_per_user_rx": [
+    0,
+    789,
+    789,
+    800,
+    0,
+    777,
+    799,
+    0,
+    799,
+    0,
+    800,
+    799,
+    799,
+    800,
+    797,
+    798,
+    757,
+    796,
+    800,
+    752,
+    0,
+    779,
+    675,
+    774,
+    799,
+    800,
+    674,
+    800,
+    0,
+    800
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 3,
+   "placement": "ppo_legacy",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     -20.0,
+     61.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -1.0,
+     40.0
+    ]
+   ],
+   "actions": [
+    [
+     1,
+     0,
+     4
+    ],
+    [
+     1,
+     0,
+     4
+    ],
+    [
+     1,
+     0,
+     4
+    ],
+    [
+     0,
+     0,
+     4
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 23.333333333333332,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 29,
+   "net_predicted_pdr": 0.9666666666666667,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8383441025641026,
+   "reward_legacy": 0.7710155229285329,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 29,
+   "ns3_users_pdr_ge_90": 22,
+   "ns3_pdr": 0.7763333333333333,
+   "ns3_mean_user_throughput_mbps": 0.33537600000000006,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 96.54118548196651,
+   "ns3_p95_flow_latency_ms": 571.5122,
+   "ns3_per_user_rx": [
+    799,
+    773,
+    786,
+    303,
+    788,
+    796,
+    800,
+    749,
+    798,
+    798,
+    800,
+    797,
+    798,
+    786,
+    800,
+    42,
+    790,
+    147,
+    334,
+    800,
+    256,
+    1,
+    800,
+    800,
+    0,
+    800,
+    796,
+    800,
+    103,
+    792
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 3,
+   "placement": "ppo_network",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     61.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -41.0,
+     40.0
+    ]
+   ],
+   "actions": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 29,
+   "net_predicted_pdr": 0.9666666666666667,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.8421732307692309,
+   "reward_legacy": 0.7504925170450931,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 29,
+   "ns3_users_pdr_ge_90": 21,
+   "ns3_pdr": 0.791375,
+   "ns3_mean_user_throughput_mbps": 0.341874,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 93.84154502185015,
+   "ns3_p95_flow_latency_ms": 546.9127999999998,
+   "ns3_per_user_rx": [
+    771,
+    799,
+    684,
+    792,
+    780,
+    800,
+    796,
+    196,
+    789,
+    800,
+    800,
+    800,
+    799,
+    798,
+    800,
+    0,
+    690,
+    800,
+    65,
+    799,
+    267,
+    308,
+    775,
+    793,
+    3,
+    795,
+    794,
+    800,
+    100,
+    800
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 4,
+   "placement": "fixed",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     61.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -41.0,
+     40.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 27,
+   "net_predicted_pdr": 0.9,
+   "net_usable_per_user": [
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.7814491282051284,
+   "reward_legacy": 0.7571884560280937,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 28,
+   "ns3_users_pdr_ge_90": 18,
+   "ns3_pdr": 0.7099583333333334,
+   "ns3_mean_user_throughput_mbps": 0.3067020000000001,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 115.30244475614766,
+   "ns3_p95_flow_latency_ms": 550.3010499999999,
+   "ns3_per_user_rx": [
+    651,
+    800,
+    0,
+    727,
+    800,
+    703,
+    774,
+    434,
+    798,
+    792,
+    53,
+    798,
+    800,
+    800,
+    776,
+    800,
+    737,
+    0,
+    68,
+    800,
+    95,
+    94,
+    470,
+    107,
+    779,
+    793,
+    800,
+    800,
+    190,
+    800
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 4,
+   "placement": "random",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     73.98,
+     90.96,
+     40.0
+    ],
+    [
+     179.34,
+     -76.36,
+     40.0
+    ],
+    [
+     31.6,
+     -53.97,
+     40.0
+    ]
+   ],
+   "actions": [],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 26,
+   "net_predicted_pdr": 0.8666666666666667,
+   "net_usable_per_user": [
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.7597922051282051,
+   "reward_legacy": 0.7579157287553664,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 26,
+   "ns3_users_pdr_ge_90": 24,
+   "ns3_pdr": 0.811875,
+   "ns3_mean_user_throughput_mbps": 0.35073000000000004,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 70.89543026995125,
+   "ns3_p95_flow_latency_ms": 416.99350000000004,
+   "ns3_per_user_rx": [
+    800,
+    745,
+    735,
+    0,
+    800,
+    357,
+    790,
+    0,
+    796,
+    800,
+    800,
+    790,
+    800,
+    779,
+    800,
+    800,
+    800,
+    789,
+    0,
+    800,
+    800,
+    799,
+    797,
+    0,
+    789,
+    800,
+    800,
+    799,
+    165,
+    755
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 4,
+   "placement": "ppo_legacy",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     61.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     111.0,
+     -31.0,
+     40.0
+    ]
+   ],
+   "actions": [
+    [
+     0,
+     0,
+     4
+    ],
+    [
+     0,
+     0,
+     2
+    ],
+    [
+     0,
+     0,
+     2
+    ],
+    [
+     0,
+     0,
+     2
+    ],
+    [
+     0,
+     0,
+     2
+    ],
+    [
+     0,
+     0,
+     2
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 16.99673171197595,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 27,
+   "net_predicted_pdr": 0.9,
+   "net_usable_per_user": [
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.7851947692307694,
+   "reward_legacy": 0.7646884400983764,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 28,
+   "ns3_users_pdr_ge_90": 19,
+   "ns3_pdr": 0.7679583333333333,
+   "ns3_mean_user_throughput_mbps": 0.331758,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 99.17786064239597,
+   "ns3_p95_flow_latency_ms": 537.64175,
+   "ns3_per_user_rx": [
+    798,
+    800,
+    0,
+    693,
+    791,
+    551,
+    800,
+    341,
+    799,
+    790,
+    719,
+    796,
+    798,
+    800,
+    800,
+    800,
+    799,
+    0,
+    71,
+    800,
+    205,
+    783,
+    452,
+    112,
+    792,
+    800,
+    800,
+    797,
+    144,
+    800
+   ]
+  },
+  {
+   "scenario": "wide_area",
+   "seed": 4,
+   "placement": "ppo_network",
+   "rf_mode": "sionna",
+   "uav_positions": [
+    [
+     10.0,
+     61.0,
+     40.0
+    ],
+    [
+     -41.0,
+     -41.0,
+     40.0
+    ],
+    [
+     61.0,
+     -41.0,
+     40.0
+    ]
+   ],
+   "actions": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "movement_m": 0.0,
+   "rf_coverage_pct": 100.0,
+   "rf_connected": 30,
+   "net_usable": 27,
+   "net_predicted_pdr": 0.9,
+   "net_usable_per_user": [
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "reward_network": 0.7814491282051284,
+   "reward_legacy": 0.7571884560280937,
+   "ns3_flows": 30,
+   "ns3_delivering_users": 28,
+   "ns3_users_pdr_ge_90": 18,
+   "ns3_pdr": 0.7099583333333334,
+   "ns3_mean_user_throughput_mbps": 0.3067020000000001,
+   "ns3_min_user_throughput_mbps": 0.0,
+   "ns3_mean_latency_ms": 115.30244475614766,
+   "ns3_p95_flow_latency_ms": 550.3010499999999,
+   "ns3_per_user_rx": [
+    651,
+    800,
+    0,
+    727,
+    800,
+    703,
+    774,
+    434,
+    798,
+    792,
+    53,
+    798,
+    800,
+    800,
+    776,
+    800,
+    737,
+    0,
+    68,
+    800,
+    95,
+    94,
+    470,
+    107,
+    779,
+    793,
+    800,
+    800,
+    190,
+    800
+   ]
+  }
+ ]
+}

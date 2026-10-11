@@ -642,38 +642,215 @@ def run_ppo_episode(
 
 
 # ============================================================
+# MULTI-UAV EPISODE  (num_uavs >= 1, scenario-driven)
+# ============================================================
+#
+# The legacy single-UAV path above (run_ppo_episode / UAVDynamicEnv /
+# models/ppo_uav_dynamic.zip) is left completely untouched. This function
+# is only used when the caller passes multi-UAV / scenario arguments.
+
+MULTIUAV_MODEL_PATH = PROJECT_ROOT / "models" / "ppo_multiuav" / "model.zip"
+
+
+def _step_user_results(eval_result):
+    """Map evaluate_multi_uav()/surrogate user_results into the trajectory's
+    per-user shape (keeps the legacy fields + adds serving_uav / per_uav)."""
+    out = []
+    for u in eval_result["user_results"]:
+        out.append({
+            "user_id": u["user_id"],
+            "position": u["position"],
+            "rss_dbm": u.get("best_rss_dbm"),
+            "sinr_db": u.get("best_sinr_db"),
+            "snr_db": u.get("best_snr_db"),
+            "path_gain_db": u.get("best_path_gain_db"),
+            "num_paths": u.get("num_paths"),
+            "shortest_delay_sec": u.get("shortest_delay_sec"),
+            "coverage": u.get("coverage"),
+            "connected": u.get("connected"),
+            "serving_uav": u.get("serving_uav"),
+            "per_uav": u.get("per_uav"),
+        })
+    return out
+
+
+def run_multiuav_episode(
+    scenario="blocked_urban",
+    num_uavs=3,
+    num_users=30,
+    mode="surrogate",
+    max_steps=10,
+    seed=42,
+    interference_model="co_channel",
+    out_uav_positions=None,
+    out_trajectory=None,
+):
+    import multiuav_io as mio
+    from multiuav_env import MultiUAVEnv, MAX_UAVS
+
+    uav_out = Path(out_uav_positions) if out_uav_positions else UAV_POSITION_PATH
+    traj_out = Path(out_trajectory) if out_trajectory else TRAJECTORY_PATH
+
+    print()
+    print("=" * 66)
+    print("RESQNET MULTI-UAV PPO OPTIMIZATION")
+    print("=" * 66)
+    print(f"Scenario   : {scenario}")
+    print(f"UAVs       : {num_uavs}   Users: {num_users}")
+    print(f"Mode       : {mode}   Steps: {max_steps}")
+    print(f"Interference: {interference_model} (co-channel SINR from ray-traced powers)")
+
+    env = MultiUAVEnv(
+        num_uavs=num_uavs, num_users=num_users, scenario=scenario,
+        mode=mode, seed=seed, max_steps=max_steps,
+        interference_model=interference_model,
+    )
+    obs, info = env.reset(seed=seed)
+
+    model = None
+    if MULTIUAV_MODEL_PATH.exists():
+        from stable_baselines3 import PPO
+        print(f"\nLoading multi-UAV PPO model: {MULTIUAV_MODEL_PATH}")
+        model = PPO.load(str(MULTIUAV_MODEL_PATH))
+    else:
+        print("\nWARNING: multi-UAV PPO model not found "
+              f"({MULTIUAV_MODEL_PATH}); using random actions.\n"
+              "Train it with: python ml/train_multiuav.py")
+
+    scene_xml = env._scene_xml()
+    initial_positions = env.initial_positions.tolist()
+
+    def _mk_step(step_idx, actions, ev):
+        agg = ev["aggregate"]
+        return mio.build_trajectory_step(
+            step=step_idx,
+            num_uavs=num_uavs,
+            uav_positions=env.uav_positions.tolist(),
+            actions=actions,
+            connected_users=agg["connected_users_count"],
+            coverage_percent=agg["coverage_percentage"],
+            mean_path_gain_db=agg["mean_best_path_gain_db"],
+            mean_rss_dbm=agg["mean_best_rss_dbm"],
+            mean_sinr_db=agg["mean_best_sinr_db"],
+            reward=0.0,
+            user_results=_step_user_results(ev),
+            extra={
+                "mean_snr_db": agg["mean_best_snr_db"],
+                "users_per_uav": agg["users_per_uav"],
+            },
+        )
+
+    trajectory = [_mk_step(0, [None] * num_uavs, env.last_eval)]
+
+    total_reward = 0.0
+    for step in range(1, max_steps + 1):
+        if model is not None:
+            action, _ = model.predict(obs, deterministic=True)
+            action = np.asarray(action).ravel()
+        else:
+            action = env.np_random.integers(0, 5, size=MAX_UAVS)
+
+        obs, reward, terminated, truncated, sinfo = env.step(action)
+        total_reward += float(reward)
+
+        rec = _mk_step(step, sinfo["actions"], sinfo["eval"])
+        rec["reward"] = float(reward)
+        trajectory.append(rec)
+
+        agg = sinfo["eval"]["aggregate"]
+        print(f"\nStep {step}  actions={sinfo['actions']}")
+        print(f"  coverage {agg['coverage_percentage']}%  "
+              f"connected {agg['connected_users_count']}/{num_users}  "
+              f"mean SNR {agg['mean_best_snr_db']} dB  "
+              f"mean SINR {agg['mean_best_sinr_db']} dB  "
+              f"reward {reward:.4f}")
+        print(f"  users_per_uav {agg['users_per_uav']}")
+        if terminated or truncated:
+            break
+
+    final_positions = env.uav_positions.tolist()
+    final_eval = env.last_eval
+    associations = [u["serving_uav"] - 1 for u in final_eval["user_results"]]
+    user_positions = [u["position"] for u in final_eval["user_results"]]
+
+    uav_data = mio.build_uav_positions(final_positions, user_positions, associations)
+    uav_out.parent.mkdir(parents=True, exist_ok=True)
+    with open(uav_out, "w") as f:
+        json.dump(uav_data, f, indent=2)
+
+    traj_doc = mio.build_trajectory(
+        scene=scene_xml, mode=mode, num_uavs=num_uavs, num_users=num_users,
+        num_steps=len(trajectory) - 1, total_reward=total_reward,
+        initial_positions=initial_positions, final_positions=final_positions,
+        steps=trajectory, scenario=scenario,
+        interference_model=interference_model, seed=seed,
+    )
+    with open(traj_out, "w") as f:
+        json.dump(traj_doc, f, indent=2)
+
+    problems = mio.validate_consistency(uav_data, traj_doc)
+    print()
+    print("=" * 66)
+    print("MULTI-UAV PPO COMPLETE")
+    print("=" * 66)
+    print(f"Initial UAV positions: {initial_positions}")
+    print(f"Final UAV positions  : {[[round(c, 2) for c in p] for p in final_positions]}")
+    print(f"Total reward         : {round(total_reward, 4)}")
+    print(f"Consistency check    : {'OK' if not problems else problems}")
+    print(f"Saved: {uav_out}")
+    print(f"Saved: {traj_out}")
+    print("=" * 66)
+    if problems:
+        raise RuntimeError(f"handoff/trajectory consistency check failed: {problems}")
+    return traj_doc
+
+
+# ============================================================
 # MAIN
 # ============================================================
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description=(
-            "Run PPO UAV optimization "
-            "with Sionna RT"
-        )
+        description="Run PPO UAV optimization (single-UAV legacy path, or "
+                    "multi-UAV / scenario path when those arguments are given)."
     )
 
-    parser.add_argument(
-        "--mode",
-        choices=[
-            "sionna",
-            "surrogate"
-        ],
-        default="sionna"
-    )
+    parser.add_argument("--mode", choices=["sionna", "surrogate"], default="sionna")
+    parser.add_argument("--steps", type=int, default=5)
 
+    # Multi-UAV / scenario arguments. If NONE of these are given the legacy
+    # single-UAV path runs unchanged.
+    parser.add_argument("--num-uavs", type=int, default=None)
+    parser.add_argument("--num-users", type=int, default=None)
+    parser.add_argument("--scenario", type=str, default=None)
+    parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
-        "--steps",
-        type=int,
-        default=5
+        "--interference-model", choices=["co_channel", "orthogonal"],
+        default="co_channel",
     )
 
     args = parser.parse_args()
 
-    run_ppo_episode(
-        use_sionna=(
-            args.mode == "sionna"
-        ),
-        max_steps=args.steps
+    multiuav_requested = (
+        args.num_uavs is not None
+        or args.num_users is not None
+        or args.scenario is not None
     )
+
+    if not multiuav_requested:
+        # ---- unchanged legacy single-UAV path ----
+        run_ppo_episode(
+            use_sionna=(args.mode == "sionna"),
+            max_steps=args.steps,
+        )
+    else:
+        run_multiuav_episode(
+            scenario=args.scenario or "blocked_urban",
+            num_uavs=args.num_uavs if args.num_uavs is not None else 3,
+            num_users=args.num_users if args.num_users is not None else 30,
+            mode=args.mode,
+            max_steps=args.steps,
+            seed=args.seed,
+            interference_model=args.interference_model,
+        )

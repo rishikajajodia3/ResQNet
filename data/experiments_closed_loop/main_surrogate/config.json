@@ -1,0 +1,51 @@
+{
+ "settings": {
+  "protocol": 2,
+  "scenarios": [
+   "wide_area",
+   "blocked_urban",
+   "flood_shelters"
+  ],
+  "seeds": 20,
+  "num_users": 30,
+  "num_uavs": 3,
+  "rf_mode": "surrogate",
+  "methods": [
+   "fixed",
+   "random",
+   "ppo_network",
+   "ppo_calibrated",
+   "ppo_calibrated_30",
+   "greedy_joint",
+   "coordinate",
+   "evolution",
+   "ns3_refine"
+  ],
+  "candidate": "ns3_refine",
+  "final_rng_runs": [
+   11,
+   12
+  ],
+  "search_rng_run": 101,
+  "search_traffic_seconds": 3,
+  "surrogate_budget": 1500
+ },
+ "files": {
+  "code/calibrated_model.py": "e6a4bd8021fab489d6ae52a9bcc24ca02200db56d0d7925d2976993a6554bd35",
+  "code/evaluate_network.py": "77f7d3b16ab714cb151682a926e5b163fb5d8f447c861e1ab365a9bd4208829c",
+  "code/multiuav_env.py": "efada7c50bf1764aeaed64c0d624c5f5bd1f8a72b4a9f9f24c37e9cf7bb04c22",
+  "code/multiuav_io.py": "bc8951b5810ce8e367eb843addba8bdecfb5d9be538e0113be95ac38c2f2b7c1",
+  "code/network_model.py": "67136aae2f090e4885430993e315fbe653c6be59b7224a2c74a6ffaf936b29b3",
+  "code/placement_search.py": "7e17621825b99426098b3b58e3654af6469a8ddb39d29fa6de71e9ff61d77143",
+  "code/scenarios.py": "d895a2646fa29b3abfbf50ac4227158f73b582e859fedfc850b1d0a5babcd144",
+  "code/surrogate_rf": "cd1567f052509976f43ba669c4a59af847e63f030cd53e09bd4960a5ba3ccb3e",
+  "config/eval_network.json": "b0525d0ecd0714ff2742f466526700e7a422dab2e1731682ee69acc3c37d67ce",
+  "config/scenarios.json": "1e6a11655276e44a89a50a0ccabd303099dd94826eada48010a6e7bc2d0081e9",
+  "model/calibrated": "a63184ea3c8d671c4ad53cfa91ef1c3106917169e97cd4cbed458d16d9b4b9ee",
+  "model/ppo_calibrated": "24969bb73c977fb45e411c561393f703de2b03cd030409680ebe408a53f9f3be",
+  "model/ppo_legacy": "783bb77e0a92d8beeb4b172aaf8b2ce57233e30360aba138b144be36a59f8b9e",
+  "model/ppo_network": "7b48235324d4f9ab74ffdef754ead9b2612433a41b46c3a55e5daba8ffe2ac90",
+  "ns3/binary": "3b6c957815f4d75759e63cac90fce3ee1ef251c481050d7842c6168bbf7b0e7d",
+  "ns3/uav-demo.cc": "08daaeb9919041ac10c8843c018a74f9c4d3287ae844ffff26f6fa5223082152"
+ }
+}

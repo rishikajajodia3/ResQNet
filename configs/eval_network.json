@@ -1,0 +1,16 @@
+{
+  "_comment": "EVALUATION-ONLY scenarios for ml/evaluate_network.py and calibrated-model validation. Never registered by any training script (training uses configs/training_network.json). flood_shelters: in a flood, survivors gather at a few dry refuges (rooftops, schools, raised roads) spread over several hundred metres, separated by water with no ground infrastructure. A fixed grid of UAVs does not line up with the refuges, so placement genuinely matters. It differs from every training scenario in extent (360 m), cluster count (5) and cluster tightness (6 m).",
+  "extra_eval_scenarios": {
+    "flood_shelters": {
+      "name": "Flood Shelters (evaluation only)",
+      "scene": "city_damaged.xml",
+      "user_region": { "x": [-160.0, 200.0], "y": [-160.0, 200.0] },
+      "uav_region": { "x": [-170.0, 210.0], "y": [-170.0, 210.0], "z": [20.0, 60.0] },
+      "user_distribution": "clustered",
+      "num_clusters": 5,
+      "cluster_std_m": 6.0,
+      "purpose": "Survivors concentrated at 5 dry refuges across a flooded area."
+    }
+  },
+  "eval_scenarios": ["wide_area", "blocked_urban", "flood_shelters"]
+}

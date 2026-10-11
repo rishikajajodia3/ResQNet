@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-09-04T05:08:55+00:00",
+  "coordinate_frame": "Original Sionna scene coordinates, metres. Axes as in the OBJ: X and Y are ground plane, Z is height/altitude. Meshes are NOT recentred - real UAV and user coordinates overlay directly.",
+  "full_scene_bounds": [
+    [
+      -2760.387,
+      -2886.871,
+      -0.299
+    ],
+    [
+      2500.0,
+      2500.0,
+      172.0
+    ]
+  ],
+  "web_asset_crop": {
+    "half_extent_m": 700.0,
+    "center_xy": [
+      0.0,
+      0.0
+    ],
+    "bounds_xy": [
+      [
+        -700.0,
+        -700.0
+      ],
+      [
+        700.0,
+        700.0
+      ]
+    ],
+    "damaged": {
+      "source": "sionna/scenes/city_damaged.obj",
+      "output": "city_damaged.glb",
+      "full_faces": 317948,
+      "cropped_faces": 18552,
+      "final_faces": 18552,
+      "decimated": false,
+      "size_kb": 445.5
+    },
+    "baseline": {
+      "source": "sionna/scenes/city_baseline.obj",
+      "output": "city_baseline.glb",
+      "full_faces": 317984,
+      "cropped_faces": 18554,
+      "final_faces": 18554,
+      "decimated": false,
+      "size_kb": 445.1
+    }
+  },
+  "operational_region": {
+    "x": [
+      -50.0,
+      70.0
+    ],
+    "y": [
+      -50.0,
+      70.0
+    ],
+    "z": [
+      10.0,
+      50.0
+    ],
+    "note": "UAVDynamicEnv position clip bounds (ml/dynamic_model.py)."
+  },
+  "geometry_honesty_note": "The dense modelled urban area lies roughly 400-800 m from the origin. Within +/- 200 m of the origin the mesh has only a few hundred triangles - mostly open ground with sparse structures under ~9 m. The UAV (~26 m altitude) therefore has near line-of-sight to the ground users, which is why Sionna reports high coverage. The wide crop shows where the operating region sits relative to the city.",
+  "damage_labels": {
+    "available": false,
+    "reason": "sionna/scenes/damage_labels.geojson uses a different, unaligned coordinate frame (values around 1500, -475). It is not projected onto this scene - no faked overlay."
+  },
+  "channel_model_note": "This geometry drives Sionna RT ray tracing (propagation / radio analysis). NS-3 uses its own Wi-Fi channel model for network / MAC / traffic validation and does not consume Sionna's ray-traced channel loss."
+}

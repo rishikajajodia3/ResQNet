@@ -1,0 +1,38 @@
+{
+  "_comment": "Multi-UAV PPO trained on the ns-3-calibrated reward (reward_mode 'calibrated', ml/calibrated_model.py: per-user PDR including hidden-node collisions and contention, fitted to ns-3 runs on training scenarios only). Same training scenarios, start randomisation and step budget as configs/training_network.json, so the two policies differ only in the reward. Held-out evaluation scenarios (incl. flood_shelters from configs/eval_network.json) are never used here.",
+  "seed": 42,
+  "extra_train_scenarios": {
+    "sparse_clusters": {
+      "name": "Sparse Survivor Clusters (training only)",
+      "scene": "city_damaged.xml",
+      "user_region": { "x": [-120.0, 140.0], "y": [-120.0, 140.0] },
+      "uav_region": { "x": [-130.0, 150.0], "y": [-130.0, 150.0], "z": [20.0, 60.0] },
+      "user_distribution": "clustered",
+      "num_clusters": 4,
+      "cluster_std_m": 12.0,
+      "purpose": "Training-only: separated survivor clusters over a mid-size area."
+    },
+    "wide_edge": {
+      "name": "Wide Area, Edge-Heavy (training only)",
+      "scene": "city_damaged.xml",
+      "user_region": { "x": [-170.0, 190.0], "y": [-170.0, 190.0] },
+      "uav_region": { "x": [-180.0, 200.0], "y": [-180.0, 200.0], "z": [20.0, 60.0] },
+      "user_distribution": "edge_heavy",
+      "purpose": "Training-only: users concentrated near the edges of a large area."
+    }
+  },
+  "train": {
+    "scenarios": ["open_area", "dense_urban", "clustered_survivors", "sparse_clusters", "wide_edge"],
+    "user_counts": [10, 20, 30, 50],
+    "num_uavs": [3],
+    "mode": "surrogate",
+    "reward_mode": "calibrated",
+    "random_start_prob": 0.5,
+    "max_steps_per_episode": 12,
+    "total_timesteps": 300000
+  },
+  "eval": {
+    "scenarios": ["blocked_urban", "wide_area"]
+  },
+  "model_dir": "models/ppo_multiuav_cal"
+}

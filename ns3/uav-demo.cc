@@ -8,424 +8,503 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <vector>
+#include <cmath>
+#include <cstdio>
+#include <map>
 using namespace ns3;
+
+// ---------------------------------------------------------------------------
+// Optional MAC/PHY loss diagnostics (--macStats). Counters per node id.
+// ---------------------------------------------------------------------------
+struct NodeLossStats
+{
+    uint64_t txFailed = 0;     // data transmission attempts without ACK
+    uint64_t dropRetry = 0;    // MPDU dropped after FrameRetryLimit attempts
+    uint64_t dropLifetime = 0; // MPDU expired in the MAC queue (MaxDelay)
+    uint64_t dropEnqueue = 0;  // MAC queue full
+    uint64_t rxError = 0;      // PSDU received but failed to decode (SINR)
+    std::map<std::string, uint64_t> rxDrop; // PHY receive drops by reason
+};
+
+static std::map<uint32_t, NodeLossStats> g_lossStats;
+
+static uint32_t
+ContextNodeId(const std::string& context)
+{
+    size_t a = context.find("/NodeList/") + 10;
+    return static_cast<uint32_t>(std::stoul(context.substr(a, context.find('/', a) - a)));
+}
+
+static void
+OnMacDrop(std::string context, WifiMacDropReason reason, Ptr<const WifiMpdu>)
+{
+    auto& s = g_lossStats[ContextNodeId(context)];
+    if (reason == WIFI_MAC_DROP_REACHED_RETRY_LIMIT)
+        s.dropRetry++;
+    else if (reason == WIFI_MAC_DROP_EXPIRED_LIFETIME)
+        s.dropLifetime++;
+    else if (reason == WIFI_MAC_DROP_FAILED_ENQUEUE)
+        s.dropEnqueue++;
+}
+
+static void
+OnTxDataFailed(std::string context, Mac48Address)
+{
+    g_lossStats[ContextNodeId(context)].txFailed++;
+}
+
+static void
+OnRxError(std::string context, Ptr<const Packet>, double)
+{
+    g_lossStats[ContextNodeId(context)].rxError++;
+}
+
+static void
+OnPhyRxDrop(std::string context, Ptr<const Packet>, WifiPhyRxfailureReason reason)
+{
+    std::ostringstream r;
+    r << reason;
+    g_lossStats[ContextNodeId(context)].rxDrop[r.str()]++;
+}
+
+// ---------------------------------------------------------------------------
+// Minimal JSON helpers (no external deps) for the ML handoff file
+//   data/uav_positions.json :
+//     "num_uavs"        : K
+//     "uav_positions"   : [[x,y,z], ...]                (K entries)
+//     "num_users"       : N
+//     "user_positions"  : [[x,y,z], ...]                (N entries)
+//     "associations"    : [u0, u1, ...]  (optional)     user i -> UAV index
+//
+// For K == 1 this program behaves EXACTLY as the original single-UAV
+// scenario (same stdout, same topology: one UDP server, all users are
+// clients of it). The multi-UAV lines are only printed when K > 1.
+// ---------------------------------------------------------------------------
+
+static std::string SlurpNoNewlines(const std::string &path)
+{
+    std::ifstream f(path);
+    if (!f)
+    {
+        return std::string();
+    }
+    std::string line, json;
+    while (std::getline(f, line))
+    {
+        json += line;
+    }
+    return json;
+}
+
+// Read an integer value for "key": <int>
+static int ParseIntField(const std::string &json, const std::string &key, int fallback)
+{
+    size_t k = json.find("\"" + key + "\"");
+    if (k == std::string::npos)
+        return fallback;
+    size_t colon = json.find(':', k);
+    if (colon == std::string::npos)
+        return fallback;
+    int v = fallback;
+    if (sscanf(json.c_str() + colon + 1, " %d", &v) != 1)
+        return fallback;
+    return v;
+}
+
+// Fill `out` with every [x, y, z] triple inside the array named `key`.
+static void ParseTriples(const std::string &json, const std::string &key,
+                         std::vector<Vector> &out)
+{
+    out.clear();
+    size_t k = json.find("\"" + key + "\"");
+    if (k == std::string::npos)
+        return;
+    size_t arrStart = json.find('[', k);
+    if (arrStart == std::string::npos)
+        return;
+
+    // matching close bracket of the outer array (depth counting)
+    size_t arrEnd = std::string::npos;
+    int depth = 0;
+    for (size_t p = arrStart; p < json.size(); p++)
+    {
+        if (json[p] == '[')
+            depth++;
+        else if (json[p] == ']')
+        {
+            depth--;
+            if (depth == 0)
+            {
+                arrEnd = p;
+                break;
+            }
+        }
+    }
+    if (arrEnd == std::string::npos)
+        return;
+
+    size_t p = json.find('[', arrStart + 1);
+    while (p != std::string::npos && p < arrEnd)
+    {
+        double x, y, z;
+        if (sscanf(json.c_str() + p + 1, "%lf, %lf, %lf", &x, &y, &z) == 3)
+        {
+            out.push_back(Vector(x, y, z));
+        }
+        p = json.find('[', p + 1);
+    }
+}
+
+// Parse the optional flat integer array "associations": [ ... ].
+static void ParseIntArray(const std::string &json, const std::string &key,
+                          std::vector<int> &out)
+{
+    out.clear();
+    size_t k = json.find("\"" + key + "\"");
+    if (k == std::string::npos)
+        return;
+    size_t arrStart = json.find('[', k);
+    size_t arrEnd = json.find(']', arrStart);
+    if (arrStart == std::string::npos || arrEnd == std::string::npos)
+        return;
+    size_t p = arrStart + 1;
+    while (p < arrEnd)
+    {
+        // skip whitespace / commas
+        while (p < arrEnd && (json[p] == ' ' || json[p] == ',' || json[p] == '\t'))
+            p++;
+        if (p >= arrEnd)
+            break;
+        int v = 0;
+        int consumed = 0;
+        if (sscanf(json.c_str() + p, "%d%n", &v, &consumed) == 1)
+        {
+            out.push_back(v);
+            p += consumed;
+        }
+        else
+        {
+            break;
+        }
+    }
+}
 
 int main(int argc, char *argv[])
 {
+    // Static ARP is the default. With dynamic ARP every client starts at
+    // t = 2 s, the per-node ARP retry timers fire in lock-step (3, 4, 5 s),
+    // the un-ACKed broadcast requests collide, and ns-3 marks the entry dead
+    // for ArpCache::DeadTimeout (100 s) - longer than the whole run - so the
+    // affected users deliver nothing regardless of their radio link.
+    // --populateArp=false restores the previous dynamic-ARP behaviour.
+    bool populateArp = true;
+    CommandLine cmd(__FILE__);
+    cmd.AddValue("populateArp", "Pre-populate ARP caches (no ARP exchange)", populateArp);
+    bool macStats = false;
+    cmd.AddValue("macStats", "Print per-node MAC/PHY loss counters (MACSTATS lines)", macStats);
+    double trafficSeconds = 8.0;
+    cmd.AddValue("trafficSeconds", "UDP traffic duration in seconds (clients start at 2 s)",
+                 trafficSeconds);
+    cmd.Parse(argc, argv);
+    const double stopTime = 2.0 + trafficSeconds;
+
     // =========================================
-    // 1. CREATE NODES
+    // 1. READ ML HANDOFF
     // =========================================
-
-    NodeContainer uav;
-    uav.Create(1);
-
-    NodeContainer users;
-    users.Create(10);
-
-    // =========================================
-    // 2. 3D MOBILITY / POSITIONS
-    // =========================================
-
-    MobilityHelper mobility;
-
-    mobility.SetMobilityModel(
-        "ns3::ConstantPositionMobilityModel");
-
-    // UAV position
-    Ptr<ListPositionAllocator> uavPosition =
-        CreateObject<ListPositionAllocator>();
-
-    // Read UAV position generated by ML
-double uavX, uavY, uavZ;
-
-std::ifstream positionFile("data/uav_positions.json");
-
-if (!positionFile)
-{
-    std::cerr << "Could not open data/uav_positions.json" << std::endl;
-    return 1;
-}
-
-// Minimal JSON parsing (no external deps) for the ML handoff file:
-//   "uav_positions":  [[x, y, z]]
-//   "user_positions": [[x, y, z], [x, y, z], ...]
-// The file is pretty-printed, so we locate values by key rather than by
-// assuming a compact "[[" layout.
-
-std::string line;
-std::string json;
-
-while (std::getline(positionFile, line))
-{
-    json += line;
-}
-
-size_t uavKey = json.find("\"uav_positions\"");
-
-if (uavKey == std::string::npos)
-{
-    std::cerr << "Could not find \"uav_positions\" in data/uav_positions.json" << std::endl;
-    return 1;
-}
-
-size_t uavBracket = json.find('[', uavKey);            // outer '['
-if (uavBracket != std::string::npos)
-{
-    uavBracket = json.find('[', uavBracket + 1);       // first inner '['
-}
-
-if (uavBracket == std::string::npos ||
-    sscanf(json.c_str() + uavBracket + 1,
-           "%lf, %lf, %lf",
-           &uavX,
-           &uavY,
-           &uavZ) != 3)
-{
-    std::cerr << "Could not parse UAV coordinates from data/uav_positions.json" << std::endl;
-    return 1;
-}
-
-std::cout << "ML UAV Position: ("
-          << uavX << ", "
-          << uavY << ", "
-          << uavZ << ")"
-          << std::endl;
-
-uavPosition->Add(
-    Vector(uavX, uavY, uavZ));
-
-    mobility.SetPositionAllocator(uavPosition);
-    mobility.Install(uav);
-
-    // Ground users: use the SAME positions that Sionna RT / PPO evaluated,
-    // handed over through data/uav_positions.json as
-    //   "user_positions": [[x, y, z], ...].
-    // This keeps the wireless-propagation scenario and the network
-    // simulation consistent. If the field is absent (older handoff file),
-    // fall back to the previous generated layout.
-    Ptr<ListPositionAllocator> userPositions =
-        CreateObject<ListPositionAllocator>();
-
-    uint32_t usersLoaded = 0;
-    size_t userKey = json.find("\"user_positions\"");
-
-    if (userKey != std::string::npos)
+    std::string json = SlurpNoNewlines("data/uav_positions.json");
+    if (json.empty())
     {
-        size_t arrStart = json.find('[', userKey);          // outer '['
+        std::cerr << "Could not open data/uav_positions.json" << std::endl;
+        return 1;
+    }
 
-        // Find the matching close bracket of the outer array by depth
-        // counting (whitespace-tolerant for pretty-printed JSON).
-        size_t arrEnd = std::string::npos;
-        if (arrStart != std::string::npos)
+    std::vector<Vector> uavPos;
+    std::vector<Vector> userPos;
+    std::vector<int> assoc;
+    ParseTriples(json, "uav_positions", uavPos);
+    ParseTriples(json, "user_positions", userPos);
+    ParseIntArray(json, "associations", assoc);
+
+    int nUav = ParseIntField(json, "num_uavs", (int)uavPos.size());
+    int nUser = ParseIntField(json, "num_users", (int)userPos.size());
+
+    if (uavPos.empty() || (int)uavPos.size() != nUav)
+    {
+        std::cerr << "Could not parse " << nUav << " UAV positions from data/uav_positions.json"
+                  << std::endl;
+        return 1;
+    }
+
+    // legacy single-UAV compatibility line (kept for every K; the
+    // orchestrator's existing check looks for UAV 0)
+    std::cout << "ML UAV Position: ("
+              << uavPos[0].x << ", " << uavPos[0].y << ", " << uavPos[0].z << ")"
+              << std::endl;
+
+    bool multi = nUav > 1;
+    if (multi)
+    {
+        std::cout << "ML UAV Positions: " << nUav << std::endl;
+        for (int k = 0; k < nUav; k++)
         {
-            int depth = 0;
-            for (size_t k = arrStart; k < json.size(); k++)
-            {
-                if (json[k] == '[')
-                {
-                    depth++;
-                }
-                else if (json[k] == ']')
-                {
-                    depth--;
-                    if (depth == 0)
-                    {
-                        arrEnd = k;
-                        break;
-                    }
-                }
-            }
-        }
-
-        size_t p = (arrStart == std::string::npos)
-                       ? std::string::npos
-                       : json.find('[', arrStart + 1);      // first inner '['
-
-        while (p != std::string::npos && arrEnd != std::string::npos &&
-               p < arrEnd && usersLoaded < users.GetN())
-        {
-            double ux, uy, uz;
-            if (sscanf(json.c_str() + p + 1,
-                       "%lf, %lf, %lf",
-                       &ux, &uy, &uz) == 3)
-            {
-                userPositions->Add(Vector(ux, uy, uz));
-                usersLoaded++;
-            }
-            p = json.find('[', p + 1);
+            std::cout << "UAV " << (k + 1) << ": ("
+                      << uavPos[k].x << ", " << uavPos[k].y << ", " << uavPos[k].z << ")"
+                      << std::endl;
         }
     }
 
-    if (usersLoaded != users.GetN())
+    // =========================================
+    // 2. NODES
+    // =========================================
+    NodeContainer uav;
+    uav.Create(nUav);
+    NodeContainer users;
+    users.Create(nUser);
+
+    // =========================================
+    // 3. MOBILITY / POSITIONS
+    // =========================================
+    MobilityHelper mobility;
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+
+    Ptr<ListPositionAllocator> uavAlloc = CreateObject<ListPositionAllocator>();
+    for (int k = 0; k < nUav; k++)
     {
-        std::cerr << "WARNING: expected " << users.GetN()
+        uavAlloc->Add(uavPos[k]);
+    }
+    mobility.SetPositionAllocator(uavAlloc);
+    mobility.Install(uav);
+
+    // Ground users: the SAME positions Sionna RT / PPO evaluated.
+    Ptr<ListPositionAllocator> userAlloc = CreateObject<ListPositionAllocator>();
+    uint32_t usersLoaded = 0;
+    for (int i = 0; i < nUser && i < (int)userPos.size(); i++)
+    {
+        userAlloc->Add(userPos[i]);
+        usersLoaded++;
+    }
+    if ((int)usersLoaded != nUser)
+    {
+        std::cerr << "WARNING: expected " << nUser
                   << " entries in \"user_positions\", found " << usersLoaded
                   << "; using generated fallback positions." << std::endl;
-
-        userPositions = CreateObject<ListPositionAllocator>();
-        for (uint32_t i = 0; i < users.GetN(); i++)
+        userAlloc = CreateObject<ListPositionAllocator>();
+        for (int i = 0; i < nUser; i++)
         {
-            userPositions->Add(
-                Vector(uavX + i * 5.0,
-                       uavY + i * 3.0,
-                       0.0));
+            userAlloc->Add(Vector(uavPos[0].x + i * 5.0, uavPos[0].y + i * 3.0, 0.0));
         }
     }
     else
     {
         std::cout << "Loaded " << usersLoaded
-                  << " ground-user positions from data/uav_positions.json"
-                  << std::endl;
+                  << " ground-user positions from data/uav_positions.json" << std::endl;
     }
-
-    mobility.SetPositionAllocator(userPositions);
+    mobility.SetPositionAllocator(userAlloc);
     mobility.Install(users);
 
     // =========================================
-    // 3. WIFI
+    // 4. ASSOCIATION (user -> UAV)
     // =========================================
+    // Use the association from the handoff file (best-RSS server chosen by
+    // Sionna). If it is absent or malformed, fall back to nearest UAV by
+    // 3-D Euclidean distance.
+    bool assocFromFile = ((int)assoc.size() == nUser);
+    if (!assocFromFile)
+    {
+        assoc.assign(nUser, 0);
+        for (int i = 0; i < nUser; i++)
+        {
+            double best = 1e300;
+            int bestK = 0;
+            Vector up = (i < (int)userPos.size())
+                            ? userPos[i]
+                            : Vector(uavPos[0].x + i * 5.0, uavPos[0].y + i * 3.0, 0.0);
+            for (int k = 0; k < nUav; k++)
+            {
+                double dx = up.x - uavPos[k].x;
+                double dy = up.y - uavPos[k].y;
+                double dz = up.z - uavPos[k].z;
+                double d = dx * dx + dy * dy + dz * dz;
+                if (d < best)
+                {
+                    best = d;
+                    bestK = k;
+                }
+            }
+            assoc[i] = bestK;
+        }
+    }
+    for (int i = 0; i < nUser; i++)
+    {
+        if (assoc[i] < 0 || assoc[i] >= nUav)
+            assoc[i] = 0;
+    }
+    if (multi)
+    {
+        std::cout << "Associations: " << (assocFromFile ? "from handoff (best-RSS server)"
+                                                        : "computed (nearest UAV)")
+                  << std::endl;
+    }
 
+    // =========================================
+    // 5. WIFI  (single shared 802.11n ad-hoc channel)
+    // =========================================
     NodeContainer allNodes;
-
     allNodes.Add(uav);
     allNodes.Add(users);
 
     WifiHelper wifi;
-
     wifi.SetStandard(WIFI_STANDARD_80211n);
 
     WifiMacHelper wifiMac;
+    wifiMac.SetType("ns3::AdhocWifiMac");
 
-    wifiMac.SetType(
-        "ns3::AdhocWifiMac");
-
-    // Wi-Fi channel
-    YansWifiChannelHelper channel =
-        YansWifiChannelHelper::Default();
-
+    YansWifiChannelHelper channel = YansWifiChannelHelper::Default();
     YansWifiPhyHelper phy;
-
     phy.SetChannel(channel.Create());
+    phy.Set("TxPowerStart", DoubleValue(30.0));
+    phy.Set("TxPowerEnd", DoubleValue(30.0));
+    phy.Set("RxSensitivity", DoubleValue(-90.0));
 
-    // Increase transmission power
-    phy.Set(
-        "TxPowerStart",
-        DoubleValue(30.0));
-
-    phy.Set(
-        "TxPowerEnd",
-        DoubleValue(30.0));
-
-    // Improve receiver sensitivity
-    phy.Set(
-        "RxSensitivity",
-        DoubleValue(-90.0));
-
-    NetDeviceContainer devices =
-        wifi.Install(
-            phy,
-            wifiMac,
-            allNodes);
+    NetDeviceContainer devices = wifi.Install(phy, wifiMac, allNodes);
 
     // =========================================
-    // 4. INTERNET STACK
+    // 6. INTERNET STACK
     // =========================================
-
     InternetStackHelper internet;
-
     internet.Install(allNodes);
 
     Ipv4AddressHelper address;
+    address.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer interfaces = address.Assign(devices);
+    // interface index 0..nUav-1  -> UAVs ;  nUav..  -> users
 
-    address.SetBase(
-        "10.1.1.0",
-        "255.255.255.0");
-
-    Ipv4InterfaceContainer interfaces =
-        address.Assign(devices);
-
-    // =========================================
-    // 5. UDP SERVER ON UAV
-    // =========================================
-
-    uint16_t port = 9000;
-
-    UdpServerHelper server(port);
-
-    ApplicationContainer serverApp =
-        server.Install(uav.Get(0));
-
-    serverApp.Start(
-        Seconds(1.0));
-
-    serverApp.Stop(
-        Seconds(10.0));
-
-    // =========================================
-    // 6. UDP CLIENTS ON USERS
-    // =========================================
-
-    for (uint32_t i = 0;
-         i < users.GetN();
-         i++)
+    if (populateArp)
     {
-        UdpClientHelper client(
-            interfaces.GetAddress(0),
-            port);
+        NeighborCacheHelper neighborCache;
+        neighborCache.PopulateNeighborCache(interfaces);
+    }
 
-        client.SetAttribute(
-            "MaxPackets",
-            UintegerValue(1000));
-
-        client.SetAttribute(
-            "Interval",
-            TimeValue(
-                MilliSeconds(10)));
-
-        client.SetAttribute(
-            "PacketSize",
-            UintegerValue(512));
-
-        ApplicationContainer clientApp =
-            client.Install(
-                users.Get(i));
-
-        clientApp.Start(
-            Seconds(2.0));
-
-        clientApp.Stop(
-            Seconds(10.0));
+    if (multi)
+    {
+        for (int k = 0; k < nUav; k++)
+        {
+            std::cout << "UAV " << (k + 1) << " address: "
+                      << interfaces.GetAddress(k) << std::endl;
+        }
     }
 
     // =========================================
-    // 7. FLOW MONITOR
+    // 7. ONE UDP SERVER PER UAV
     // =========================================
+    uint16_t port = 9000;
+    for (int k = 0; k < nUav; k++)
+    {
+        UdpServerHelper server(port);
+        ApplicationContainer serverApp = server.Install(uav.Get(k));
+        serverApp.Start(Seconds(1.0));
+        serverApp.Stop(Seconds(stopTime));
+    }
 
+    // =========================================
+    // 8. UDP CLIENT PER USER -> ITS ASSOCIATED UAV
+    // =========================================
+    for (int i = 0; i < nUser; i++)
+    {
+        Ipv4Address target = interfaces.GetAddress(assoc[i]); // UAV interface
+        UdpClientHelper client(target, port);
+        client.SetAttribute("MaxPackets", UintegerValue(1000));
+        client.SetAttribute("Interval", TimeValue(MilliSeconds(10)));
+        client.SetAttribute("PacketSize", UintegerValue(512));
+        ApplicationContainer clientApp = client.Install(users.Get(i));
+        clientApp.Start(Seconds(2.0));
+        clientApp.Stop(Seconds(stopTime));
+    }
+
+    // =========================================
+    // 9. FLOW MONITOR
+    // =========================================
     FlowMonitorHelper flowmon;
+    Ptr<FlowMonitor> monitor = flowmon.InstallAll();
 
-    Ptr<FlowMonitor> monitor =
-        flowmon.InstallAll();
+    if (macStats)
+    {
+        const std::string dev = "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/";
+        Config::Connect(dev + "Mac/DroppedMpdu", MakeCallback(&OnMacDrop));
+        Config::Connect(dev + "RemoteStationManager/MacTxDataFailed",
+                        MakeCallback(&OnTxDataFailed));
+        Config::Connect(dev + "Phy/State/RxError", MakeCallback(&OnRxError));
+        Config::Connect(dev + "Phy/PhyRxDrop", MakeCallback(&OnPhyRxDrop));
+    }
 
-    // =========================================
-    // 8. RUN SIMULATION
-    // =========================================
-
-    Simulator::Stop(
-        Seconds(10.0));
-
+    Simulator::Stop(Seconds(stopTime));
     Simulator::Run();
 
     // =========================================
-    // 9. COLLECT RESULTS
+    // 10. RESULTS  (format unchanged)
     // =========================================
-
     monitor->CheckForLostPackets();
-
     Ptr<Ipv4FlowClassifier> classifier =
-        DynamicCast<Ipv4FlowClassifier>(
-            flowmon.GetClassifier());
+        DynamicCast<Ipv4FlowClassifier>(flowmon.GetClassifier());
+    auto stats = monitor->GetFlowStats();
 
-    auto stats =
-        monitor->GetFlowStats();
-
-    std::cout
-        << "\n====================================\n";
-
-    std::cout
-        << "       UAV NETWORK RESULTS\n";
-
-    std::cout
-        << "====================================\n";
+    std::cout << "\n====================================\n";
+    std::cout << "       UAV NETWORK RESULTS\n";
+    std::cout << "====================================\n";
 
     for (const auto &flow : stats)
     {
-        Ipv4FlowClassifier::FiveTuple tuple =
-            classifier->FindFlow(flow.first);
+        Ipv4FlowClassifier::FiveTuple tuple = classifier->FindFlow(flow.first);
 
-        std::cout
-            << "\nFlow: "
-            << tuple.sourceAddress
-            << " -> "
-            << tuple.destinationAddress
-            << "\n";
+        std::cout << "\nFlow: " << tuple.sourceAddress << " -> "
+                  << tuple.destinationAddress << "\n";
 
         if (flow.second.rxPackets == 0)
         {
-            std::cout
-                << "No packets received.\n";
-
+            // Report what was sent so a failed flow still counts towards loss.
+            std::cout << "Packets Sent: " << flow.second.txPackets << "\n";
+            std::cout << "No packets received.\n";
             continue;
         }
 
-        double duration =
-            flow.second.timeLastRxPacket.GetSeconds()
-            -
-            flow.second.timeFirstTxPacket.GetSeconds();
-
+        double duration = flow.second.timeLastRxPacket.GetSeconds() -
+                          flow.second.timeFirstTxPacket.GetSeconds();
         double throughput = 0.0;
-
         if (duration > 0)
         {
-            throughput =
-                flow.second.rxBytes * 8.0
-                /
-                duration
-                /
-                1000000.0;
+            throughput = flow.second.rxBytes * 8.0 / duration / 1000000.0;
         }
+        double delay = flow.second.delaySum.GetSeconds() / flow.second.rxPackets * 1000.0;
+        double packetLoss = 100.0 * (flow.second.txPackets - flow.second.rxPackets) /
+                            flow.second.txPackets;
 
-        double delay =
-            flow.second.delaySum.GetSeconds()
-            /
-            flow.second.rxPackets
-            *
-            1000.0;
-
-        double packetLoss =
-            100.0
-            *
-            (
-                flow.second.txPackets
-                -
-                flow.second.rxPackets
-            )
-            /
-            flow.second.txPackets;
-
-        std::cout
-            << "Packets Sent: "
-            << flow.second.txPackets
-            << "\n";
-
-        std::cout
-            << "Packets Received: "
-            << flow.second.rxPackets
-            << "\n";
-
-        std::cout
-            << "Throughput: "
-            << throughput
-            << " Mbps\n";
-
-        std::cout
-            << "Average Delay: "
-            << delay
-            << " ms\n";
-
-        std::cout
-            << "Packet Loss: "
-            << packetLoss
-            << " %\n";
+        std::cout << "Packets Sent: " << flow.second.txPackets << "\n";
+        std::cout << "Packets Received: " << flow.second.rxPackets << "\n";
+        std::cout << "Throughput: " << throughput << " Mbps\n";
+        std::cout << "Average Delay: " << delay << " ms\n";
+        std::cout << "Packet Loss: " << packetLoss << " %\n";
     }
 
-    std::cout
-        << "\n====================================\n";
+    std::cout << "\n====================================\n";
 
-    // =========================================
-    // 10. DESTROY SIMULATION
-    // =========================================
+    if (macStats)
+    {
+        for (uint32_t n = 0; n < NodeList::GetNNodes(); n++)
+        {
+            const auto& s = g_lossStats[n];
+            std::cout << "MACSTATS node=" << n << " txFailed=" << s.txFailed
+                      << " dropRetry=" << s.dropRetry << " dropLifetime=" << s.dropLifetime
+                      << " dropEnqueue=" << s.dropEnqueue << " rxError=" << s.rxError;
+            for (const auto& [reason, count] : s.rxDrop)
+            {
+                std::cout << " rxDrop_" << reason << "=" << count;
+            }
+            std::cout << "\n";
+        }
+    }
 
     Simulator::Destroy();
-
     return 0;
 }

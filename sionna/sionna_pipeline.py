@@ -24,30 +24,31 @@ from sionna.rt import (
 
 def safe_load_scene(scene_name):
     """
-    Robustly loads a scene from a custom .obj/.ply file or built-in preset.
-    Handles missing files, unassigned materials, and syntax errors gracefully.
+    Loads a scene from a custom .obj/.ply scene file or built-in preset.
+
+    scene_name=None explicitly selects the built-in placeholder
+    (simple_street_canyon). A named scene that is missing or fails to load
+    raises instead of silently falling back to the placeholder. Relative
+    paths are tried against the working directory, then this module's
+    directory (so "scenes/city_damaged.xml" works from the repo root).
     """
     if scene_name is None:
+        print("[INFO] No scene given: using built-in placeholder simple_street_canyon.")
         return load_scene(sionna.rt.scene.simple_street_canyon)
-        
+
     if isinstance(scene_name, str):
-        if os.path.exists(scene_name):
-            try:
-                scene = load_scene(scene_name)
-                for name, obj in scene.objects.items():
-                    if obj.radio_material is None:
-                        obj.radio_material = "itu_concrete"
-                return scene
-            except Exception as e:
-                print(f"[ERROR] Failed to load custom mesh '{scene_name}': {e}. Falling back to default.")
-                return load_scene(sionna.rt.scene.simple_street_canyon)
-        else:
-            return load_scene(sionna.rt.scene.simple_street_canyon)
-            
-    try:
-        return load_scene(scene_name)
-    except Exception as e:
-        return load_scene(sionna.rt.scene.simple_street_canyon)
+        path = scene_name
+        if not os.path.exists(path) and not os.path.isabs(path):
+            path = os.path.join(os.path.dirname(os.path.abspath(__file__)), scene_name)
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Sionna scene '{scene_name}' not found.")
+        scene = load_scene(path)
+        for name, obj in scene.objects.items():
+            if obj.radio_material is None:
+                obj.radio_material = "itu_concrete"
+        return scene
+
+    return load_scene(scene_name)
 
 
 def run_uav_propagation_sim(

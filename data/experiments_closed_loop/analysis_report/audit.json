@@ -1,0 +1,145 @@
+{
+ "experiment": "/home/rishika/ResQNet/data/experiments_closed_loop/main_surrogate",
+ "meta": {
+  "label": "main_surrogate",
+  "rf_mode": "surrogate",
+  "num_users": 30,
+  "num_uavs": 3,
+  "num_seeds": 20,
+  "scenarios": [
+   "wide_area",
+   "blocked_urban",
+   "flood_shelters"
+  ],
+  "methods": [
+   "fixed",
+   "random",
+   "ppo_network",
+   "ppo_calibrated",
+   "ppo_calibrated_30",
+   "greedy_joint",
+   "coordinate",
+   "evolution",
+   "ns3_refine"
+  ],
+  "candidate": "ns3_refine",
+  "final_rng_runs": [
+   11,
+   12
+  ],
+  "search_rng_run": 101,
+  "surrogate_budget": 1500,
+  "runner": {
+   "cached": 1490,
+   "simulated": 1208,
+   "low_mem_waits": 0,
+   "min_mem_available_mb": 11026.49609375
+  },
+  "generated_at": "2026-10-11T09:33:34Z"
+ },
+ "ranking_by_pdr": {
+  "wide_area": [
+   "evolution",
+   "ns3_refine",
+   "coordinate",
+   "ppo_calibrated",
+   "ppo_calibrated_30",
+   "greedy_joint",
+   "ppo_network",
+   "fixed",
+   "random"
+  ],
+  "blocked_urban": [
+   "ns3_refine",
+   "fixed",
+   "ppo_network",
+   "ppo_calibrated",
+   "ppo_calibrated_30",
+   "greedy_joint",
+   "coordinate",
+   "evolution",
+   "random"
+  ],
+  "flood_shelters": [
+   "ns3_refine",
+   "evolution",
+   "coordinate",
+   "ppo_calibrated",
+   "ppo_calibrated_30",
+   "greedy_joint",
+   "ppo_network",
+   "fixed",
+   "random"
+  ]
+ },
+ "strongest_competitor": {
+  "wide_area": "evolution",
+  "blocked_urban": "fixed",
+  "flood_shelters": "evolution"
+ },
+ "audit": {
+  "rows": 540,
+  "rederived": 540,
+  "mismatches": [],
+  "missing_final_runs": 0,
+  "packets_sent_per_user": [
+   800
+  ],
+  "altitudes_m": {
+   "blocked_urban": [
+    30.0
+   ],
+   "flood_shelters": [
+    40.0
+   ],
+   "wide_area": [
+    40.0
+   ]
+  },
+  "search_vs_final": {
+   "blocked_urban": {
+    "n": 160,
+    "spearman": -0.11831637230788708,
+    "mean_abs_diff": 0.002168446180555547
+   },
+   "flood_shelters": {
+    "n": 92,
+    "spearman": 0.9938650779877298,
+    "mean_abs_diff": 0.011378774154589365
+   },
+   "wide_area": {
+    "n": 113,
+    "spearman": 0.9886990375598934,
+    "mean_abs_diff": 0.01467219764011799
+   }
+  },
+  "ns3_refine": {
+   "wide_area": {
+    "accepted_moves_histogram": {
+     "0": 2,
+     "1": 10,
+     "2": 8
+    },
+    "ns3_search_runs_per_instance": 27.0,
+    "improved_in_last_round": 9
+   },
+   "blocked_urban": {
+    "accepted_moves_histogram": {
+     "0": 16,
+     "1": 4
+    },
+    "ns3_search_runs_per_instance": 27.0,
+    "improved_in_last_round": 0
+   },
+   "flood_shelters": {
+    "accepted_moves_histogram": {
+     "0": 3,
+     "1": 9,
+     "2": 8
+    },
+    "ns3_search_runs_per_instance": 26.9,
+    "improved_in_last_round": 9
+   }
+  }
+ }
+}
