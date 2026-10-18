@@ -14,7 +14,7 @@ import {
    Presentation goal: neutral engineering / GIS digital twin — no glow,
    no emissive, no animated rings. Blue-family UAV identity only. */
 
-function CityMesh({ url }) {
+export function CityMesh({ url }) {
   const gltf = useGLTF(url);
   const scene = useMemo(() => {
     const s = gltf.scene.clone(true);

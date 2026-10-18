@@ -118,6 +118,38 @@ itself) and then invokes `scripts/run_full_pipeline.py --mode <mode>
 
 ---
 
+## Closed-loop control view (simulated digital twin)
+
+The "Closed-loop control (simulated)" tab drives `ml/closed_loop_control.py`
+(settings: `configs/closed_loop_control.json`) through
+`dashboard/backend/control.py`. Each control interval: observe (Sionna RT at
+the current UAV positions + ns-3 per-user delivery/latency) -> evaluate the
+objective and per-UAV diagnostics -> each UAV that needs to move picks its own
+up/down/+-x/+-y move (safety-checked: scenario boundary, 15-60 m, 5 m above
+roofs within 10 m, 15 m separation) -> move -> re-simulate -> keep the move if
+the measured objective holds, otherwise fly back and ban that move for a few
+intervals. The ns-3 channel is obstruction-aware (Sionna loss per UAV-user
+link) or distance-only (original), selectable.
+
+| Method | Path | |
+|---|---|---|
+| GET | `/api/control/config` | default config, priority presets |
+| GET | `/api/control/state` | full live state (UAVs, survivors, metrics, history, decisions, before/after, provenance) |
+| POST | `/api/control/start` | `{channel_mode, preset \| weights, max_steps, initial_altitude_m, traffic_seconds, events, rf_mode, network}` |
+| POST | `/api/control/pause`, `/resume`, `/reset` | pause/resume act at the next phase boundary; reset stops the process (kept on disk) |
+| GET | `/api/control/runs` | past sessions |
+
+Sessions are written to `~/.cache/resqnet_control/<run_id>/` (override with
+`RESQNET_CONTROL_DIR`): `state.json`, `run.log`, `config.json`. One interval
+takes about 30-60 s with Sionna + ns-3. Everything is simulated; no physical
+UAV or telemetry is connected. `rf_mode=surrogate` / `network=mock` are test
+modes and are labelled as such in the UI.
+
+CLI equivalent: `python ml/closed_loop_control.py --out ~/.cache/resqnet_control/my_run`.
+Tests: `python -m unittest ml/test_closed_loop_control.py`, `cd dashboard/frontend && npm test`.
+
+---
+
 ## Run history
 
 Each dashboard-triggered run copies the produced
@@ -160,8 +192,11 @@ the OBJ/GLB uses Z as the height axis.
   different, unaligned coordinate frame. It is **not** projected onto the
   scene - the UI states "not shown".
 - **Sionna vs NS-3.** They use different physical-layer models. NS-3 uses
-  its own Wi-Fi channel; it does **not** consume Sionna ray-traced channel
-  loss. The UI keeps the two stages visually distinct.
+  its own Wi-Fi channel; in the pipeline-results view it does **not**
+  consume Sionna ray-traced channel loss. (The closed-loop control view can:
+  in obstruction-aware mode each UAV-user link gets Sionna's loss in excess
+  of free space on top of ns-3's distance model.) The UI keeps the two stages
+  visually distinct.
 - **SINR = SNR.** One UAV, no co-channel interference, so SINR reduces to
   SNR. The code's `mean_sinr_db` naming is kept; no multi-UAV interference
   is modelled or implied.

@@ -1,0 +1,25 @@
+{
+  "_comment": "VALIDATION window val_a for closed-loop checks of the 3D PPO policy and the rule-based baseline (model selection only). Chosen by ml/scan_training_areas.py (configs/training_areas_3d.json); 289 m from urban_core, which stays held out. Same structure as configs/eval_urban_core.json so closed_loop_control.build() can use it unchanged.",
+  "scenarios": {
+    "val_a": {
+      "name": "Validation window A (3D PPO model selection only)",
+      "scene": "city_damaged.xml",
+      "centre": [864.613037109375, 388.12890625],
+      "user_region": { "x": [774.613037109375, 954.613037109375], "y": [298.12890625, 478.12890625] },
+      "uav_region": { "x": [764.613037109375, 964.613037109375], "y": [288.12890625, 488.12890625], "z": [15.0, 60.0] },
+      "user_distribution": "street_level"
+    }
+  },
+  "experiment": {
+    "scenario": "val_a",
+    "num_uavs": 3,
+    "num_users": 30,
+    "user_z_m": 1.5,
+    "user_clearance_m": 3.0,
+    "user_seed_base": 8100,
+    "uav_offsets_m": [[0.0, 30.0], [-30.0, -30.0], [30.0, -30.0]],
+    "uav_snap_search_m": 25.0,
+    "roof_radius_m": 10.0,
+    "roof_clearance_m": 2.0
+  }
+}

@@ -22,6 +22,7 @@ from typing import Any, Optional
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import config  # noqa: E402
+import control  # noqa: E402
 import runners  # noqa: E402
 import schemas  # noqa: E402
 
@@ -395,6 +396,77 @@ def run_status(run_id: str) -> schemas.RunInfo:
 @app.get("/api/runs", response_model=list[schemas.RunInfo])
 def list_runs() -> list[schemas.RunInfo]:
     return [schemas.RunInfo(**r) for r in runners.manager.list()]
+
+
+# ----------------------------------------------------------------------
+# closed-loop control (simulated digital twin; ml/closed_loop_control.py)
+# ----------------------------------------------------------------------
+@app.get("/api/control/config")
+def control_config() -> dict:
+    sys.path.insert(0, str(config.PROJECT_ROOT / "ml"))
+    import closed_loop_control as clc  # light import: numpy + project modules only
+    return {"config": _maybe_json(control.CONTROL_CONFIG), "presets": clc.PRESETS,
+            "actions": list(clc.ACTIONS), "output_dir": str(control.manager.base_dir)}
+
+
+@app.get("/api/control/state")
+def control_state() -> dict:
+    return control.manager.state()
+
+
+@app.post("/api/control/start", status_code=202)
+def control_start(req: schemas.ControlStartRequest) -> dict:
+    try:
+        return control.manager.start(req.to_overrides())
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+
+
+def _control_cmd(fn) -> dict:
+    try:
+        fn()
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    return control.manager.state()
+
+
+@app.post("/api/control/pause")
+def control_pause() -> dict:
+    return _control_cmd(control.manager.pause)
+
+
+@app.post("/api/control/resume")
+def control_resume() -> dict:
+    return _control_cmd(control.manager.resume)
+
+
+@app.post("/api/control/reset")
+def control_reset() -> dict:
+    return {"reset": control.manager.reset(), **control.manager.state()}
+
+
+@app.get("/api/control/runs")
+def control_runs() -> dict:
+    return {"runs": control.manager.runs()}
+
+
+@app.get("/api/control/ppo_models")
+def control_ppo_models() -> dict:
+    """3D PPO training runs (read-only): checkpoints, training summary and the
+    offline validation-window comparison when present."""
+    root = config.PROJECT_ROOT / "models" / "ppo_multiuav_3d"
+    runs = []
+    for d in sorted(root.glob("*/")) if root.exists() else []:
+        if not (d / "train_config.json").exists():
+            continue
+        runs.append({"run_id": d.name,
+                     "checkpoints": sorted(p.name for p in d.glob("*.zip")),
+                     "train_config": _maybe_json(d / "train_config.json"),
+                     "summary": _maybe_json(d / "summary.json"),
+                     "validation": _maybe_json(d / "validation_offline.json")})
+    return {"root": str(root), "runs": runs}
 
 
 # ----------------------------------------------------------------------

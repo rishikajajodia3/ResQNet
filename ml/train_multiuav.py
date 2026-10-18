@@ -138,6 +138,8 @@ def main() -> None:
         raise AssertionError(f"train / eval scenarios overlap: {overlap}")
     reward_mode = tr.get("reward_mode", "legacy")
     model_dir = _ROOT / cfg.get("model_dir", "models/ppo_multiuav")
+    if args.smoke:   # never let a smoke run overwrite the real checkpoint
+        model_dir = model_dir / "_smoke"
     model_dir.mkdir(parents=True, exist_ok=True)
 
     total_timesteps = args.timesteps or (2000 if args.smoke else int(tr["total_timesteps"]))

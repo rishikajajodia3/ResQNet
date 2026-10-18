@@ -48,4 +48,13 @@ export const api = {
   geometryUrl: (variant) => `${BASE}/scene/geometry?variant=${variant}`,
   startRun: (opts) => post("/run", opts),
   runStatus: (runId) => get(`/run/${runId}`),
+  // closed-loop control (ml/closed_loop_control.py via dashboard/backend/control.py)
+  controlConfig: () => get("/control/config"),
+  controlState: () => get("/control/state"),
+  controlStart: (opts) => post("/control/start", opts),
+  controlPause: () => post("/control/pause", {}),
+  controlResume: () => post("/control/resume", {}),
+  controlReset: () => post("/control/reset", {}),
+  controlRuns: () => get("/control/runs"),
+  controlPpoModels: () => get("/control/ppo_models"),
 };
