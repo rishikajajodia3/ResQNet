@@ -1,0 +1,49 @@
+{
+  "_comment": "Closed-loop per-UAV 3-D positioning (ml/closed_loop_control.py, dashboard 'Closed-loop control'). Site, users and UAV start x/y come from scenario_config (urban_core, evaluation only). All results are simulated (Sionna RT + ns-3); outputs go to ~/.cache/resqnet_control/<run_id>/ unless --out says otherwise.",
+  "scenario_config": "configs/eval_urban_core.json",
+  "rf_mode": "sionna",
+  "network": "ns3",
+  "channel_mode": "obstruction",
+  "num_uavs": 3,
+  "num_users": 30,
+  "user_seed": 7000,
+  "initial_altitude_m": 40.0,
+  "max_steps": 12,
+  "patience": 2,
+  "step_interval_s": 0.5,
+  "step_h_m": 15.0,
+  "step_v_m": 10.0,
+  "safety": {
+    "min_altitude_m": 15.0,
+    "max_altitude_m": 60.0,
+    "building_clearance_m": 5.0,
+    "clearance_radius_m": 10.0,
+    "min_separation_m": 15.0
+  },
+  "objective": {
+    "preset": "balanced",
+    "weights": null,
+    "coverage_pdr_threshold": 0.5,
+    "latency_ref_ms": 100.0,
+    "latency_cap": 3.0,
+    "pdr_target": 0.9,
+    "latency_target_ms": 50.0,
+    "margin_weight": 0.05,
+    "move_cost_per_m": 0.0005
+  },
+  "acceptance_tolerance": 0.005,
+  "min_predicted_gain": 0.002,
+  "probe_tolerance": 0.01,
+  "tabu_steps": 3,
+  "ns3": { "traffic_seconds": 3.0, "rng_runs": [11], "workers": 2 },
+  "events": [
+    {
+      "step": 6,
+      "type": "add_users",
+      "count": 6,
+      "seed": 7777,
+      "region": { "x": [550.0, 590.0], "y": [-100.0, 0.0] },
+      "description": "6 new survivors reported in the east block"
+    }
+  ]
+}

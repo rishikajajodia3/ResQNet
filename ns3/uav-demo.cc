@@ -2,6 +2,7 @@
 #include "ns3/network-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/wifi-module.h"
+#include "ns3/propagation-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/flow-monitor-module.h"
@@ -191,6 +192,87 @@ static void ParseIntArray(const std::string &json, const std::string &key,
     }
 }
 
+// Read a number for "key": <number>. Returns false if the key is absent or
+// not followed by a number.
+static bool ParseDoubleField(const std::string &json, const std::string &key, double &out)
+{
+    size_t k = json.find("\"" + key + "\"");
+    if (k == std::string::npos)
+        return false;
+    size_t colon = json.find(':', k);
+    if (colon == std::string::npos)
+        return false;
+    const char *start = json.c_str() + colon + 1;
+    char *end = nullptr;
+    double v = strtod(start, &end);
+    if (end == start)
+        return false;
+    out = v;
+    return true;
+}
+
+// Parse the optional 2-D array "key": [[a, b, ...], [c, d, ...], ...].
+// Returns false if the key is absent. If present but malformed, sets `error`.
+static bool ParseMatrix(const std::string &json, const std::string &key,
+                        std::vector<std::vector<double>> &out, std::string &error)
+{
+    out.clear();
+    size_t k = json.find("\"" + key + "\"");
+    if (k == std::string::npos)
+        return false;
+    size_t colon = json.find(':', k);
+    size_t p = (colon == std::string::npos) ? std::string::npos : json.find_first_not_of(" \t", colon + 1);
+    if (p == std::string::npos || json[p] != '[')
+    {
+        error = "\"" + key + "\" is not an array";
+        return true;
+    }
+    p++;  // inside the outer array
+    while (true)
+    {
+        p = json.find_first_not_of(" \t,", p);
+        if (p == std::string::npos)
+        {
+            error = "\"" + key + "\" is not terminated";
+            return true;
+        }
+        if (json[p] == ']')
+            return true;  // end of outer array
+        if (json[p] != '[')
+        {
+            error = "\"" + key + "\" must be an array of arrays";
+            return true;
+        }
+        p++;  // inside a row
+        std::vector<double> row;
+        while (true)
+        {
+            p = json.find_first_not_of(" \t,", p);
+            if (p == std::string::npos)
+            {
+                error = "\"" + key + "\" row is not terminated";
+                return true;
+            }
+            if (json[p] == ']')
+            {
+                p++;
+                break;
+            }
+            const char *start = json.c_str() + p;
+            char *end = nullptr;
+            double v = strtod(start, &end);
+            if (end == start)
+            {
+                error = "\"" + key + "\" contains a non-numeric value";
+                return true;
+            }
+            row.push_back(v);
+            p += end - start;
+        }
+        out.push_back(row);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     // Static ARP is the default. With dynamic ARP every client starts at
@@ -207,6 +289,8 @@ int main(int argc, char *argv[])
     double trafficSeconds = 8.0;
     cmd.AddValue("trafficSeconds", "UDP traffic duration in seconds (clients start at 2 s)",
                  trafficSeconds);
+    bool printChannel = false;
+    cmd.AddValue("printChannel", "Print the Wi-Fi operating channel (CHANNEL line)", printChannel);
     cmd.Parse(argc, argv);
     const double stopTime = 2.0 + trafficSeconds;
 
@@ -349,6 +433,55 @@ int main(int argc, char *argv[])
     }
 
     // =========================================
+    // 4b. OPTIONAL OBSTRUCTION LOSS (UAV <-> user)
+    // =========================================
+    // "obstruction_loss_db": K x N matrix, row k = UAV k, column i = user i
+    // (handoff order). Each entry is the loss in dB IN ADDITION to the
+    // distance-based LogDistance model (the RF model's loss in excess of
+    // free space at the same distance), applied symmetrically.
+    // "obstruction_freq_hz": frequency the matrix was computed at; it must
+    // match the Wi-Fi operating channel. Without the matrix key the channel
+    // below is exactly the original one.
+    std::vector<std::vector<double>> obstructionDb;
+    std::string obstructionError;
+    bool obstruction = ParseMatrix(json, "obstruction_loss_db", obstructionDb, obstructionError);
+    double obstructionFreqHz = 0.0;
+    if (obstruction)
+    {
+        if (obstructionError.empty() && (int)obstructionDb.size() != nUav)
+        {
+            obstructionError = "obstruction_loss_db has " + std::to_string(obstructionDb.size()) +
+                               " rows, expected num_uavs=" + std::to_string(nUav);
+        }
+        for (int k = 0; obstructionError.empty() && k < (int)obstructionDb.size(); k++)
+        {
+            if ((int)obstructionDb[k].size() != nUser)
+            {
+                obstructionError = "obstruction_loss_db row " + std::to_string(k) + " has " +
+                                   std::to_string(obstructionDb[k].size()) +
+                                   " values, expected num_users=" + std::to_string(nUser);
+            }
+            for (double v : obstructionDb[k])
+            {
+                if (obstructionError.empty() && !(std::isfinite(v) && v >= 0.0 && v <= 300.0))
+                {
+                    obstructionError = "obstruction_loss_db values must be finite and in [0, 300] dB";
+                }
+            }
+        }
+        if (obstructionError.empty() &&
+            !ParseDoubleField(json, "obstruction_freq_hz", obstructionFreqHz))
+        {
+            obstructionError = "obstruction_loss_db requires \"obstruction_freq_hz\"";
+        }
+        if (!obstructionError.empty())
+        {
+            std::cerr << "ERROR: " << obstructionError << std::endl;
+            return 2;
+        }
+    }
+
+    // =========================================
     // 5. WIFI  (single shared 802.11n ad-hoc channel)
     // =========================================
     NodeContainer allNodes;
@@ -363,12 +496,64 @@ int main(int argc, char *argv[])
 
     YansWifiChannelHelper channel = YansWifiChannelHelper::Default();
     YansWifiPhyHelper phy;
-    phy.SetChannel(channel.Create());
+    if (!obstruction)
+    {
+        phy.SetChannel(channel.Create());
+    }
+    else
+    {
+        // Same chain as YansWifiChannelHelper::Default() (LogDistance with its
+        // default attributes + constant-speed delay), followed by a matrix
+        // model that adds the per-link obstruction loss. Pairs not in the
+        // matrix (user-user, UAV-UAV) get 0 dB extra: the matrix model's own
+        // default loss is "infinite" and must be overridden.
+        Ptr<YansWifiChannel> ch = CreateObject<YansWifiChannel>();
+        Ptr<LogDistancePropagationLossModel> logDistance =
+            CreateObject<LogDistancePropagationLossModel>();
+        Ptr<MatrixPropagationLossModel> matrix = CreateObject<MatrixPropagationLossModel>();
+        matrix->SetDefaultLoss(0.0);
+        double sum = 0.0, maxDb = 0.0;
+        for (int k = 0; k < nUav; k++)
+        {
+            for (int i = 0; i < nUser; i++)
+            {
+                matrix->SetLoss(uav.Get(k)->GetObject<MobilityModel>(),
+                                users.Get(i)->GetObject<MobilityModel>(),
+                                obstructionDb[k][i],
+                                true);
+                sum += obstructionDb[k][i];
+                maxDb = std::max(maxDb, obstructionDb[k][i]);
+            }
+        }
+        logDistance->SetNext(matrix);
+        ch->SetPropagationLossModel(logDistance);
+        ch->SetPropagationDelayModel(CreateObject<ConstantSpeedPropagationDelayModel>());
+        phy.SetChannel(ch);
+        std::cout << "Obstruction loss: " << nUav << " x " << nUser
+                  << " matrix applied (mean " << sum / (nUav * nUser) << " dB, max " << maxDb
+                  << " dB, computed at " << obstructionFreqHz / 1e6 << " MHz)" << std::endl;
+    }
     phy.Set("TxPowerStart", DoubleValue(30.0));
     phy.Set("TxPowerEnd", DoubleValue(30.0));
     phy.Set("RxSensitivity", DoubleValue(-90.0));
 
     NetDeviceContainer devices = wifi.Install(phy, wifiMac, allNodes);
+
+    if (obstruction || printChannel)
+    {
+        Ptr<WifiPhy> wphy = DynamicCast<WifiNetDevice>(devices.Get(0))->GetPhy();
+        double channelMhz = wphy->GetFrequency();
+        std::cout << "CHANNEL number=" << (int)wphy->GetChannelNumber()
+                  << " frequency_mhz=" << channelMhz << " width_mhz=" << wphy->GetChannelWidth()
+                  << " band=" << wphy->GetPhyBand() << std::endl;
+        if (obstruction && std::abs(obstructionFreqHz / 1e6 - channelMhz) > 1.0)
+        {
+            std::cerr << "ERROR: obstruction_freq_hz " << obstructionFreqHz / 1e6
+                      << " MHz does not match the Wi-Fi operating channel " << channelMhz
+                      << " MHz" << std::endl;
+            return 2;
+        }
+    }
 
     // =========================================
     // 6. INTERNET STACK

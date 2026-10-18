@@ -1,0 +1,20 @@
+{
+  "_comment": "Closed-loop 3D PPO on the VALIDATION window val_a (Sionna RT at the ns-3 frequency -> obstruction matrix -> ns-3 -> measured per-user PDR -> next PPO observation). Set ppo.checkpoint to the pilot model (models/ppo_multiuav_3d/<run>/best_val_model.zip or model.zip). The default controller config (configs/closed_loop_control.json) is unchanged and still rule-based.",
+  "scenario_config": "configs/eval_val_a_3d.json",
+  "rf_mode": "sionna",
+  "network": "ns3",
+  "channel_mode": "obstruction",
+  "num_uavs": 3,
+  "num_users": 30,
+  "user_seed": 8100,
+  "initial_altitude_m": 40.0,
+  "max_steps": 12,
+  "patience": 2,
+  "step_interval_s": 0.0,
+  "step_h_m": 15.0,
+  "step_v_m": 10.0,
+  "ns3": { "traffic_seconds": 3.0, "rng_runs": [11], "workers": 2 },
+  "events": [],
+  "policy": "ppo",
+  "ppo": { "checkpoint": null, "deterministic": true }
+}

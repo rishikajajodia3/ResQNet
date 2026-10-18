@@ -1,0 +1,151 @@
+{
+  "_comment": "3D PPO training / validation windows of city_damaged.xml, chosen by ml/scan_training_areas.py (densest non-overlapping 200 m windows, built fraction = share of 5 m cells above 5 m). Every window's edge is >= 100 m from the held-out final-evaluation window (configs/eval_*.json), which stays held out for the final evaluation only and is never used for training, reward tuning or model selection. Scan output: ~/.cache/resqnet_3d/scan/windows.json.",
+  "scene": "city_damaged.xml",
+  "held_out": "final-evaluation window of configs/eval_*.json (not listed here, never trained on)",
+  "windows": {
+    "train_a": {
+      "role": "train",
+      "centre": [
+        1089.613037109375,
+        1238.12890625
+      ],
+      "uav_region": {
+        "x": [
+          989.613037109375,
+          1189.613037109375
+        ],
+        "y": [
+          1138.12890625,
+          1338.12890625
+        ],
+        "z": [
+          15.0,
+          60.0
+        ]
+      },
+      "user_region": {
+        "x": [
+          999.613037109375,
+          1179.613037109375
+        ],
+        "y": [
+          1148.12890625,
+          1328.12890625
+        ]
+      },
+      "built_frac_gt5m": 0.7406,
+      "roof_mean_m": 9.04,
+      "roof_max_m": 16.0,
+      "street_cells": 163,
+      "gap_to_held_out_m": 1155.8
+    },
+    "val_a": {
+      "role": "validation",
+      "centre": [
+        864.613037109375,
+        388.12890625
+      ],
+      "uav_region": {
+        "x": [
+          764.613037109375,
+          964.613037109375
+        ],
+        "y": [
+          288.12890625,
+          488.12890625
+        ],
+        "z": [
+          15.0,
+          60.0
+        ]
+      },
+      "user_region": {
+        "x": [
+          774.613037109375,
+          954.613037109375
+        ],
+        "y": [
+          298.12890625,
+          478.12890625
+        ]
+      },
+      "built_frac_gt5m": 0.7162,
+      "roof_mean_m": 10.35,
+      "roof_max_m": 22.4,
+      "street_cells": 152,
+      "gap_to_held_out_m": 289.5
+    },
+    "train_b": {
+      "role": "train",
+      "centre": [
+        1439.613037109375,
+        1813.12890625
+      ],
+      "uav_region": {
+        "x": [
+          1339.613037109375,
+          1539.613037109375
+        ],
+        "y": [
+          1713.12890625,
+          1913.12890625
+        ],
+        "z": [
+          15.0,
+          60.0
+        ]
+      },
+      "user_region": {
+        "x": [
+          1349.613037109375,
+          1529.613037109375
+        ],
+        "y": [
+          1723.12890625,
+          1903.12890625
+        ]
+      },
+      "built_frac_gt5m": 0.7103,
+      "roof_mean_m": 9.56,
+      "roof_max_m": 16.0,
+      "street_cells": 166,
+      "gap_to_held_out_m": 1820.2
+    },
+    "train_c": {
+      "role": "train",
+      "centre": [
+        689.613037109375,
+        1888.12890625
+      ],
+      "uav_region": {
+        "x": [
+          589.613037109375,
+          789.613037109375
+        ],
+        "y": [
+          1788.12890625,
+          1988.12890625
+        ],
+        "z": [
+          15.0,
+          60.0
+        ]
+      },
+      "user_region": {
+        "x": [
+          599.613037109375,
+          779.613037109375
+        ],
+        "y": [
+          1798.12890625,
+          1978.12890625
+        ]
+      },
+      "built_frac_gt5m": 0.7026,
+      "roof_mean_m": 9.11,
+      "roof_max_m": 19.2,
+      "street_cells": 178,
+      "gap_to_held_out_m": 1738.1
+    }
+  }
+}

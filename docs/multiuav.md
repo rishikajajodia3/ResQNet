@@ -135,11 +135,21 @@ textually separate everywhere:
 | Channel | Mitsuba shoot-and-bounce over the 3D mesh | `YansWifiChannelHelper::Default()` (log-distance / Friis) |
 | Output | per-user × per-UAV RSS / SNR / SINR / path gain / delay / paths, connectivity | per-flow packet delivery, throughput, delay, flow-failure rate |
 
-**NS-3 does NOT consume Sionna's ray-traced channel loss.** It runs its own
-Wi-Fi PHY. The only thing passed from Sionna/PPO to NS-3 is the *geometry*:
-UAV positions, user positions, and the serving-UAV association. A user can
-be Sionna-connected but get no NS-3 delivery (MAC contention on the shared
-channel) or vice-versa; the dashboard shows the two states separately.
+**Whether NS-3 consumes Sionna's channel loss depends on the path.**
+In the one-shot pipeline (`scripts/run_full_pipeline.py`,
+`ml/evaluate_multiuav.py`) it does not: only the *geometry* (UAV positions,
+user positions, serving-UAV association) is passed and NS-3 uses its own
+distance-based channel. In the obstruction-aware paths
+(`ml/closed_loop_control.py` with `channel_mode: "obstruction"`,
+`ml/evaluate_obstruction.py`, `ml/gen_ns3_3d_data.py`) the handoff also
+carries `obstruction_loss_db`: Sionna's per-link loss beyond free space at the
+NS-3 operating frequency (2.412 GHz, verified with `--printChannel`), which
+`ns3/uav-demo.cc` adds on top of its log-distance loss for every UAV–user link.
+These callers check that NS-3 printed "Obstruction loss:" (that is, applied the
+matrix) and fail otherwise. In every path a user can be Sionna-connected but get
+no NS-3 delivery (MAC contention on the shared channel) or vice versa; the
+dashboard shows the two states separately. See `docs/ppo3d.md` for the 3D PPO
+closed loop.
 
 **Association**: NS-3 uses the `associations` array from
 `data/uav_positions.json` (best-RSS server chosen by Sionna). Nearest-UAV

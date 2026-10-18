@@ -1,0 +1,29 @@
+{
+  "_comment": "EVALUATION-ONLY scenario for ml/evaluate_obstruction.py (obstruction-aware ns-3 altitude experiment). Registered only by that script; not part of configs/scenarios.json, configs/eval_network.json or any training config. urban_core is the most built-up 200 m window of the city_damaged mesh found by an offline height-map scan (72 % of 5 m cells above 5 m, roofs ~10 m, max ~19 m), centred at (500, -50). Coordinates are the Sionna scene's own (the scene XML has no transform and the OBJ is not recentred), and ns-3 receives the identical numbers through the handoff file.",
+  "scenarios": {
+    "urban_core": {
+      "name": "Urban Core (evaluation only)",
+      "scene": "city_damaged.xml",
+      "centre": [500.0, -50.0],
+      "user_region": { "x": [410.0, 590.0], "y": [-140.0, 40.0] },
+      "uav_region": { "x": [400.0, 600.0], "y": [-150.0, 50.0], "z": [15.0, 60.0] },
+      "user_distribution": "street_level",
+      "purpose": "Dense built-up area where buildings obstruct UAV-user links; tests whether altitude changes ns-3 network performance once obstruction loss is applied.",
+      "note": "Users are placed by ml/obstruction.street_level_users (open ground under and within 3 m of each user, checked by ray casts on the scene), not by scenarios.generate_users."
+    }
+  },
+  "experiment": {
+    "scenario": "urban_core",
+    "num_uavs": 3,
+    "num_users": 30,
+    "user_z_m": 1.5,
+    "user_clearance_m": 3.0,
+    "user_seed_base": 7000,
+    "uav_offsets_m": [[0.0, 30.0], [-30.0, -30.0], [30.0, -30.0]],
+    "uav_snap_search_m": 25.0,
+    "roof_radius_m": 10.0,
+    "roof_clearance_m": 2.0,
+    "altitudes_m": [15.0, 20.0, 30.0, 40.0, 60.0],
+    "rng_runs": [11, 12, 13]
+  }
+}
