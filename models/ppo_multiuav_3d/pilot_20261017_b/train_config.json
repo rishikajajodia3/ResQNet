@@ -1,0 +1,74 @@
+{
+  "run_id": "pilot_20261017_b",
+  "out_root": "/home/rishika/ResQNet/models/ppo_multiuav_3d",
+  "timesteps": 100000,
+  "smoke": false,
+  "rf": "radiomap",
+  "pdr_model": "calibrated:models/latency_surrogate_v1/fit_20261017/pdr_v2.joblib",
+  "pdr_model_path": "models/latency_surrogate_v1/fit_20261017/pdr_v2.joblib",
+  "radiomap_samples": 10000000,
+  "train_windows": [
+    "train_a"
+  ],
+  "val_windows": [
+    "val_a"
+  ],
+  "reward_weights": {
+    "pdr": 0.35,
+    "coverage": 0.2,
+    "fairness": 0.25,
+    "delta": 0.1,
+    "move": 0.03,
+    "unsafe": 0.05
+  },
+  "checkpoint_every": 25000,
+  "resume_from": null,
+  "heightmap": "~/.cache/resqnet_3d/scan/heightmap.npz",
+  "max_steps": 12,
+  "pdr_obs_noise": 0.0,
+  "n_envs": 4,
+  "n_steps": 256,
+  "batch_size": 128,
+  "lr": 0.0003,
+  "ent_coef": 0.01,
+  "val_every": 20000,
+  "val_episodes": 10,
+  "seed": 0,
+  "obs_version": "3d-v1",
+  "obs_len": 163,
+  "action_names": [
+    "stay",
+    "-x",
+    "+x",
+    "-y",
+    "+y",
+    "down",
+    "up"
+  ],
+  "max_uavs": 5,
+  "step_h_m": 15.0,
+  "step_v_m": 10.0,
+  "z_levels": [
+    20.0,
+    30.0,
+    40.0,
+    50.0,
+    60.0
+  ],
+  "safety": {
+    "min_altitude_m": 15.0,
+    "max_altitude_m": 60.0,
+    "building_clearance_m": 5.0,
+    "clearance_radius_m": 10.0,
+    "min_separation_m": 15.0
+  },
+  "coverage_threshold": 0.5,
+  "validation_windows": [
+    "val_a"
+  ],
+  "rf_label": "Sionna RT radio maps",
+  "latency_in_reward": false,
+  "held_out": [
+    "urban_core"
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "run_id": "multi_20261018_a",
+  "out_root": "/home/rishika/ResQNet/models/ppo_multiuav_3d",
+  "timesteps": 300000,
+  "smoke": false,
+  "rf": "radiomap",
+  "pdr_model": "calibrated:models/latency_surrogate_v1/fit_20261017/pdr_v2.joblib",
+  "pdr_model_path": "models/latency_surrogate_v1/fit_20261017/pdr_v2.joblib",
+  "radiomap_samples": 10000000,
+  "train_windows": [
+    "train_a",
+    "train_b",
+    "train_c"
+  ],
+  "val_windows": [
+    "val_a"
+  ],
+  "reward_weights": {
+    "pdr": 0.35,
+    "coverage": 0.2,
+    "fairness": 0.25,
+    "delta": 0.1,
+    "move": 0.03,
+    "unsafe": 0.05
+  },
+  "checkpoint_every": 25000,
+  "resume_from": null,
+  "heightmap": "~/.cache/resqnet_3d/scan/heightmap.npz",
+  "max_steps": 12,
+  "pdr_obs_noise": 0.0,
+  "n_envs": 4,
+  "n_steps": 256,
+  "batch_size": 128,
+  "lr": 0.0003,
+  "ent_coef": 0.01,
+  "val_every": 20000,
+  "val_episodes": 10,
+  "seed": 0,
+  "obs_version": "3d-v1",
+  "obs_len": 163,
+  "action_names": [
+    "stay",
+    "-x",
+    "+x",
+    "-y",
+    "+y",
+    "down",
+    "up"
+  ],
+  "max_uavs": 5,
+  "step_h_m": 15.0,
+  "step_v_m": 10.0,
+  "z_levels": [
+    20.0,
+    30.0,
+    40.0,
+    50.0,
+    60.0
+  ],
+  "safety": {
+    "min_altitude_m": 15.0,
+    "max_altitude_m": 60.0,
+    "building_clearance_m": 5.0,
+    "clearance_radius_m": 10.0,
+    "min_separation_m": 15.0
+  },
+  "coverage_threshold": 0.5,
+  "validation_windows": [
+    "val_a"
+  ],
+  "rf_label": "Sionna RT radio maps",
+  "latency_in_reward": false,
+  "held_out": [
+    "urban_core"
+  ],
+  "area_sampling": "uniform over train_windows, re-drawn every episode (MultiUAV3DEnv.reset)",
+  "provenance": {
+    "git_head": "ae3a50895471b1b2853263284690b39b693ae915",
+    "source_sha256": {
+      "ml/multiuav3d_env.py": "36513d24b5e7ba28e89215d55776af4b87db1f3efa5ad6d88a0aebfe8835d198",
+      "ml/train_multiuav3d.py": "6ac137c9fef7a6021fbf0401db44ab2d0b52e2cddfd47586f375a385b597dc55",
+      "ml/radiomap_cache.py": "74987c16f095fc37137ce9dcdf8583dd4b5992f84ae55b5733d141b93502a406",
+      "ml/closed_loop_control.py": "ca2d8b8f5164c2629eba56aa9e66dbe62a91ecf05a08759f11577486dbc7bd40",
+      "configs/training_areas_3d.json": "bf65eb9af8d0c2db7a4b2f2bc5ffbbd2f8a3d0eff0a9b26b7d1f77e5760a946b"
+    },
+    "pdr_model_sha256": "07786149ac3d6c49c236fc0ebd5327691059548c71d8001483df896abe03ee64",
+    "heightmap_sha256": "56e293efb58f69169f5d663eb63b3b4e954b4c4d13e75c7d9dc0e2eabff65519",
+    "radiomap_caches": {
+      "train_a": "/home/rishika/.cache/resqnet_3d/radiomaps/train_a/v1_s10000000_d3_c2",
+      "train_b": "/home/rishika/.cache/resqnet_3d/radiomaps/train_b/v1_s10000000_d3_c2",
+      "train_c": "/home/rishika/.cache/resqnet_3d/radiomaps/train_c/v1_s10000000_d3_c2",
+      "val_a": "/home/rishika/.cache/resqnet_3d/radiomaps/val_a/v1_s10000000_d3_c2"
+    },
+    "radiomap_meta_sha256": {
+      "train_a": "78b00b7220211da9e4d71d000c9278a58c82f69fa0cc9c6bf65abb50f87268f7",
+      "train_b": "ec717920133b86dbfaeeeea6b5a366742b749e3bb0518b5c92e47c9c2cf4287e",
+      "train_c": "b735db159d7457b206771817b485b07719394920ed8a1c37c89b23d4be7865cd",
+      "val_a": "6ab715ec19a05e20fde21f56a857cb6738499a11655cedd1140c945d09489b6f"
+    }
+  }
+}
