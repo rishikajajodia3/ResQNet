@@ -1,0 +1,7 @@
+{
+  "source": "closed-loop PPO episode on val_a (Sionna RT -> obstruction matrix -> ns-3), configs/closed_loop_ppo3d.json, user seed 8100",
+  "checkpoint": "models/ppo_multiuav_3d/multi_lat_20261019_d/best_val_model.zip (latency-aware reward, 520k steps)",
+  "run": "~/.cache/resqnet_control/multiseed_20261019/ppo_lat_520k_8100/state.json (after.positions)",
+  "start_positions": [[879.61, 423.13, 40.0], [809.61, 378.13, 40.0], [894.61, 358.13, 40.0]],
+  "uav_positions": [[909.61, 423.13, 20.0], [914.61, 378.13, 40.0], [894.61, 298.13, 20.0]]
+}

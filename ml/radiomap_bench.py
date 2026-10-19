@@ -17,7 +17,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import resource
 import sys
 import time
 from pathlib import Path
@@ -32,8 +31,7 @@ HELD_OUT_CENTRE = (500.0, -50.0)   # urban_core (configs/eval_urban_core.json)
 NS3_FREQ_HZ = 2.412e9              # ns-3 Wi-Fi channel 1
 
 
-def peak_rss_mb() -> float:
-    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
+from utils import peak_rss_mb  # noqa: E402,F401  (re-exported; Linux getrusage or Windows psutil)
 
 
 def pick_window(mi_scene, size: float, min_dist: float) -> tuple[float, float]:

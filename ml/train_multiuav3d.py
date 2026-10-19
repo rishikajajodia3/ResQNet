@@ -76,7 +76,7 @@ def make_env(args, role: str, seed: int):
             _RF_SHARED[key] = MultiWindowRF(windows, args.radiomap_samples)
         rf = _RF_SHARED[key]
     if args.pdr_model == "calibrated":
-        pdr = E.CalibratedPDR(path=args.pdr_model_path)
+        pdr = E.CalibratedPDR(path=args.pdr_model_path, latency_path=getattr(args, "latency_model_path", None))
     else:
         pdr = E.NetworkPDR()
     return E.MultiUAV3DEnv(windows, geom, rf, pdr, max_steps=args.max_steps,
@@ -101,18 +101,19 @@ def provenance(args) -> dict:
     import calibrated_model as cm
     import radiomap_cache as rc
     files = ["ml/multiuav3d_env.py", "ml/train_multiuav3d.py", "ml/radiomap_cache.py", "ml/closed_loop_control.py",
-             "configs/training_areas_3d.json"]
+             "ml/latency_model.py", "configs/training_areas_3d.json"]
     caches = {n: str(Path(os.path.expanduser(rc.DEFAULT_ROOT)) / n / f"v{rc.CACHE_VERSION}_s{args.radiomap_samples}_d3_c2")
               for n in {**load_windows("train", args.train_windows), **load_windows("validation", args.val_windows)}}
     return {"git_head": head, "source_sha256": {f: sha(ROOT / f) for f in files},
             "pdr_model_sha256": sha(args.pdr_model_path or cm.DEFAULT_MODEL), "heightmap_sha256": sha(args.heightmap),
+            "latency_model_sha256": sha(args.latency_model_path) if args.latency_model_path else None,
             "radiomap_caches": caches,
             "radiomap_meta_sha256": {n: sha(Path(d) / "meta.json") for n, d in caches.items()}}
 
 
 def run_policy(model, env, episodes: int, seed: int) -> dict:
     """Deterministic rollouts; returns mean final metrics and Z-action stats."""
-    finals, z_moves, moves = [], 0, 0
+    finals, lats, z_moves, moves = [], [], 0, 0
     alts = []
     for e in range(episodes):
         obs, info = env.reset(seed=seed + e)
@@ -125,10 +126,13 @@ def run_policy(model, env, episodes: int, seed: int) -> dict:
             z_moves += sum(1 for x in acts if x in (5, 6))
             moves += sum(1 for x in acts if x)
         finals.append([info["pdr"], info["coverage"], info["worst10_pdr"], info["score"]])
+        if info.get("mean_latency_ms") is not None:
+            lats.append(info["mean_latency_ms"])
         alts += [p[2] for p in info["positions"]]
     f = np.mean(finals, axis=0)
     return {"pdr": f[0], "coverage": f[1], "worst10_pdr": f[2], "score": f[3],
-            "z_move_share": z_moves / max(1, moves), "final_altitudes": alts}
+            "z_move_share": z_moves / max(1, moves), "final_altitudes": alts,
+            "mean_latency_ms": float(np.mean(lats)) if lats else None}
 
 
 def main() -> int:
@@ -144,6 +148,8 @@ def main() -> int:
     ap.add_argument("--train-windows", nargs="+", default=None, help="subset of the train windows")
     ap.add_argument("--val-windows", nargs="+", default=None)
     ap.add_argument("--reward-weights", default=None, help="JSON overrides of DEFAULT_REWARD_WEIGHTS")
+    ap.add_argument("--latency-model-path", default=None,
+                    help="latency predictor joblib (ml/fit_latency_model.py); needed for a latency reward weight > 0")
     ap.add_argument("--checkpoint-every", type=int, default=25_000)
     ap.add_argument("--resume-from", default=None, help="checkpoint .zip to continue from (new run dir)")
     ap.add_argument("--heightmap", default=DEFAULT_HEIGHTMAP)
@@ -183,7 +189,7 @@ def main() -> int:
            "train_windows": sorted(load_windows("train", a.train_windows)),
            "validation_windows": sorted(load_windows("validation", a.val_windows)),
            "rf_label": "free-space surrogate (NOT Sionna)" if a.rf == "free_space" else "Sionna RT radio maps",
-           "pdr_model": val_env.pdr_model.name, "latency_in_reward": False, "held_out": ["urban_core"],
+           "pdr_model": val_env.pdr_model.name, "latency_in_reward": val_env.w["latency"] > 0, "held_out": ["urban_core"],
            "area_sampling": "uniform over train_windows, re-drawn every episode (MultiUAV3DEnv.reset)",
            "radiomap_sharing": "one read-only MultiWindowRF per window set, shared by the envs of the process",
            "provenance": provenance(a)}
@@ -202,9 +208,19 @@ def main() -> int:
             self.act_hist = np.zeros(E.N_ACTIONS, int)
             self.next_val = a.val_every
             self.next_prog = 0
+            self.start_steps = 0
+
+        def _on_training_start(self):
+            # schedules count from the resumed step; the resumed model is validated first, so best_val_model.zip
+            # is only replaced by a checkpoint that beats it
+            self.start_steps = self.num_timesteps
+            self.next_val = self.num_timesteps + a.val_every
+            self.next_prog = self.num_timesteps
+            if self.num_timesteps:
+                self._validate()
 
         def _progress(self):          # persistent progress log, appended while training runs
-            import resource
+            from utils import peak_rss_mb
             f = out / "progress.csv"
             new = not f.exists()
             recent = [r[1] for r in self.rows[-200:]]
@@ -214,9 +230,10 @@ def main() -> int:
                     w.writerow(["timesteps", "elapsed_s", "steps_per_s", "episodes", "mean_ep_return_last200",
                                 "maxrss_mb"])
                 el = time.time() - self.t0
-                w.writerow([self.num_timesteps, round(el, 1), round(self.num_timesteps / max(el, 1e-9), 1),
+                w.writerow([self.num_timesteps, round(el, 1),
+                            round((self.num_timesteps - self.start_steps) / max(el, 1e-9), 1),
                             len(self.rows), round(float(np.mean(recent)), 4) if recent else "",
-                            resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // 1024])
+                            int(peak_rss_mb())])
 
         def _on_step(self):
             if self.num_timesteps >= self.next_prog:
@@ -232,15 +249,18 @@ def main() -> int:
                 self.model.save(out / f"checkpoint_{self.num_timesteps:07d}.zip")
             if self.num_timesteps >= self.next_val:
                 self.next_val += a.val_every
-                v = run_policy(self.model, val_env, a.val_episodes, 50_000)
-                self.val_rows.append([self.num_timesteps, v["score"], v["pdr"], v["coverage"],
-                                      v["worst10_pdr"], v["z_move_share"]])
-                with open(out / "val_progress.csv", "a", newline="") as fh:   # survives an interrupted run
-                    csv.writer(fh).writerow(self.val_rows[-1])
-                if v["score"] > self.best:          # model selection on the validation window only
-                    self.best = v["score"]
-                    self.model.save(out / "best_val_model.zip")
+                self._validate()
             return True
+
+        def _validate(self):
+            v = run_policy(self.model, val_env, a.val_episodes, 50_000)
+            self.val_rows.append([self.num_timesteps, v["score"], v["pdr"], v["coverage"],
+                                  v["worst10_pdr"], v["z_move_share"], v["mean_latency_ms"]])
+            with open(out / "val_progress.csv", "a", newline="") as fh:   # survives an interrupted run
+                csv.writer(fh).writerow(self.val_rows[-1])
+            if v["score"] > self.best:          # model selection on the validation window only
+                self.best = v["score"]
+                self.model.save(out / "best_val_model.zip")
 
     cb = Log()
     t0 = time.time()
@@ -254,10 +274,10 @@ def main() -> int:
         w.writerows(cb.rows)
     with open(out / "val_log.csv", "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["timesteps", "score", "pdr", "coverage", "worst10_pdr", "z_move_share"])
+        w.writerow(["timesteps", "score", "pdr", "coverage", "worst10_pdr", "z_move_share", "mean_latency_ms"])
         w.writerows(cb.val_rows)
     summary = {"run_id": run_id, "timesteps": int(model.num_timesteps), "train_seconds": round(train_s, 1),
-               "steps_per_second": round(model.num_timesteps / train_s, 1),
+               "steps_per_second": round((model.num_timesteps - cb.start_steps) / train_s, 1),
                "action_histogram": dict(zip(E.ACTION_NAMES, cb.act_hist.tolist())),
                "episodes": len(cb.rows), "best_val_score": cb.best, "val_log": cb.val_rows}
     (out / "summary.json").write_text(json.dumps(summary, indent=2, default=float))

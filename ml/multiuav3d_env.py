@@ -13,12 +13,16 @@ Differences from multiuav_env.MultiUAVEnv (which stays unchanged):
     separation are resolved by cancelling the higher-index UAV's move.
   * Reward (all terms in [0, 1], weights in DEFAULT_REWARD_WEIGHTS):
         score = w_pdr * mean PDR + w_cov * coverage(PDR >= thr) + w_fair * worst-10 % PDR
+                - w_lat * latency score             (only if w_lat > 0, see below)
         r     = score + w_delta * (score - previous score)
                 - w_move * metres moved / (active UAVs * max step)
                 - w_unsafe * unsafe attempts / active UAVs
-    No term depends on altitude. Latency is NOT in the reward or the
-    observation (no validated latency predictor yet); throughput under the
-    fixed offered load is offered * PDR, so it is logged, not rewarded.
+    No term depends on altitude. Latency score = mean predicted per-user delay /
+    LATENCY_REF_MS, capped at LATENCY_CAP: the closed-loop objective's term
+    (closed_loop_control.network_metrics), from the latency predictor that passed
+    its pre-registered validation (ml/fit_latency_model.py). w_lat is 0 by default
+    (earlier runs); latency is not in the observation. Throughput under the fixed
+    offered load is offered * PDR, so it is logged, not rewarded.
   * Per-user PDR comes from a pluggable network model (calibrated model by
     default) on the path gains of a pluggable RF backend: rf.path_gain(P, U)
     -> [K, N] dB (free space for tests / smoke; Sionna radio maps for training).
@@ -67,7 +71,9 @@ N_ACTIONS = len(ACTION_NAMES)
 DEFAULT_SAFETY = {"min_altitude_m": 15.0, "max_altitude_m": 60.0, "building_clearance_m": 5.0,
                   "clearance_radius_m": 10.0, "min_separation_m": 15.0}
 DEFAULT_REWARD_WEIGHTS = {"pdr": 0.35, "coverage": 0.20, "fairness": 0.25, "delta": 0.10,
-                          "move": 0.03, "unsafe": 0.05}
+                          "move": 0.03, "unsafe": 0.05, "latency": 0.0}
+LATENCY_REF_MS = 100.0              # = closed-loop objective latency_ref_ms / latency_cap
+LATENCY_CAP = 3.0
 TRAINING_FREQ_HZ = 2.412e9          # ns-3 Wi-Fi channel 1 (uav-demo.cc --printChannel)
 CALIBRATED_FREQ_HZ = 2.1e9          # calibrated_model computes excess loss at this frequency
 
@@ -173,22 +179,44 @@ class CalibratedPDR:
     the excess at freq_hz (exact; the ns-3 distance law is frequency-free)."""
     name = "calibrated_v1"
 
-    def __init__(self, freq_hz: float = TRAINING_FREQ_HZ, path: Optional[str] = None):
+    def __init__(self, freq_hz: float = TRAINING_FREQ_HZ, path: Optional[str] = None,
+                 latency_path: Optional[str] = None):
+        """latency_path: optional latency predictor (ml/latency_model.py joblib); it
+        shares this model's features, so predict() returns both at little extra cost."""
         import calibrated_model as cm
+        self.cm = cm
         self.model = cm.CalibratedNetworkModel(path) if path else cm.CalibratedNetworkModel()
         self.freq_hz = freq_hz
         if path:
             self.name = f"calibrated:{path}"
+        self.latency = None
+        if latency_path:
+            import latency_model as lm               # imports this module: load lazily
+            self.latency = lm.LatencyModel(latency_path)
 
-    def __call__(self, P, U, pg) -> np.ndarray:
+    def predict(self, P, U, pg) -> tuple[np.ndarray, Optional[np.ndarray]]:
+        """(per-user PDR, per-user mean delay [ms] or None without a latency model;
+        NaN for users the link model says are unusable)."""
         d = np.linalg.norm(P[:, None, :] - U[None, :, :], axis=2)
         exc = excess_loss_db(pg, d, self.freq_hz)
         fspl_ref = 20.0 * np.log10(4.0 * np.pi * np.maximum(d, 1.0) * CALIBRATED_FREQ_HZ / nm.C_LIGHT)
         pg_ref = np.where(pg <= -199.0, -200.0, -(fspl_ref + exc))
         serving = np.argmax(pg, axis=0)               # association by the real path gain
         rf = compose_rf(P.tolist(), U.tolist(), pg_ref, serving.tolist())
-        pdr, _ = self.model.predict_users(rf, P, U)
-        return pdr
+        X, usable, net = self.cm.user_features(rf, P, U)
+        pdr, lat = np.zeros(len(X)), None
+        if usable.any():
+            pdr[usable] = np.clip(self.model.model.predict(X[usable]), 0.0, 1.0)
+        if self.latency is not None:                  # same features as latency_model.user_features
+            cnt = np.bincount(serving, minlength=len(P))[serving]
+            rate = np.array([p["mcs_rate_mbps"] for p in net["per_user"]])
+            lat = np.full(len(X), np.nan)
+            if usable.any():
+                lat[usable] = np.exp(self.latency.model.predict(np.column_stack([X, cnt, rate])[usable]))
+        return pdr, lat
+
+    def __call__(self, P, U, pg) -> np.ndarray:
+        return self.predict(P, U, pg)[0]
 
 
 # ----------------------------------------------------------------------
@@ -217,6 +245,8 @@ class MultiUAV3DEnv(gym.Env):
         self.z_levels = [float(z) for z in z_levels]
         self.safety = {**DEFAULT_SAFETY, **(safety or {})}
         self.w = {**DEFAULT_REWARD_WEIGHTS, **(reward_weights or {})}
+        if self.w["latency"] > 0 and pdr_model is not None and getattr(pdr_model, "latency", None) is None:
+            raise ValueError("latency reward weight > 0 needs a PDR model with a latency predictor")
         self.cov_thr = float(coverage_threshold)
         self.max_steps = int(max_steps)
         self.num_uavs_choices, self.num_users_choices = list(num_uavs), list(num_users)
@@ -334,9 +364,23 @@ class MultiUAV3DEnv(gym.Env):
         return self._obs(), float(r), False, trunc, self._info(moved, unsafe, cancelled, acts)
 
     # -- network evaluation / observation --------------------------------
+    def predict_network(self, P) -> tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
+        """(path gain [K, N], per-user PDR, per-user delay [ms] or None) at positions P."""
+        pg = np.asarray(self.rf.path_gain(P, self.users), float)
+        if self.w["latency"] > 0:
+            pdr, lat = self.pdr_model.predict(P, self.users, pg)
+        else:
+            pdr, lat = self.pdr_model(P, self.users, pg), None
+        return pg, pdr, lat
+
+    def score_of(self, metrics: dict) -> float:
+        w = self.w
+        s = w["pdr"] * metrics["pdr"] + w["coverage"] * metrics["coverage"] + w["fairness"] * metrics["worst10_pdr"]
+        return s - w["latency"] * metrics["latency_score"] if w["latency"] > 0 else s
+
     def _evaluate(self) -> None:
-        pg = np.asarray(self.rf.path_gain(self.P, self.users), float)      # [K, N]
-        self._set_network(pg, self.pdr_model(self.P, self.users, pg))
+        pg, pdr, lat = self.predict_network(self.P)
+        self._set_network(pg, pdr, lat)
 
     def load_state(self, region: dict, positions, users, pg, per_user_pdr, t: int,
                    window: str = "closed_loop") -> np.ndarray:
@@ -354,23 +398,28 @@ class MultiUAV3DEnv(gym.Env):
         self._set_network(np.asarray(pg, float), per_user_pdr)
         return self._obs()
 
-    def _set_network(self, pg: np.ndarray, pdr) -> None:
+    def _set_network(self, pg: np.ndarray, pdr, latency_ms=None) -> None:
         self.pg = pg
         self.pdr = np.clip(np.asarray(pdr, float), 0.0, 1.0)
         self.serving = np.argmax(self.pg, axis=0)
         d = np.linalg.norm(self.P[:, None, :] - self.users[None, :, :], axis=2)
         self.excess = excess_loss_db(self.pg, d, TRAINING_FREQ_HZ)
-        self.metrics = self.metrics_from(self.pdr)
-        w = self.w
-        self.score = (w["pdr"] * self.metrics["pdr"] + w["coverage"] * self.metrics["coverage"]
-                      + w["fairness"] * self.metrics["worst10_pdr"])
+        self.metrics = self.metrics_from(self.pdr, latency_ms)
+        self.score = self.score_of(self.metrics)
 
-    def metrics_from(self, pdr: np.ndarray) -> dict:
+    def metrics_from(self, pdr: np.ndarray, latency_ms=None) -> dict:
         n = len(pdr)
         worst = np.sort(pdr)[:max(1, int(math.ceil(0.10 * n)))]
         offered = nm.PACKETS_PER_SEC * nm.IP_PACKET_BYTES * 8 / 1e6
-        return {"pdr": float(pdr.mean()), "coverage": float(np.mean(pdr >= self.cov_thr)),
-                "worst10_pdr": float(worst.mean()), "throughput_mbps": float(offered * pdr.mean())}
+        m = {"pdr": float(pdr.mean()), "coverage": float(np.mean(pdr >= self.cov_thr)),
+             "worst10_pdr": float(worst.mean()), "throughput_mbps": float(offered * pdr.mean()),
+             "mean_latency_ms": None, "latency_score": 0.0}
+        if latency_ms is not None:                    # as the closed loop: mean over delivering users
+            lat = np.asarray(latency_ms, float)
+            lat = lat[~np.isnan(lat) & (pdr > 0)]
+            m["mean_latency_ms"] = float(lat.mean()) if len(lat) else None
+            m["latency_score"] = LATENCY_CAP if not len(lat) else float(min(lat.mean() / LATENCY_REF_MS, LATENCY_CAP))
+        return m
 
     def _obs(self) -> np.ndarray:
         rx, ry = self.region["x"], self.region["y"]

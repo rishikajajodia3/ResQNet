@@ -41,6 +41,21 @@ def save_json(data, filepath):
         json.dump(data, f, indent=4)
 
 
+def peak_rss_mb():
+    """
+    Peak resident memory of this process in MB.
+    Linux: getrusage (KB). Windows has no `resource` module: psutil's peak working set.
+    """
+
+    try:
+        import resource
+    except ImportError:
+        import psutil
+        return psutil.Process().memory_info().peak_wset / 2**20
+
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
+
+
 def load_json(filepath):
     """
     Load JSON file.

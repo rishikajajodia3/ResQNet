@@ -24,7 +24,6 @@ import hashlib
 import json
 import math
 import os
-import resource
 import sys
 import time
 from pathlib import Path
@@ -35,6 +34,8 @@ ROOT = Path(__file__).resolve().parents[1]
 for p in (ROOT / "ml", ROOT / "sionna"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
+
+from utils import peak_rss_mb  # noqa: E402
 
 CACHE_VERSION = 1
 DEFAULT_ROOT = "~/.cache/resqnet_3d/radiomaps"
@@ -136,7 +137,7 @@ def precompute(a) -> int:
         done += 1
         el = time.time() - t0
         print(f"shard {i + 1}/{len(shards)}  {el:.0f}s  eta {el / done * (len(shards) - i - 1):.0f}s  "
-              f"rss {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024:.0f}MB", flush=True)
+              f"rss {peak_rss_mb():.0f}MB", flush=True)
     print("done", d, flush=True)
     return 0
 
