@@ -211,6 +211,59 @@ class TestRewardAndObs(unittest.TestCase):
         for k in ("pdr", "coverage", "worst10_pdr", "throughput_mbps", "positions", "actions"):
             self.assertIn(k, info)
 
+    def test_latency_off_by_default(self):
+        env = make(rf=ConstRF(), pdr=const_pdr)
+        _, info = reset_at(env, [[45.0, 45.0, 40.0]])
+        self.assertEqual(env.w["latency"], 0.0)
+        self.assertIsNone(info["mean_latency_ms"])
+        w = env.w
+        self.assertAlmostEqual(env.score, w["pdr"] * 0.7 + w["coverage"] * 1.0 + w["fairness"] * 0.7, places=12)
+
+    def test_latency_weight_needs_predictor(self):
+        with self.assertRaises(ValueError):
+            make(rf=ConstRF(), pdr=const_pdr, reward_weights={"latency": 0.2})
+
+    def test_latency_term_in_score(self):
+        class LatPDR:
+            latency = object()
+
+            def __init__(self, ms):
+                self.ms = ms
+
+            def predict(self, P, U, pg):
+                lat = np.full(len(U), self.ms)
+                lat[0] = np.nan                                   # unusable user: left out of the mean
+                return np.full(len(U), 0.7), lat
+
+        base = make(rf=ConstRF(), pdr=const_pdr)
+        reset_at(base, [[45.0, 45.0, 40.0]])
+        for ms, lat_score in ((50.0, 0.5), (1000.0, E.LATENCY_CAP)):
+            env = make(rf=ConstRF(), pdr=LatPDR(ms), reward_weights={"latency": 0.2})
+            _, info = reset_at(env, [[45.0, 45.0, 40.0]])
+            self.assertAlmostEqual(info["mean_latency_ms"], ms)
+            self.assertAlmostEqual(base.score - env.score, 0.2 * lat_score, places=12)
+
+    def test_calibrated_latency_matches_latency_model(self):
+        """CalibratedPDR.predict reuses the PDR features for latency: same numbers as
+        latency_model.LatencyModel, and the same PDR as before."""
+        fit = Path(__file__).resolve().parents[1] / "models" / "latency_surrogate_v1" / "fit_20261017"
+        if not (fit / "model.joblib").exists():
+            self.skipTest("latency model not present")
+        import latency_model as lm
+        P = np.array([[40.0, 40.0, 40.0], [120.0, 60.0, 50.0]])
+        U = np.array([[20.0 + 12 * i, 30.0 + 7 * (i % 5), 1.5] for i in range(12)])
+        pg = SurrogateRF(E.TRAINING_FREQ_HZ).path_gain(P, U)
+        m = E.CalibratedPDR(path=str(fit / "pdr_v2.joblib"), latency_path=str(fit / "model.joblib"))
+        pdr, lat = m.predict(P, U, pg)
+        np.testing.assert_allclose(lat, lm.LatencyModel(fit / "model.joblib").predict_users(P, U, pg))
+        old = E.CalibratedPDR(path=str(fit / "pdr_v2.joblib"))
+        d = np.linalg.norm(P[:, None] - U[None], axis=2)
+        fspl = 20 * np.log10(4 * np.pi * np.maximum(d, 1) * E.CALIBRATED_FREQ_HZ / E.nm.C_LIGHT)
+        pg_ref = np.where(pg <= -199, -200, -(fspl + E.excess_loss_db(pg, d, E.TRAINING_FREQ_HZ)))
+        rf = E.compose_rf(P.tolist(), U.tolist(), pg_ref, np.argmax(pg, axis=0).tolist())
+        np.testing.assert_allclose(pdr, old.model.predict_users(rf, P, U)[0])
+        np.testing.assert_allclose(pdr, old(P, U, pg))
+
     def test_calibrated_frequency_shim(self):
         """Excess loss seen by the calibrated model equals the 2.412 GHz excess."""
         P = np.array([[0.0, 0.0, 40.0]]); U = np.array([[30.0, 40.0, 1.5]])

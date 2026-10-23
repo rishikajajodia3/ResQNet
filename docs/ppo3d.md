@@ -422,3 +422,216 @@ Blocked before launch: Windows free memory 1.4-1.7 GB at the start and 0.87-0.99
 holds ~0.9 GB page cache; browser and other apps hold the rest), below the ~1.7 GB level where the reaper
 stopped `multi_20261018_a`. `multi_20261018_b` not started; equivalence check (shared vs separate maps, same
 seeds, identical obs / rewards) not yet run. Needed before launch: roughly 3 GB or more Windows free memory.
+
+### 12.6 `multi_20261018_b`: completed run and results (2026-10-18)
+
+Supersedes the open decision in 12.4 / 12.5: the run was restarted on a different host (Windows 11, RTX GPU for
+Sionna, data on `D:`), so the memory limit that stopped `multi_20261018_a` no longer applied.
+
+**Setup on this host.**
+- Windows Python 3.12 runs the radio maps, training and offline evaluation. `ml/utils.py:peak_rss_mb()` replaces
+  `resource.getrusage` (Linux-only) in `radiomap_cache.py`, `radiomap_bench.py` and `train_multiuav3d.py`: psutil's
+  peak working set on Windows, unchanged on Linux. `sb3-contrib` and `scikit-learn==1.9.0` are needed (`pdr_v2.joblib`
+  was pickled with 1.9.0).
+- The closed loop (Sionna + ns-3) runs in WSL Ubuntu: ns-3.47 at `~/ns-allinone-3.47/ns-3.47` (optimized build),
+  venv `~/resqnet-venv` with the Windows package versions. OptiX cannot start in WSL (its `libnvoptix.so.1` has no
+  `optixQueryFunctionTable`), so Sionna runs on Dr.Jit's CPU backend: `DRJIT_LIBLLVM_PATH` points at a user-space
+  libLLVM 18 (micromamba, conda-forge `libllvm18`), `CUDA_VISIBLE_DEVICES=` is empty.
+- All four radio maps were rebuilt here (GPU, ~2 min each). Accuracy matches 10.: train_a 0.09 / 1.36 dB / 1.7 %,
+  val_a 0.14 / 2.75 dB / 0.3 %, train_b 0.085 / 2.39 dB / 1.0 %, train_c 0.11 / 1.70 dB / 1.0 % (median / p90 /
+  usable flips), all **pass**. Tests: `ml/test_multiuav3d.py` 31/31 OK on Windows.
+- Reproduction check: the rule-based closed loop on val_a gives exactly the numbers in 10. (0.675 → 0.750).
+
+**Training.** Same command as 12.3 with `--run-id multi_20261018_b` (train_a/b/c, val_a, 300k steps, seed 0,
+PDR v2, shared radio maps from 12.5). 300 032 steps in 5570 s (54 steps/s), ~0.93 GB. Validation score
+(every 20k steps) rises from 0.276 to its best **0.693 at 160k** (`best_val_model.zip`, sha256 `66368d0eceee8f45…`)
+and then stays at 0.61–0.69. Action histogram: stay 47 %, +x 17 %, up 12 %, −y 10 %, +y 10 %, −x 2 %, down 2 %.
+
+**Offline comparison on val_a** (same protocol as 10., 30 episodes; val_a is also the selection window, so the
+checkpoint row is optimistic — `urban_core` is the unbiased test and was not run):
+
+| method | score | mean PDR | coverage | worst-10 % | horiz. m | vert. m |
+|---|---|---|---|---|---|---|
+| fixed | 0.475 | 0.718 | 0.736 | 0.307 | 0 | 0 |
+| random actions | 0.473 | 0.714 | 0.732 | 0.306 | 301 | 83 |
+| random placement | 0.463 | 0.689 | 0.701 | 0.325 | 0 | 0 |
+| greedy one-step (model) | 0.720 | **0.961** | **0.974** | 0.754 | 27 | 4 |
+| pilot PPO b (one window) | 0.445 | 0.624 | 0.637 | 0.398 | 299 | 29 |
+| **multi PPO b, best (160k)** | **0.742** | 0.951 | 0.962 | **0.867** | 211 | 22 |
+| multi PPO b, best, up/down masked | 0.738 | 0.950 | 0.961 | 0.853 | 224 | 0 |
+
+Checkpoints (`validation_offline_ckpt*.json`): 100k 0.714 (masked z 0.686), 200k 0.741 (0.753), 300k 0.746 (0.753).
+Training on three windows fixes the pilot's failure to generalise: PPO now beats greedy on score, mostly through
+the worst-served users (worst-10 % 0.867 vs 0.754), at slightly lower mean PDR / coverage. Altitude control adds
+little: from 200k on, masking up/down is as good or better. No safety violations.
+
+**Real closed-loop episode on val_a** (`configs/closed_loop_ppo3d.json`, one episode each, one ns-3 run per
+interval — indicative only):
+
+| | multi PPO b (`best_val_model.zip`) | rule-based |
+|---|---|---|
+| output (WSL) | `~/.cache/resqnet_control/ppo3d_val_20261018_b` | `~/.cache/resqnet_control/rule_val_20261018` |
+| intervals / UAV moves | 7 with moves / 17 (final z 40, 60, 60 m) | 3 / 1 (15 m) |
+| coverage | 0.967 → **1.000** | 0.967 → 1.000 |
+| mean PDR | 0.965 → 0.955 | 0.965 → **0.995** |
+| worst-10 % PDR | 0.656 → 0.743 | 0.656 → **0.966** |
+| mean latency | 25.6 → 77.1 ms | 25.6 → **21.7** ms |
+| controller objective | 0.675 → 0.594 (best 0.718 after step 1) | 0.675 → **0.750** |
+| Sionna / ns-3 calls, time | 8 / 8, 45 s / 80 s | 3 / 2, 42 s / 24 s |
+
+Final PPO positions: `data/ppo3d_val_a_positions.json`.
+
+Conclusion: offline (training model, no latency term) PPO is now the best method on val_a, but in the measured loop
+it is **worse than the rule-based controller**. Two measured causes: (1) the controller objective weights latency
+0.2 and PPO's reward has no latency term (`latency_in_reward: false`, 7.), so PPO climbs to 60 m and spreads the
+UAVs, and latency rises 25.6 → 77 ms (the pilot did the same, 25.6 → 56 ms); (2) PPO keeps moving after its best
+measured point (0.718 after the first move) until the safety masks stop it at the window edge / ceiling. Next steps
+that do not change this run: add the latency predictor (passed its gate, 7.) to the reward, or let the closed loop
+keep the best measured placement; then run `urban_core` once.
+
+**Caveat (ns-3 channel, unchanged here).** `uav-demo.cc` chains `MatrixPropagationLossModel` after
+`LogDistancePropagationLossModel` (exponent 3, 46.6777 dB at 1 m). The matrix holds Sionna's loss *in excess of
+free space*, but the LogDistance base is itself above free space by 6.6 + 10·log10(d) dB at 2.412 GHz
+(≈ 24–27 dB at 50–100 m), so obstructed links are penalised by both. Kept as is for this run because the
+user-to-user hidden-node behaviour and every number in 10. use the same channel; fixing it (free-space base, or
+Sionna's total loss instead of the excess) needs new ns-3 data and a refit of the PDR model.
+
+**Sionna paths for the PPO placement** (this run; the notebook now shows `multi_lat_20261018_c`, 12.7). `ResQNet_Sionna_Rays.ipynb` (helpers in `sionna/ray_viz.py`) traces
+UAV → user paths in val_a with the pipeline's settings (max depth 3, line of sight, specular reflection,
+refraction; diffraction and diffuse scattering off: one material, scattering coefficient 0) and draws the real
+path vertices: an interactive 3D view with reflection points, Sionna's own render (`data/sionna_rays_val_a.png`)
+and a per-link table. With the PPO placement and 10 users: 79 paths (15 line of sight, 18 one reflection, 9 two or
+three reflections, 37 through a wall), and every user has line of sight to its best UAV. `POSITIONS_FILE = None`
+shows the hand-placed start formation instead (99 paths, 7 line of sight).
+
+### 12.7 `multi_lat_20261018_c`: latency in the reward (2026-10-18)
+
+Why: in 12.6 PPO lost the measured closed loop because the controller objective weights latency 0.2 and PPO's
+reward had no latency term. The latency predictor passed its pre-registered gate (7.), so it now enters the reward.
+
+**Change.**
+- `ml/multiuav3d_env.py`:
+  - `score = 0.35·PDR + 0.20·coverage + 0.25·worst-10 % − w_lat·latency score`, where latency score is the mean
+    predicted per-user delay / 100 ms, capped at 3. That is the closed-loop objective's term
+    (`closed_loop_control.network_metrics`), averaged over delivering users.
+  - `w_lat` defaults to 0, so earlier runs and their evaluation are unchanged. Re-evaluating `multi_20261018_b`
+    with the new code gives identical numbers (greedy 0.7196, PPO 0.742).
+  - `CalibratedPDR(latency_path=...)` computes PDR and latency from the same features: the test checks it
+    against `latency_model.LatencyModel` and the previous PDR path.
+  - The observation is unchanged (`3d-v1`), so old and new checkpoints run in the same closed loop.
+- `ml/train_multiuav3d.py`:
+  - new option `--latency-model-path`;
+  - `train_config.json` records `latency_in_reward` and the latency-model sha256;
+  - the validation log gains `mean_latency_ms`.
+- `ml/eval_3d_validation.py`:
+  - new options `--latency-model-path` and `--reward-weights`;
+  - greedy now uses `env.score_of`, so with the latency term on it also optimises latency.
+- Tests: `ml/test_multiuav3d.py` 35/35 on Windows (4 new: latency off by default, weight needs a predictor,
+  term and cap, predictor consistency); `ml/test_closed_loop.py` passes in WSL (the 4 checkpointing tests need the
+  Linux ns-3 binary; the 3 dashboard tests need pydantic, absent from the WSL venv).
+
+**Predictor check on the measured loop.** At the exact positions and users of the 12.6 episodes (Sionna path
+gains, Windows GPU), predicted vs measured mean latency: the PPO episode 32 → 63 ms vs 25.6 → 77 ms (the
+predictor gets the direction right at every altitude step but understates the rise); the rule-based start → end
+32.0 → 31.2 vs 25.6 → 21.7 ms.
+
+**Training.** As 12.6 plus `--latency-model-path models/latency_surrogate_v1/fit_20261017/model.joblib
+--reward-weights '{"latency": 0.2}'`. 300 032 steps, 8151 s (37 steps/s). Validation (latency-aware score) rises
+to its best, 0.658, at the **last** checkpoint (300k), so the run is probably not converged. Action histogram:
+stay 37 %, +x 23 %, −y 12 %, +y 11 %, up 8 %, down 6 %, −x 3 %.
+
+**Offline, val_a, latency-aware score** (`validation_offline_latency.json` in both run directories):
+
+| method | score | mean PDR | coverage | worst-10 % | pred. latency ms | horiz. m |
+|---|---|---|---|---|---|---|
+| fixed | 0.426 | 0.718 | 0.736 | 0.307 | 24.6 | 0 |
+| random actions | 0.421 | 0.714 | 0.732 | 0.306 | 26.1 | 301 |
+| greedy one-step (latency-aware) | **0.690** | **0.966** | **0.975** | 0.816 | **23.5** | 45 |
+| PPO `multi_20261018_b` (no latency term) | 0.680 | 0.951 | 0.962 | **0.867** | 30.8 | 211 |
+| PPO `multi_lat_20261018_c` | 0.674 | 0.950 | 0.963 | 0.846 | 31.4 | 257 |
+
+Offline, the latency term does not change much: both PPO runs are slightly below the latency-aware greedy.
+
+**Real closed-loop episode on val_a** (same config / users / start as 12.6; one episode, indicative only):
+
+| | PPO `multi_lat_20261018_c` | PPO `multi_20261018_b` | rule-based |
+|---|---|---|---|
+| intervals with moves / UAV moves | 2 / 4 (final z 30, 40, 40 m) | 7 / 17 (z 40, 60, 60) | 1 / 1 |
+| coverage | 0.967 → 1.000 | 0.967 → 1.000 | 0.967 → 1.000 |
+| mean PDR | 0.965 → **0.995** | 0.965 → 0.955 | 0.965 → **0.995** |
+| worst-10 % PDR | 0.656 → 0.957 | 0.656 → 0.743 | 0.656 → **0.966** |
+| mean latency | 25.6 → 31.3 ms | 25.6 → 77.1 ms | 25.6 → **21.7** ms |
+| controller objective | 0.675 → **0.729** | 0.675 → 0.594 | 0.675 → **0.750** |
+| Sionna / ns-3 calls, time | 3 / 3, 12 s / 17 s | 8 / 8, 45 s / 80 s | 3 / 2, 42 s / 24 s |
+
+Output: `~/.cache/resqnet_control/ppo3d_val_20261018_lat_c` (WSL). Final positions: `data/ppo3d_val_a_positions.json`.
+
+Conclusion: with latency in the reward, PPO stops after two intervals instead of climbing to the 60 m ceiling,
+and the measured objective goes from a loss (0.594) to a gain (0.729). PDR, coverage and worst-10 % now match the
+rule-based controller; the remaining gap (0.729 vs 0.750) is latency, 31 vs 22 ms. One episode on one window, one
+ns-3 run per interval: indicative, not a significance test. Not yet run: `urban_core` (the unbiased test),
+more seeds / user layouts, and continued training (validation was still rising at 300k; `--resume-from
+models/ppo_multiuav_3d/multi_lat_20261018_c/model.zip`).
+
+`ResQNet_Sionna_Rays.ipynb` showed this placement until 12.8: 113 traced paths (7 line of sight, 21 one reflection,
+31 two or three reflections, 54 through a wall). 5 of 10 users have no line of sight to their best UAV and are
+reached through reflections or walls.
+
+### 12.8 Continued training (`multi_lat_20261019_d`) and a 5-layout closed-loop comparison (2026-10-19)
+
+**Training.** `--resume-from models/ppo_multiuav_3d/multi_lat_20261018_c/model.zip --timesteps 300000` with
+the 12.7 settings: 300k → 600k steps, 7354 s (41 steps/s). Fix in `ml/train_multiuav3d.py` first:
+- On resume, the validation, progress and steps/s counters now count from the resumed step. Before the fix, the
+  validation schedule started at 20k, so resuming at 300k would have validated 15 times in a row.
+- The resumed model is validated first, so `best_val_model.zip` is only replaced by a better checkpoint.
+- Checked with a short resumed smoke run; `ml/test_multiuav3d.py` 35/35.
+
+Validation (10 episodes, latency-aware): 0.656 at 300k, best **0.733 at 520k** (`best_val_model.zip`), 0.715 at
+600k.
+
+**Offline, val_a, latency-aware score, 30 episodes:**
+
+| method | score | mean PDR | coverage | worst-10 % | pred. latency ms |
+|---|---|---|---|---|---|
+| greedy one-step (latency-aware) | 0.690 | 0.966 | 0.975 | 0.816 | **23.5** |
+| PPO 300k (`multi_lat_20261018_c`) | 0.674 | 0.950 | 0.963 | 0.846 | 31.4 |
+| **PPO 520k** (`multi_lat_20261019_d/best_val_model.zip`) | **0.712** | **0.973** | **0.985** | **0.928** | 29.1 |
+| PPO 600k (`multi_lat_20261019_d/model.zip`) | 0.694 | 0.967 | 0.981 | 0.891 | 31.6 |
+
+**Real closed loop, 5 user layouts.** Same config as 12.6 / 12.7 with `user_seed` 8100–8104, one episode per
+method and layout, run in WSL as `python ml/closed_loop_control.py --config configs/closed_loop_ppo3d.json --override '{"user_seed": <seed>, "ppo": {"checkpoint": "<model>"}}'` (rule-based: `'{"policy": "rule_based", "user_seed": <seed>}'`). Output: `~/.cache/resqnet_control/multiseed_20261019/<method>_<seed>`.
+
+Objective before → after (UAV moves):
+
+| user seed | rule-based | PPO 300k | PPO 520k |
+|---|---|---|---|
+| 8100 | 0.675 → **0.750** (1) | 0.675 → 0.729 (4) | 0.675 → 0.682 (19) |
+| 8101 | 0.678 → **0.723** (1) | 0.678 → 0.304 (34) | 0.678 → 0.609 (28) |
+| 8102 | 0.563 → 0.651 (2) | 0.563 → 0.733 (10) | 0.563 → **0.743** (19) |
+| 8103 | 0.633 → 0.633 (0) | 0.633 → 0.374 (33) | 0.633 → **0.727** (27) |
+| 8104 | 0.473 → **0.756** (3) | 0.473 → 0.377 (29) | 0.473 → 0.683 (28) |
+
+Mean of the final state over the 5 layouts (start: objective 0.605):
+
+| | objective | coverage | PDR | worst-10 % | latency ms | wins vs rule | best objective during episode |
+|---|---|---|---|---|---|---|---|
+| rule-based | **0.703** | 0.987 | 0.979 | 0.836 | 31.0 | – | 0.703 |
+| PPO 300k | 0.503 | 0.753 | 0.750 | 0.387 | 21.6 | 1 / 5 | 0.695 |
+| **PPO 520k** | 0.689 | **0.993** | **0.982** | **0.864** | 41.5 | 2 / 5 | **0.734** |
+
+Conclusion:
+- **Model choice:** PPO 520k is the model to use. The 300k model's single good episode (12.7) was luck: on 3 of
+  5 layouts it lost most of the coverage (0.30–0.38).
+- **PPO 520k against rule-based:** essentially even, 0.689 vs 0.703 with 5 episodes, a difference well inside
+  the per-layout spread.
+  - PPO 520k beats the rule-based controller on 2 layouts and has better coverage, PDR and worst-10 %.
+  - It pays in latency, 41.5 vs 31.0 ms.
+  - It passes through better placements than it ends at (mean best 0.734 vs final 0.689): it keeps moving
+    (about 24 moves per episode against 1–3).
+  - The two remaining improvements are the 12.6 "keep the best measured placement" option and a stronger
+    latency / movement penalty in training.
+- Still one window (val_a), one ns-3 run per interval. `urban_core` not run.
+
+`ResQNet_Sionna_Rays.ipynb` now shows PPO 520k's final placement for user seed 8100 (`data/ppo3d_val_a_positions.json`):
+- 112 traced paths: 12 line of sight, 22 one reflection, 34 two or three reflections, 44 through a wall.
+- Every user has line of sight to its best UAV.

@@ -1,0 +1,102 @@
+{
+  "run_id": "multi_20261018_b",
+  "out_root": "C:\\Users\\Rayaan\\Desktop\\uavns3\\ResQNet\\models\\ppo_multiuav_3d",
+  "timesteps": 300000,
+  "smoke": false,
+  "rf": "radiomap",
+  "pdr_model": "calibrated:models/latency_surrogate_v1/fit_20261017/pdr_v2.joblib",
+  "pdr_model_path": "models/latency_surrogate_v1/fit_20261017/pdr_v2.joblib",
+  "radiomap_samples": 10000000,
+  "train_windows": [
+    "train_a",
+    "train_b",
+    "train_c"
+  ],
+  "val_windows": [
+    "val_a"
+  ],
+  "reward_weights": {
+    "pdr": 0.35,
+    "coverage": 0.2,
+    "fairness": 0.25,
+    "delta": 0.1,
+    "move": 0.03,
+    "unsafe": 0.05
+  },
+  "checkpoint_every": 25000,
+  "resume_from": null,
+  "heightmap": "~/.cache/resqnet_3d/scan/heightmap.npz",
+  "max_steps": 12,
+  "pdr_obs_noise": 0.0,
+  "n_envs": 4,
+  "n_steps": 256,
+  "batch_size": 128,
+  "lr": 0.0003,
+  "ent_coef": 0.01,
+  "val_every": 20000,
+  "val_episodes": 10,
+  "seed": 0,
+  "obs_version": "3d-v1",
+  "obs_len": 163,
+  "action_names": [
+    "stay",
+    "-x",
+    "+x",
+    "-y",
+    "+y",
+    "down",
+    "up"
+  ],
+  "max_uavs": 5,
+  "step_h_m": 15.0,
+  "step_v_m": 10.0,
+  "z_levels": [
+    20.0,
+    30.0,
+    40.0,
+    50.0,
+    60.0
+  ],
+  "safety": {
+    "min_altitude_m": 15.0,
+    "max_altitude_m": 60.0,
+    "building_clearance_m": 5.0,
+    "clearance_radius_m": 10.0,
+    "min_separation_m": 15.0
+  },
+  "coverage_threshold": 0.5,
+  "validation_windows": [
+    "val_a"
+  ],
+  "rf_label": "Sionna RT radio maps",
+  "latency_in_reward": false,
+  "held_out": [
+    "urban_core"
+  ],
+  "area_sampling": "uniform over train_windows, re-drawn every episode (MultiUAV3DEnv.reset)",
+  "radiomap_sharing": "one read-only MultiWindowRF per window set, shared by the envs of the process",
+  "provenance": {
+    "git_head": "8f998aec88f1b12034bc1cbf8eded06886f0133d",
+    "source_sha256": {
+      "ml/multiuav3d_env.py": "3388cdee778f0f463b1c2e31e5635a53652537c5272eb7fa71f5e54aeba71e56",
+      "ml/train_multiuav3d.py": "171aed019e8975560818cfcdba7784f8a5aca2b97d9dcd51fa14d24fbc9c50dc",
+      "ml/radiomap_cache.py": "7a5d1bbd6c453c07d8b72df189101dce272c28eb1ce77e032805322ed2db9f98",
+      "ml/closed_loop_control.py": "5bc56415f250ed088234c45efac04f3dd28bebdbe011a44f26267150dd9ad013",
+      "configs/training_areas_3d.json": "1e5b7d5e3490add009d091c9b8627ce77ac8a34a8f75f92561b57baf63627d16"
+    },
+    "pdr_model_sha256": "07786149ac3d6c49c236fc0ebd5327691059548c71d8001483df896abe03ee64",
+    "heightmap_sha256": "2c709d5a6dc6b44c39f36b40f46826fde2aeb04301ddf013d49659b571a1157b",
+    "radiomap_caches": {
+      "train_a": "C:\\Users\\Rayaan\\.cache\\resqnet_3d\\radiomaps\\train_a\\v1_s10000000_d3_c2",
+      "train_b": "C:\\Users\\Rayaan\\.cache\\resqnet_3d\\radiomaps\\train_b\\v1_s10000000_d3_c2",
+      "train_c": "C:\\Users\\Rayaan\\.cache\\resqnet_3d\\radiomaps\\train_c\\v1_s10000000_d3_c2",
+      "val_a": "C:\\Users\\Rayaan\\.cache\\resqnet_3d\\radiomaps\\val_a\\v1_s10000000_d3_c2"
+    },
+    "radiomap_meta_sha256": {
+      "train_a": "e202585fb3710d54a9659335e353ea932bd0f828fafc93b725a9fd2b4d612be9",
+      "train_b": "92617db50154d0b313b59e7cebe113262f0850ce7449a944560850177e0771e4",
+      "train_c": "69a2285020bbc45ea203bfddecbf3986af15d82a9ec28b81d8259c9e11038a55",
+      "val_a": "dffba02fde6477ce8710023e19a866dbba53c70937b4c0e3e19e738c742343b9"
+    }
+  }
+}

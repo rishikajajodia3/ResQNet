@@ -12,6 +12,10 @@ Methods, all from identical start states / users per seed:
   ppo            : the checkpoint, deterministic
   ppo_no_z       : the same checkpoint with up / down masked (tests whether altitude choices help)
 
+With --latency-model-path and --reward-weights '{"latency": 0.2}' every method is scored
+with the latency term (multiuav3d_env.MultiUAV3DEnv.score_of); mean predicted latency is reported either way
+when a latency model is given.
+
 Usage: python ml/eval_3d_validation.py --checkpoint models/ppo_multiuav_3d/<run>/model.zip --episodes 30
 """
 from __future__ import annotations
@@ -54,7 +58,8 @@ def rollout(env, seed, policy) -> dict:
         done = term or trunc
     return {"seed": seed, "K": env.K, "N": len(env.users), "start": start.tolist(), "final": env.P.tolist(),
             "start_metrics": {k: first[k] for k in ("pdr", "coverage", "worst10_pdr", "score")},
-            **{k: info[k] for k in ("pdr", "coverage", "worst10_pdr", "throughput_mbps", "score")},
+            **{k: info[k] for k in ("pdr", "coverage", "worst10_pdr", "throughput_mbps", "score",
+                                    "mean_latency_ms")},
             "horizontal_m": h, "vertical_m": v, "safety_violations": viol,
             "altitudes": env.P[:, 2].tolist(), "distinct_altitudes": len(set(env.P[:, 2].round(1)))}
 
@@ -80,10 +85,8 @@ def greedy(env, obs):
                 continue
             P = P0.copy()
             P[k] = env.target(k, j)
-            pg = np.asarray(env.rf.path_gain(P, env.users))
-            pdr = np.clip(env.pdr_model(P, env.users, pg), 0, 1)
-            mt = env.metrics_from(pdr)
-            s = env.w["pdr"] * mt["pdr"] + env.w["coverage"] * mt["coverage"] + env.w["fairness"] * mt["worst10_pdr"]
+            _, pdr, lat = env.predict_network(P)
+            s = env.score_of(env.metrics_from(np.clip(pdr, 0, 1), lat))
             s -= env.w["move"] * (math.dist(P[k], P0[k]) / (env.K * max(env.step_h, env.step_v)))
             if s > best + 1e-6:
                 best, best_a = s, (k, j)
@@ -106,6 +109,8 @@ def make_ppo(model, no_z=False):
 def summarise(rows) -> dict:
     keys = ["pdr", "coverage", "worst10_pdr", "throughput_mbps", "score", "horizontal_m", "vertical_m",
             "safety_violations", "distinct_altitudes"]
+    if all(r.get("mean_latency_ms") is not None for r in rows):
+        keys.append("mean_latency_ms")
     s = {k: {"mean": float(np.mean([r[k] for r in rows])),
              "ci95": float(1.96 * np.std([r[k] for r in rows], ddof=1) / math.sqrt(len(rows))) if len(rows) > 1 else 0.0}
          for k in keys}
@@ -123,6 +128,8 @@ def main() -> int:
     ap.add_argument("--rf", default="radiomap", choices=["radiomap", "free_space"])
     ap.add_argument("--pdr-model", default="calibrated", choices=["calibrated", "network"])
     ap.add_argument("--pdr-model-path", default=None)
+    ap.add_argument("--latency-model-path", default=None)
+    ap.add_argument("--reward-weights", default=None, help="JSON overrides, e.g. '{\"latency\": 0.2}'")
     ap.add_argument("--radiomap-samples", type=int, default=10_000_000)
     ap.add_argument("--max-steps", type=int, default=12)
     ap.add_argument("--val-windows", nargs="+", default=None)
@@ -137,7 +144,8 @@ def main() -> int:
     ns = argparse.Namespace(heightmap=T.DEFAULT_HEIGHTMAP, rf=a.rf, pdr_model=a.pdr_model,
                             pdr_model_path=a.pdr_model_path, radiomap_samples=a.radiomap_samples,
                             max_steps=a.max_steps, pdr_obs_noise=0.0, train_windows=None,
-                            val_windows=a.val_windows, reward_weights=None)
+                            val_windows=a.val_windows, reward_weights=a.reward_weights,
+                            latency_model_path=a.latency_model_path)
     ns.train_windows = a.val_windows
     env = T.make_env(ns, a.role, 0)
     model = None
@@ -160,7 +168,8 @@ def main() -> int:
                 env.random_start_prob = 0.5
                 _, info = env.reset(options={"window": env.window, "users": users, "positions": P.tolist()})
                 rows.append({"seed": a.seed0 + e, "K": K, "final": P.tolist(),
-                             **{k: info[k] for k in ("pdr", "coverage", "worst10_pdr", "throughput_mbps", "score")},
+                             **{k: info[k] for k in ("pdr", "coverage", "worst10_pdr", "throughput_mbps", "score",
+                                                     "mean_latency_ms")},
                              "horizontal_m": 0.0, "vertical_m": 0.0, "safety_violations": 0,
                              "altitudes": P[:, 2].tolist(), "distinct_altitudes": len(set(P[:, 2].round(1)))})
         elif name in pols:
@@ -172,6 +181,7 @@ def main() -> int:
                                 if isinstance(v, dict) and "mean" in v}), f"{time.time() - t0:.0f}s", flush=True)
     meta = {"role": a.role, "checkpoint": a.checkpoint, "episodes": a.episodes, "seed0": a.seed0, "windows": sorted(env.windows),
             "rf": a.rf, "pdr_model": env.pdr_model.name, "pdr_model_path": a.pdr_model_path,
+            "latency_model_path": a.latency_model_path, "reward_weights": env.w,
             "note": "PREDICTED metrics (training model on the validation window), not ns-3 measurements"}
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({"meta": meta, "results": res}, indent=1, default=float))
